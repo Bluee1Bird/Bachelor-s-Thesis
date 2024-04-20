@@ -33,6 +33,8 @@ Wang and Stavrou 2010 \cite{wangExploitingSmartphoneUSB2010} were the first to d
 
 At Defcon 2010 Adrian Crenshaw presented an USB dongle he called PHUKED and later published the instructions on how to build it on his website \cite{ProgrammableHIDUSB}. The penetration testing device was built using a Teensy microcontroller. PHUKED stands for Programmable HID USB Keystroke Dongle. It could be programmed to spoof a keyboard and emulate keystrokes to an unlocked computer. 
 
+The company Hak5 launched the first version USB Rubber Ducky in 2010 \cite{USBRubberDucky}. It is a commercially available, closed source keystroke injection tool disguised as a normal USB flash drive. It runs on it's own scripting language called DuckyScript, that has seen 3 versions already, with the newest one even supporting control flow constructs, repetitions, and functions. The Rubber Ducky has a UBS A and a USB C end \cite{USBRubberDucky2023}.  
+
 Lau et al., 2013 \cite{lauMactansInjectingMalware2013} showed that attacks on IOS6 using USB are possible. Within one minute of being plugged into the charger cable, the phone was compromised. The approach leverages USB to bypass Apple's security mechanism protecting their devices from arbitrary software installation. On top of the malware installation, the malware can be hidden from the user in the same way as Apple hides their own built-in-applications. 
 The hardware the authors designed for this study is called Mactans and uses a BeagleBoard. With IOs 7 Apple already implemented the protective measures proposed by this paper an thereby patched this particular attack vector. 
 
@@ -62,6 +64,9 @@ Another proof of concept was published by \cite{bojovicRisingThreatHardware2019}
 
 Efendy et al. 2019 \cite{efendyExploringPossibilityUSB2019} showed that a fork bomb attack on Windows 8 can be carried out via USB. Fork Bomb is a Denial of Service (DoS) attack that creates new processes repeatedly thereby depleting system resources. The computer will run out of memory, causing errors. The user will no longer be able to give any input to the computer. Ultimately it will exhaust the resources of the OS, overtaxing the kernel causing a crash.  
 
+The O.MG cable is a handmade cable that poses as a normal USB cable with data transfer and charging capabilities \cite{hak5MGCable}. However, inside, there is an implant that can mount sophisticated HID spoofing attacks. It was first released in 2019 with prototypes available at Defcon \cite{MGCable2019a}, is now commercially available on the Hak5 Website. It supports KeyStroke injection via DuckyScript, mouse injection, has 8-200 payload slots (depending on the version), a deployment speed of 120 - 890 keys/sec, a self destruct feature, supports geo fencing, 192 different keyboard layouts, and wifi triggers. The elite version also has a hardware keylogger, supports HIDX Stealth link to set up remote servers, and extended WiFi range and stealth optimized power draw. 
+You can choose between a USB A or C, mini USB, and lightning ends. To use them you have to activate them and upgrade to the latest firmware with the programmer. 
+
 In 2020 Dr. Kumar described a type of attack possible via USB called 'Juice Jacking' \cite{kumarJuiceJackingUSB2020}. It is a type of attack that specifically involves a malicious charging port (possibly in public) that initiates an attack when a device is connected, either installing malware or copying sensitive data from the device. He explains that this is possible, because the data transfer mode on phones is enabled by default. 
 
 In the same year, Muslim et al. \cite{muslimImplementationAnalysisUSB2020}, implemented a demonstration of how a USB attack can be leveraged to steal passwords stored in the browser of a Windows 10 PC using the Arduino Pro Micro Leonardo.  They proved that it is possible to use keyboard injection to download scripts from GitHub to extract stored passwords from Chrome and Firefox and then send them to the email address of the attacker. 
@@ -86,6 +91,8 @@ should this table be separated into hard and software? - what about studies that
  \hline
  PHUKED & IronGeek  (Adrian Crenshaw) \cite{ProgrammableHIDUSB} & 2010 & stick / 'dongle'  \\
  \hline
+ USB Rubber Ducky & Hak5 \cite{USBRubberDucky} & 2010 & Stick \\
+ \hline
  Mactan & Lau et al. \cite{lauMactansInjectingMalware2013} & 2013 & IOS6 attack \\
  \hline
  Cottonmouth & NSA \cite{appelbaumCatalogRevealsNSA2013} & 2013 & cable / built-in  \\ 
@@ -109,6 +116,8 @@ should this table be separated into hard and software? - what about studies that
  Malboard & Fahri et al. \cite{farhiMalboardNovelUser2019} & 2019 & keystroke profiling \\
  \hline
   - & Efendy\cite{efendyExploringPossibilityUSB2019} & 2019 & Fork Bomb Attack \\
+ \hline
+ O.MG Cable & MG and Hak5  \cite{hak5MGCable} \cite{MGCable2019a} & 2019 & USB Cable \\
  \hline
 - & Kumar \cite{kumarJuiceJackingUSB2020} & 2020 & Juice Jacking \\
 \hline
@@ -179,6 +188,8 @@ USBSafe has to be retrained ever 16 days for 82 seconds to maintain a detection 
 
 Also in 2019, the authors of \cite{IdentifyingHIDbasedAttacks2019} propose a system called HIDTracker that detects anomalies in HID logs to fight HID injection attacks. When a USB device is connected to a host a HID event graph is constructed which is then tested. The process events and the objects within such an event graphs are analyzed using the guilt-by-association method (GAD) and machine learning models such as random forests. In this way, USB spoofing should be detected as an anomaly to usual USB behaviour. The system has a 90\% precision rate and a 2.33\% false positive rate. 
 
+MG, the creator of the O.MG Cable has also published a device in 2020 called the Malicious Cable Detector \cite{hak5MaliciousCableDetector}, that can detect malicious cables by side channel power analysis. A positive is indicated with a blinking light. Additionally, the device doubles as a USB condom, blocking data and allowing only the charging functionality of the cables. 
+
 NetHunter \cite{IntelligentSystemPreventing} is a system published in 2021 that utilizes a deep learning artificial neural network to analyse multiple processes connected to USB device enumeration and deployment. It considers basic device identification parameters such as serial number, vendorID, productID, utilizes HID pattern identification by learning about existing RubberDucky attacks. Furthermore it tries to predict behavioural patterns and compares its predictions to the actual input. Additionally, a number of fuzzy parameters are collected such as the program processing call rate parameter (the time interval from the end point of the device driver installation to the start point of entering the first character from the peripheral device). 
 
 The Ducky-Detector \cite{USBRubberDucky2021} published in 2021 aims to identify USB rubber duckies by using heuristic checks. It springs into action when it detects two or more keyboards. It would ask the user whether they are aware of the circumstance, if the user is affirmative, nothing happens. If the user does not indicate that they are aware, ducky detector will continue the enumeration of the device and check the provided keyboard state and type. If it can detect discrepancies here for example a mismatch of the actual number of function keys and the expected number based on the stated keyboard an alert is raised. Finally, it observes the input from the keyboards and issues an alert if their approximate keypress speed is above a certain threshold per minute. The study claims no false positives and an accuracy of 100\%. 
@@ -222,6 +233,8 @@ Defense
  Malboard & Fahri et al. \cite{farhiMalboardNovelUser2019} & 2019 & 3 side channels \\
  \hline
  USBSafe & Kharraz \cite{kharrazUSBESAFEEndPointSolution2019} & 2019 & ML trained on USB traffic\\
+ \hline
+ Malicious Cable Detector & MG and Hak5 \cite{hak5MaliciousCableDetector} & 2020 & Hardware Side Channel detection \\
  \hline
  NetHunter & Tyutyunnik \cite{IntelligentSystemPreventing} & 2021 & Neural Network Rubber Ducky detection \\
  \hline
