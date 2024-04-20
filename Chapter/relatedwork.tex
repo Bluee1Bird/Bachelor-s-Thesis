@@ -1,2 +1,266 @@
 \chapter{Related Work}
 
+\section{Introduction}
+
+\section{Attack}
+
+To get an overview over the different types of attacks that are possible with USB one can refer to Nissim et al. (2017) \cite{nissimUSBbasedAttacks2017}. In their paper they classified 29 different USB based attacks into 3 main categories and 2 subcategories. They distinguish the attacks by the Hardware that was used. The categories are: Programmable Microcontrollers, Electrical, and USB Peripherals. The last one is further split into USB maliciously re-programmed peripherals and non re-programmed peripherals. 
+
+\begin{enumerate}
+  \item Electrical USB based attacks: Most notably the USB Killer attacks; a device that can discharge high voltage power surges with the goal of damaging the device it is plugged into. \cite{USBKillDevices}
+  \item Programmable Microscontrollers: Rubber Ducky, USBdriveby, Turnipschool, URFUKED.
+  \item Peripherals:
+  \begin{itemize}
+      \item Re Programmed Peripherals: smartphone based HID attacks, iSeeYou attack
+      \item Non-Reprogrammed Peripherals: USBee attack, Stuxnet
+  \end{itemize}
+\end{enumerate}
+	
+
+
+This thesis will focus on the category programmable microcontrollers (TODO ' also called ... '). In the following section we will see a chronological overview over how the programmable Microcontrollers have evolved.  
+
+\subsection{History of Attacks}
+
+One of the first documented attacks conducted via USB, was done using a tool called Slurp \cite{SharpIdeasDownloads2006} which was available as early as 2006 and could attack an IPod via a charging cable to search through it's files looking for certain file extensions. While in theory it was claimed that the implementation could be modified to extract the files that it has found, this implementation only displays the number of matching files that were discovered, since it was meant to raise awareness and not to be used for malicious purposes. 
+
+In the same year \cite{al-zarouniRealityRisksConsented2006} published a paper demonstrating another early version of the USB attack utilizing a functionality called U3, which was developed to allow users to carry portable applications on USB sticks. The USB stick in question would pose as two pieces of hardware; a CD-ROM device and a USB storage device. The attack can then be mounted by hacking the auto-run feature of CD-ROM. This meant, code could be executed automatically on the target machine only via the USB stick. 
+
+In 2009 \cite{clarkHardwareTrojanHorse2009} described an data exfiltration process via USB that they called a Hardware Trojan Horse. This Trojan was built into a keyboard for disguise and used it's "unintended" USB channels; the keyboard LED and audio channels function as a communication tool from the computer to the keyboard and could therefore be repurposed to exfiltrate data. This network endpoint data could then be searched for sensitive information and the findings be sent to the attacker. With their paper the researchers wanted to raise awareness for this kind of attack, they write; "Physical access can now be potentially sufficient to compromise a network endpoint, without attempting access through the network.".
+Expanding on their work with data exfiltration, Clark et al. released a paper in 2011 demonstrating how peripheral hardware Trojans can be used to execute code on the USB host \cite{clarkRisksAssociatedUSB2011}. 
+
+Wang and Stavrou 2010 \cite{wangExploitingSmartphoneUSB2010} were the first to describe attacks propagated via USB while launched from a smartphone or copmuter. They demonstrated propagation from Phone to Phone, Phone to Computer and Compute to Phone.
+
+At Defcon 2010 Adrian Crenshaw presented an USB dongle he called PHUKED and later published the instructions on how to build it on his website \cite{ProgrammableHIDUSB}. The penetration testing device was built using a Teensy microcontroller. PHUKED stands for Programmable HID USB Keystroke Dongle. It could be programmed to spoof a keyboard and emulate keystrokes to an unlocked computer. 
+
+Lau et al., 2013 \cite{lauMactansInjectingMalware2013} showed that attacks on IOS6 using USB are possible. Within one minute of being plugged into the charger cable, the phone was compromised. The approach leverages USB to bypass Apple's security mechanism protecting their devices from arbitrary software installation. On top of the malware installation, the malware can be hidden from the user in the same way as Apple hides their own built-in-applications. 
+The hardware the authors designed for this study is called Mactans and uses a BeagleBoard. With IOs 7 Apple already implemented the protective measures proposed by this paper an thereby patched this particular attack vector. 
+
+While all of these developments were impressive and pushed the field forward, it is not known when exactly government actors joined the field of research around USB attacks. However, in 2013 a story by the German newspaper Der Spiegel revealed that the US government had been conducting significant research in this area \cite{appelbaumCatalogRevealsNSA2013}. Developed by the NSA, one of the first USB based man-in-the-middle attack tools, Cottonmouth could be built into keyboards or accessory cables. It is part of a large collection of tools developed for the NSA called the ANT-Catalogue \cite{InteractiveGraphicNSA}. In the device catalogue Cottonmouth is advertised as a "hardware implant which will provide a wireless bridge into a target network as well a the ability to load exploit software onto target PCs". This very early attack tool was was only available in batches of 50 for a total price of 1'015'000\$ (20'000\$ / piece).
+
+The NSA playset project is an open source project that tries to replicate the technologies revealed in the ANT-Catalogue \cite{NSAPlaysetTurnipschoolHtml}. Michael Ossman replicated Cottonmouth as a part of this  project with a device called Turnipschool, making the technology available to the public. A full instruction on how to build it can be found on the Github page of the NSA-Playset Project \cite{NSAPlaysetTurnipschoolHtml}. 
+
+USBdriveby was developed by Samy Kamkar in 2014 \cite{SamyKamkarUSBdriveby}. USBdriveby is a device that can simulate keyboard and mouse input to install a backdoor and override DNS settings in order to control the flow of network traffic within seconds of being plugged in via an USB on a Windows machine. The device is built on a teensy microcontroller and can be worn as a necklace.
+
+In August of 2014 Karsten Nohl, Sasch Krissler, and Jakob Lell presented their research on USB attacks at the BlackHat Convention \cite{Srlabsbadusbblackhatv1Pdf2014}. They had reverse engineered and patched USB firmware in such a way that they created a useable, programmable, well disguised USB attack tool form a normal USB flash drive. They called it Bad USB. It could emulate Keyboard input and even spoof an Ethernet connection, allowing a connected device to intercept all internet traffic from the attacked computer. Furthermore the device can be used to mount a boot-sector virus, prompting a computer to boot an operating system from the stick, or if necessary, emulate the keystrokes to initiate the boot from the USB stick. \textit{This presentation has caused a big stir in the penetration testing community, with many papers, especially in the defense domain, referencing this presentation. (I'd need a citation for this but this is just a gut feeling from reading all the papers)}
+
+Han et al.\cite{hanIRONHIDCreateYour2016} developed a framework called IRON-HID in 2016 that can be used for penetration testing. It attaches to the existing USB devices turning them into Bad USBs. The hardware attachment can built either with Arduino or Teensy. On top of that they constructed a framework to use the hardware for various penetration testing scenarios like brute force keyboard injections to guess PIN codes of smartphones or to test whether CD-ROM programs are automatically executed. Also part of the framework are a test agent program, and a commander program, giving the penetration tester ways to reliably execute and monitor their tests.   
+
+Video Jacking is an attack demonstrated by Brain Kebs \cite{RoadWarriorsBeware2016} at Defcon 2016. He built a demonstration to raise awareness for USB based attacks by putting up a booth that would 'charge' your phone. Once the phone was connected, however, the video feed from the camera was shown on a monitor without any additional action by the user. 
+
+Inspired by PHUKED, \cite{elkinsHackingHardwareIntroducing} released an improved version of the USB Dongle at Defcon 2018, called URFUKED 
+based on Arduino that can additionally mount an HID attack by triggering it remotely.  
+
+Another proof of concept was published by \cite{bojovicRisingThreatHardware2019} in 2019. In their paper they documented how they implemented a keystroke logger and bad USB in the keyboard of one of their colleagues using an Arduino microcontroller. They recorded the target's keystrokes on a built in SD card that they then retrieved. The data was analyzed to sensitive data such as login information. In the next step they used their findings to contrive a custom script to exploit the VNC service the target was using to gain remote control overt the target machine. 
+
+\label{malboard}2019 saw the developement of a novel attack called Malboard \cite{farhiMalboardNovelUser2019}; Previously, detection of a keyboard attack was easy by identifying the keystroke dynamics as artificial (as discussed in section TODO). Malboard instead generates keystrokes that pass for the attacked user's and thereby bypass the simple detection mechanism. In order to achieve this, the user's keystrokes are observed, analyzed and emulated. To predict keystroke dynamics that may not be present in the keylogging data, a technique based on a clustering method is used. Two types of attacks can be executed with Malboard: 
+\begin{enumerate}
+    \item By combining the modified keyboard with either Remote Server Injection (RSI), where keystroke logs are either analyzed locally or sent to the off-site server to create the user profile. In a second step that off-site server sends the malicious payload using a cellular or Wifi connection. 
+    \item Alternatively Malboard is used with Physical Access Injection (PAI) where the profile is made locally through Malboard and once the attacker has gained physical access to the keyboard, their malicious keystrokes will be sent to the computer in the timing on the actual user's profile. 
+ Malboard was able to evade existing detection mechanisms in 83\% - 100\% of cases. It was able to fool DuckHunt everytime, while evading detection by Typing DNA and KeyTrac, two private keystroke authentication programs, in 83-93\% of cases. The researchers also proposed ways to defend against their attack, which will be discussed further in the detection section TODO .
+\end{enumerate}
+
+Efendy et al. 2019 \cite{efendyExploringPossibilityUSB2019} showed that a fork bomb attack on Windows 8 can be carried out via USB. Fork Bomb is a Denial of Service (DoS) attack that creates new processes repeatedly thereby depleting system resources. The computer will run out of memory, causing errors. The user will no longer be able to give any input to the computer. Ultimately it will exhaust the resources of the OS, overtaxing the kernel causing a crash.  
+
+In 2020 Dr. Kumar described a type of attack possible via USB called 'Juice Jacking' \cite{kumarJuiceJackingUSB2020}. It is a type of attack that specifically involves a malicious charging port (possibly in public) that initiates an attack when a device is connected, either installing malware or copying sensitive data from the device. He explains that this is possible, because the data transfer mode on phones is enabled by default. 
+
+In the same year, Muslim et al. \cite{muslimImplementationAnalysisUSB2020}, implemented a demonstration of how a USB attack can be leveraged to steal passwords stored in the browser of a Windows 10 PC using the Arduino Pro Micro Leonardo.  They proved that it is possible to use keyboard injection to download scripts from GitHub to extract stored passwords from Chrome and Firefox and then send them to the email address of the attacker. 
+
+Lawal et al. \cite{lawalFacilitatingCyberenabledFraud2022} 2022 were the first ones to publish a paper in which they used an O.MG cable to execute USB attacks. In their work they showed that it is possible to carry out an attack through which a document is edited in such a way that it is impossible to tell whether the modifications were made by the cable or the user of the machine. The device seems to be "capable of perfectly modifying records and files without the forensic tools being able to differentiate between files modified by the user and files modified by the O.MG Cable". Although it is possible to find hints of the presence of an O.MG cable, it cannot be determined which actions were carried out by the cable and not by the user. The authors stress, that this can be misused to place incriminating information or otherwise alter the state of information on a PC in a harmful way, while framing the user of the machine. 
+
+
+
+should this table be separated into hard and software? - what about studies that contain both?
+\begin{center}
+\begin{tabular}{|c c c c|} 
+ \hline
+ Name & Author / Inventor & Year & Charcteristics \\ [0.5ex] 
+ \hline \hline
+ pod slurping & Sharp Tools \cite{SharpIdeasDownloads2006} & 2006 & iOS slurping via Lightning Cable \\
+ \hline
+ -  &  Al-Zarouni \cite{al-zarouniRealityRisksConsented2006} & 2006 & stick / CD-ROM \\
+ \hline
+ Hardware Trojan & Clark \cite{clarkHardwareTrojanHorse2009} & 2009 and 2011 & built in keyboard and audio \\
+ \hline
+ - & Wand and Stavrou \cite{wangExploitingSmartphoneUSB2010} & 2010 & attack propagated by USB \\
+ \hline
+ PHUKED & IronGeek  (Adrian Crenshaw) \cite{ProgrammableHIDUSB} & 2010 & stick / 'dongle'  \\
+ \hline
+ Mactan & Lau et al. \cite{lauMactansInjectingMalware2013} & 2013 & IOS6 attack \\
+ \hline
+ Cottonmouth & NSA \cite{appelbaumCatalogRevealsNSA2013} & 2013 & cable / built-in  \\ 
+ \hline
+ Matans & Iau \cite{lauMactansInjectingMalware2013} & 2013 & USB IOS6 Attack \\
+ \hline
+ Turnipschool & NSA-playset \cite{NSAPlaysetTurnipschoolHtml} & 2015 & cable / built-in  \\
+ \hline
+ USB Driveby & Samy Kamkar \cite{SamyKamkarUSBdriveby} & 2014 & USB 'stick'\\
+ \hline
+ Bad USB & Nohl et al.\cite{Srlabsbadusbblackhatv1Pdf2014} & 2014 & programmable HID spoofing USB Stick\\
+ \hline
+ IRON-HID & Han et al \cite{hanIRONHIDCreateYour2016} & 2016 & DIY Framework \\
+ \hline
+ - & Brian Kebs\cite{RoadWarriorsBeware2016} & 2016 & Video Jacking \\
+ \hline
+ URFUKED & Monta Elkins \cite{elkinsHackingHardwareIntroducing} & 2018 & USB stick \\
+ \hline
+ -  & Bojovic \cite{bojovicRisingThreatHardware2019} & 2019 & built-into keyboard \\
+ \hline
+ Malboard & Fahri et al. \cite{farhiMalboardNovelUser2019} & 2019 & keystroke profiling \\
+ \hline
+  - & Efendy\cite{efendyExploringPossibilityUSB2019} & 2019 & Fork Bomb Attack \\
+ \hline
+- & Kumar \cite{kumarJuiceJackingUSB2020} & 2020 & Juice Jacking \\
+\hline
+- & Muslim \cite{muslimImplementationAnalysisUSB2020} & 2020 & stealing passwords \\
+\hline
+-  & lawal \cite{lawalFacilitatingCyberenabledFraud2022} & 2022 & O.MG cable attack \\
+ \hline 
+\end{tabular}
+\end{center}
+
+\section{Defense}
+
+Now that we know what the attackers might employ to reach their goals, let's take a look at what can be done to prevent HID attacks via USB. 
+Next to the prevention, it is also vital to be able to detect HID spoofing attacks while or forensically after they happened. 
+I partitioned the following section into these two categories; active prevention and techniques focused on attack detection.
+
+\subsection{Active Defense}
+
+One of the first published defense systems was GoodUSB \cite{tianDefendingMaliciousUSB2015}. It relies on user input to defend against malicious USB. It features a graphical interface that prompts users to describe the device they plug in then compares the expectation to the information given by the device itself. If the two descriptions don't match, access to the computer is denied. After an initial registration of the devices by the user, the program will not ask for verification again on future contact. This way, when the user plugs in a BadUSB, the device will register as USB storage stick and GoodUSB will only allow actions compliant with the behaviour of an USB stick. Any HID spoofing will be blocked.
+\cite{nissimUSBbasedAttacks2017} criticizes that GoodUSB assumes all devices are in an uncompromised state when first contact is made. It is not guaranteed to work with infected hosts (for example Teensy built into a keyboard). 
+\cite{mohammadmoradiMakingWhitelistingBasedDefense2018} criticizes this approach as missing a reliable solution for uniquely identifying registered USB devices. In cases of the devices using base class code, spoofing would still be possible, the same is true for devices using vendor specific interfaces (mostly cellphones). 
+
+The Idea of Cinch \cite{angelDefendingMaliciousPeripherals2016}, a defense mechanism developed in 2016, is to treat peripheral devices, like USB devices on a kernel level as though they were untrustworthy network endpoints. To this end it would build an extra layer between the device and the computer, channeling traffic through a 'choke point' where the actual defense would take place. These defenses, called 'policies' in the context of Cinch, include static rules (pattern matching) or checking specifications of expected devices against actual traffic. 
+These modifications do not require changes to the computer hardware, nor do they impose an unreasonable overhead to the system.
+\cite{farhiMalboardNovelUser2019} describes Cinch as "Middleware that behaves as a separation layer between the host computer and the USB device." However, they critique: "USB attacks can be mutated and randomized to avoid detection by those kinds of mechanisms."
+
+SandUSB (2016) consists of a physical middleware and user interface to control and monitor USB devices connected to a host \cite{loeSandUSBInstallationfreeSandbox2016}. Furthermore it features automatic defensive measures, five of which come out of the box: blacklisting, keyboard dynamic analysis, files and settings modification detection, input pattern matching and USB packet analysis. Further semi automatic measures can be configured through the UI. 
+Blacklisting includes displaying USB device information, such as PID, VID and device class to the user, who would then be able to detect spoofing. The keyboard dynamics analysis detects malicious input by unusual speed and typing patterns. Should a USB device try to access sensitive settings and files, SandUSB can block the access to prevent attacks. Lastly, malicious payloads are detected although it is not specified in the paper how this is accomplished. 
+
+USG \cite{robertfiskRobertfiskUSG2016} is a hardware USB firewall designed in new Zealand. It was design to prevent supply-chain attacks, and has an open source firmware that can even be custom written. It limits the speed of packets o 12Mbps, protecting against high speed injection attacks. Furthermore it supports whitelisting "known-safe commands" and thereby simplifies the USB interface. Also it prevents run-time class changes (re-enumeration) of USB devices. On top of that it implements a "HID bot detection" that detects insufficiently random inputs and blocks HID input from that USB for 4 seconds while flashing a warnlight. 
+
+Risk management is even more of concern in areas with high stakes, such as Industrial Control Systems (ICS). To mitigate the risks of an USB attack on ICS \cite{yangTMSUITrustManagement2016} has developed a trust management scheme called TMSUI, which was published in 2016. It manages access rights for USB devices; administrators can grant access to individual devices (whitelisting) and set rules for what specifically they are or are not allowed to do. USB devices are identified through their Vendor ID (VID) and serial number (SN). The only hardware modification that is necessary for this scheme is a TPM/TCM chip which is often already present in modern devices for singing the admin keys during the whitelisting process.
+
+Building on packet-level control USBFilter \cite{tianMakingUSBGreat2016} is a program for USB designed to prevent unauthorized devices from successfully connecting to the host. In addition, USBFilter can also restrict access to individual applications (e.g. only Video Conference apps can access a webcam). The firewall checks a user defined rule database and executes the action defined for the first match for the packet. Interceptions are done in the kernel thereby controlling access to both physical and virtual devices. USB packets are tracked to their original USB application by passing the PID along down the software stack, however, this is only possible for non-HID devices.
+\cite{nissimUSBbasedAttacks2017} criticizes this solution for being deterministic and only detecting known attacks. 
+
+2017 saw the release of Curtain \cite{fuCurtainKeepYour2017}. It's authors created a process to detect USB attacks made up of three methods:
+\begin{itemize}
+    \item User's choice; The program will prompt the user when a new USB device is connected, to provide the expected device type. If that does not match the specification given by the device itself, a warning is issued. That warning can be ignored, however, if the user becomes suspicious they can use Curtain to disallow access and ban the USB device.
+    \item Isolation Forest algorithm; The algorithm is used to detect abnormalities in file access by analyzing the IRP flow from the USB device. 
+    \item Static rules: depending on the type of USB device a newly connected entity claims to be, certain operations can be expected. Any device that does not conform with theses rules, will be brought to the user's attention. 
+\end{itemize}
+They argue that a combination of these methods will make a system 'well-suited for protecting any USB workload'.  The disadvantage is that the functionality of Curtain is dependent on the user, which leaves room for social engineering workarounds.  
+
+FirmUSB is a framework developed in 2017 that analyses firmware images of USB devices as a tool to detect malicious USB devices \cite{hernandezFirmUSBVettingUSB2017}. In this way, it is able to build a model of discovered firmware functionality to compare with the functionality that would be expected based on the description the UBS devices gives upon enumeration. For example a HID devices would not be expected to have a large storage capacity. Discrepancies such as these indicate malicious intent. 
+
+USBWall (also from 2017) creates a Sandbox for USB device enumeration \cite{kangUSBWallNovelSecurity2017}. It intercepts the connection on a middleware built on a BeagleBoneBlack, where the connection is analyzed and rejected if it is malicious. It is also built on USBproxy by Dominic Spill \cite{dominicspillShmooCon2014Open2014}, which relays USB traffic form the device to the host, thereby handling the actual traffic. In this manner, USBWall sandboxes the connection until the user requests functionality from the USB device through the USBWall UI where they can check whether the characteristics of the USB as presented to the computer match their expectations of the device they plugged in. They can then chose whether to establish the connection from device to the computer.  
+
+A framework developed by \cite{erdinOSIndependentHardwareAssisted2018} in 2018 implements an USB data sniffer, that looks at the USB packets upon USB enumeration. Certain rules can be set by an administrator to block or allow certain types of devices, such rules can be manufacturer or product ID, a threshold for packet speed, or interface descriptors like mice, printer, keyboards, mass storage device etc. If an USB packets matches one of the rules, the communication is reset. This solution is OS and hardware independent. 
+
+Mohammadmoradi \cite{mohammadmoradiMakingWhitelistingBasedDefense2018} pursued the idea of fingerprinting and whitelisting USB devices in 2018. In order to be able to identify every USB device individually and reliably, 24 features are evaluated, including DeviceType, VendorID, ProductID, USBClass, DriverFileName and USB protocol. With this approach a unique fingerprint is created. They found that they were able to identify each USB device they tested with an accuracy of 98.5\% , it could also detect changes in usage and block services that were newly requested. All devices that are not on the whitelist are assumed to be suspicious. This method does not protect against keystroke logging. 
+
+\cite{neunerUSBlockBlockingUSBBased2018} developed a mechanism that depends on packet speed analysis for detecting rapid keystroke injection attacks. Keystrokes that occur over a defined speed limit are flagged as malicious.\textit{ The authors argue, that more sophisticated attacks could mimic human typing, however this would eliminates the biggest appeal of the attack, that being the speed. A user could now notice what is happening and stop the attack from being fully executed. (should this go here?) }
+
+In 2019 \cite{denneyUSBWatchDynamicHardwareAssisted2019} developed a system called USB-Watch. It includes a hardware device that is placed between the USB device and the host. It intercepts the USB communication, collects the data and feeds it into a classifiers based on machine learning which then determines the nature of the device and should be able to detect malicious activity by the analysis of the USB input. It promises to distinguish between genuine and faked human keystroke characteristics by metrics such as typing time differentials, key press duration etc. This implementation is OS independent. The system claims to be able to detect keystroke injection that mimics human behaviour by adding 100ms delays or random delays between 100ms and 150ms to the input with an ROC of 0.89 . 
+
+The authors of Malboard \cite{farhiMalboardNovelUser2019} as discussed in \ref{malboard} also proposed countermeasures to their invention in the form of three detection modules based on side-channel resources. 
+\begin{enumerate}
+    \item Comparing the keyboard's power consumption with the expected one.
+    \item Checking the time it takes from when a keystroke is detected through the microphone of the computer and when the signal arrives, since extra  concealed Teensy has some processing time.
+    \item By Typo Inspection: This is done by a program that has the user type a something into the computer and injecting an error into the input. Then the systems tracks how long the use takes to correct the typo.
+\end{enumerate}
+RSI attacks would fail at this exercise and PAI attacks would reveal themselves by the delay caused by the Teensy.   
+In contrast to existing detection algorithms that might be used against Malboard which it was able to evade in 83\% - 100\% of cases, the methods proposed by the authors themselves utilising the side channels were observed to have a 100\% Malboard detection rate with no misses and no false positives.  
+
+USBSafe utilizes machine learning to detect suspicious USB communication \cite{kharrazUSBESAFEEndPointSolution2019}. They train different machine learning algorithms on 14 months of unsuspicious, normal USB traffic data generated by devices such as keyboards, mouses, headsets, mass storage devices and cameras. They were able to narrow down the considered classification features to three categories; content-based, timing-based and type-based. With the best performing ML algorithm they achieved the highest accuracy and precision rates, with a TP rate of 95.7\% and 0.21\% FP rate. BadUSB attacks were distinguished as novel observations with deviations in the USB communication data as it would have been expected from the training set. 
+USBSafe has to be retrained ever 16 days for 82 seconds to maintain a detection rate of 93\%.
+
+Also in 2019, the authors of \cite{IdentifyingHIDbasedAttacks2019} propose a system called HIDTracker that detects anomalies in HID logs to fight HID injection attacks. When a USB device is connected to a host a HID event graph is constructed which is then tested. The process events and the objects within such an event graphs are analyzed using the guilt-by-association method (GAD) and machine learning models such as random forests. In this way, USB spoofing should be detected as an anomaly to usual USB behaviour. The system has a 90\% precision rate and a 2.33\% false positive rate. 
+
+NetHunter \cite{IntelligentSystemPreventing} is a system published in 2021 that utilizes a deep learning artificial neural network to analyse multiple processes connected to USB device enumeration and deployment. It considers basic device identification parameters such as serial number, vendorID, productID, utilizes HID pattern identification by learning about existing RubberDucky attacks. Furthermore it tries to predict behavioural patterns and compares its predictions to the actual input. Additionally, a number of fuzzy parameters are collected such as the program processing call rate parameter (the time interval from the end point of the device driver installation to the start point of entering the first character from the peripheral device). 
+
+The Ducky-Detector \cite{USBRubberDucky2021} published in 2021 aims to identify USB rubber duckies by using heuristic checks. It springs into action when it detects two or more keyboards. It would ask the user whether they are aware of the circumstance, if the user is affirmative, nothing happens. If the user does not indicate that they are aware, ducky detector will continue the enumeration of the device and check the provided keyboard state and type. If it can detect discrepancies here for example a mismatch of the actual number of function keys and the expected number based on the stated keyboard an alert is raised. Finally, it observes the input from the keyboards and issues an alert if their approximate keypress speed is above a certain threshold per minute. The study claims no false positives and an accuracy of 100\%. 
+
+
+Defense
+
+\begin{center}
+\begin{tabular}{|c c c c|} 
+ \hline
+ Col1 & Col2 & Col2 & type \\ [0.5ex] 
+ \hline\hline
+ GoodUSB & Tian \cite{tianDefendingMaliciousUSB2015} & 2015 & register with user input \\
+ \hline
+ Cinch & Angel \cite{angelDefendingMaliciousPeripherals2016} & 2016 & kernel level middleware \\
+ \hline
+ USBFilter & Tian \cite{tianMakingUSBGreat2016} & 2016 & Packet level filtering \\
+ \hline
+ TMSUI & Yang \cite{yangTMSUITrustManagement2016} & 2016 & whitelisting tool \\
+ \hline
+ USG & Robertfisk \cite{robertfiskRobertfiskUSG2016}  & 2016 & Hardware Firewall\\
+ \hline
+ SandUSB \cite{loeSandUSBInstallationfreeSandbox2016} & Loe & 2016 & Hardware Sandbox \\
+ \hline
+ USBWAll & Kang \cite{kangUSBWallNovelSecurity2017} & 2017 & USB Sandbox \\
+ \hline
+ Curtain &  Fu \cite{fuCurtainKeepYour2017} & 2017 & analyze IRP, user participation\\
+ \hline
+ FirmUSB & Hernandez \cite{hernandezFirmUSBVettingUSB2017} & 2017 & firmware images vs expected\\
+ \hline
+ - & Erdin \cite{erdinOSIndependentHardwareAssisted2018} & 2018 & USB data sniffer with static rules \\
+ \hline
+ -  & Mohammadmoradi \cite{mohammadmoradiMakingWhitelistingBasedDefense2018}  & 2018 & USB whitelisting\\
+ \hline
+ - & Neuner \cite{neunerUSBlockBlockingUSBBased2018} & 2018 & speed limit for packets \\
+ \hline
+ USB-Watch & Denny \cite{denneyUSBWatchDynamicHardwareAssisted2019} & 2019 & Hardware USB intercept and ML keystroke detection \\
+ \hline
+ HIDTracker & Huang \cite{IdentifyingHIDbasedAttacks2019} & 2019 & HID event tree and ML anomaly detection \\
+ \hline
+ Malboard & Fahri et al. \cite{farhiMalboardNovelUser2019} & 2019 & 3 side channels \\
+ \hline
+ USBSafe & Kharraz \cite{kharrazUSBESAFEEndPointSolution2019} & 2019 & ML trained on USB traffic\\
+ \hline
+ NetHunter & Tyutyunnik \cite{IntelligentSystemPreventing} & 2021 & Neural Network Rubber Ducky detection \\
+ \hline
+ Ducky-Detector & Arora \cite{USBRubberDucky2021} & 2021 & Heuristic Checks \\
+ \hline
+ 
+\end{tabular}
+\end{center}
+
+\subsection{Detection Techniques}
+
+
+Keystroke dynamics describe a biometric that is unique to each person. It is made up of the way they type on a keyboard, similar to how each person has unique handwriting. Leveraging this characteristic, \cite{barbhuiyaAnomalyBasedApproach2012} developed an approach to detect anomalies in HID input in order to thwart USB HID injection attacks. It relies on studying a user's behaviour such as holding time, typing speed etc. This approach is very versatile and can be used independently of hardware, platform, and operating system.  
+
+Another interesting detection method using side channels was proposed by \cite{ibrahimRFDNAFingerprintingDetection2019} in 2019. They found that it is possible to distinguish between normal USB devices and Rubber Duckies by using the unintentional radiated emissions (URE) produced by the electronic components of the USB devices. 
+
+The authors of \cite{thomasDuckHuntMemory2021} chose a different approach for badUSB detection. They used digital forensic tools to analyse memory artifacts generated by USB Rubber Duckies and Bash Bunny. They built a system based on two open source volatility plugins (usbhunt and dhcphunt) who extract the artifacts generated by plugging either of these devices into a windows 10 machine. Some indicators of compromise (IOC) remain in memory for at least 24 hours. In addition to that, it was fond that the payload scripts executed on the target machine were recoverable from memory as well. 
+
+\cite{bojovicRisingThreatHardware2019} mentions the possibility of detecting an HID injection attack on a Smartphone by the (missing) vibrations of the keyboard. This possibility is further supported by \cite{zhuangKeyboardAcousticEmanations2009} who prove that it is possible to guess motion sensors on phone keyboards what was written on it. So not only could the defense technique check for authentic keyboard vibrations but a further step could be to check the plausibility of the typing vibrations by the model made by \cite{zhuangKeyboardAcousticEmanations2009}. 
+
+\begin{center}
+\begin{tabular}{|c c c c|}
+    \hline
+    Name & Author & Year & description \\ [0.5ex] 
+    \hline \hline
+    - & Zhuang \cite{zhuangKeyboardAcousticEmanations2009} & 2009 & keyboard vibrations \\
+    \hline
+    - & Barbhuiya \cite{barbhuiyaAnomalyBasedApproach2012} & 2012 & Keystroke Anomalies \\
+    \hline
+    - & Ibrahim \cite{ibrahimRFDNAFingerprintingDetection2019} & 2019 & URE Fingerprinting\\
+    \hline
+    Duck Hunt & Thomas \cite{thomasDuckHuntMemory2021} & 2021 & memory forensics with artifacts \\
+    \hline
+\end{tabular}
+\end{center}
+
+
+
+\subsection{hello}
+
+\subsubsection{hello2}
+
