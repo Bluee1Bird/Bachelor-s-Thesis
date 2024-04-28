@@ -138,7 +138,9 @@ The following section is partitioned into two categories; active prevention and 
 
 \subsection{Active Defense}
 
-One of the first published defense systems was GoodUSB \cite{tianDefendingMaliciousUSB2015}. It relies on user input to defend against malicious USB. It features a graphical interface that prompts users to select the device class they expect and then compares that expectation with the information given by the device itself. If the two don't match, access to the computer is denied. After an initial registration of the devices by the user, the program will not ask for verification again on future contact. This way, when the user plugs in a BadUSB, the device will register as USB storage stick and GoodUSB will only allow actions compliant with the behaviour of an USB stick. Any HID spoofing will be blocked.
+One of the first published defense systems was USBGuard \cite{HomeUSBGuard}. It is a Linux-based Daemon that implements black- and whitelisting of USB devices based on user defined rules. To this end, it supports it's own specific rule syntax \cite{RuleLanguageUSBGuard}. The devices are identified through their name, serial number, port, and interface type. These values are then stored in a hash. The custom rules furthermore support time based attributes and random values. This system is only available on Linux and has been accused of being unsafe by \cite{farhiMalboardNovelUser2019} since the device identification metrics be be spoofed by a Teensy. 
+
+GoodUSB \cite{tianDefendingMaliciousUSB2015} is a program that relies on user input to defend against malicious USB. It features a graphical interface that prompts users to select the device class they expect and then compares that expectation with the information given by the device itself. If the two don't match, access to the computer is denied. After an initial registration of the devices by the user, the program will not ask for verification again on future contact. This way, when the user plugs in a BadUSB, the device will register as USB storage stick and GoodUSB will only allow actions compliant with the behaviour of an USB stick. Any HID spoofing will be blocked.
 \cite{nissimUSBbasedAttacks2017} criticizes that GoodUSB assumes all devices are in an uncompromised state when first contact is made. It is not guaranteed to work with infected hosts (for example Teensy built into a keyboard). 
 \cite{mohammadmoradiMakingWhitelistingBasedDefense2018} criticizes this approach as missing a reliable solution for uniquely identifying registered USB devices. In cases of the devices using base class code, spoofing would still be possible, the same is true for devices using vendor specific interfaces (mostly cellphones). 
 
@@ -204,6 +206,8 @@ The Ducky-Detector \cite{USBRubberDucky2021} published in 2021 aims to identify 
  \hline
  Name & Author / Inventor &  Year & Characteristics & Hardware & Software \\ [0.5ex] 
  \hline\hline
+ USBGuard & USBGuard Project \cite{HomeUSBGuard} & 2014 & Black- and Whitelisting & & $\times$ \\
+ \hline
  GoodUSB & Tian \cite{tianDefendingMaliciousUSB2015} & 2015 & register with user input &  & $\times$\\
  \hline
  Cinch & Angel \cite{angelDefendingMaliciousPeripherals2016} & 2016 & kernel level middleware & & $\times$ \\
