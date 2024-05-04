@@ -20,12 +20,31 @@
 \usepackage{url}
 \usepackage{unizhdt}
 \usepackage[graphicx]{realboxes}
+\usepackage{listings}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Define the language of the diploma thesis
 \selectlanguage{english}
 %\selectlanguage{german}
+
+% set the config for listings (code stly blocks)
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
 
 \pagestyle{headings}
 
@@ -71,6 +90,7 @@
 \input{Chapter/introduction.tex}
 \input{Chapter/background}
 \input{Chapter/relatedwork.tex}
+\input{Chapter/attack}
 \input{Chapter/main.tex}
 %\input{.tex}
 %\input{.tex}
