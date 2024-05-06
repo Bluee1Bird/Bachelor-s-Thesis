@@ -1,8 +1,8 @@
-\chapter{Attack}
+\chapter{Methodology and Architecture}
 
 \section{Introduction}
 
-This chapter will describe the point of view of an attacker during a HID injection attack. To this end it will firstly explain the basics of a HID attack utilizing DuckyScript with the USB Rubber Ducky or the O.MG cable. Next, it will evaluate existing attack methods and patterns and lastly, it will introduce new attacks. 
+This chapter will describe the point of view of an attacker during a HID injection attack. To this end it will firstly explain the basics of a HID attack utilizing DuckyScript with the USB Rubber Ducky or the O.MG cable. Next, it will evaluate existing attack payloads and lastly, it will introduce new attacks. 
 
 \section{Setup for an HID Injection Attack}
 
@@ -19,7 +19,75 @@ When preparing for an HID injection attack, a malicious actor has to pay attenti
 
 \section{DuckyScript and the O.MG cable}
 
-\section{}{ATT\&CK by MITRE}
+As described shortly in sections \ref{Hak5Hardware} and \ref{HistoryOfAttacks} the O.MG cable is a BadUSB cable invented by MG \cite{MGCable2019a}, produced by Mischief Gadgets \cite{hak5MischiefGadgets} and sold in cooperation with Hak5 on their website \cite{hak5MischiefGadgets}. \\
+The cable does not have any physical markers; neither it's USB ends, the cable, nor the weight gives any indication that it has so many more capabilities than other USB cables. For the most part, it is a usual USB cable; the non-active (passthrough) end does not have any special abilities, and if it is not configured to execute a boot script, the cable can be used like any other. It's malicious active end is marked by a USB trident as found often on USB cables to indicate their compatibility with the USB standard. That end transmits the payloads on the device to the USB host. It is available in USB-A and USB-C.
+When setting up to use a O.MG cable ,the very first thing that need s to be done is flashing it. The cable has to be (re)flashed before it is used, or after a self-destruct was triggered. To flash it, a O.MG Programmer is needed \cite{hak5MGCable}. The active end of the O.MG cable is plugged into the programmer, which itself is connected to a computer by a regular USB cable. Flashing can either be done with the official open source firmware \cite{DuckyScriptSyntaxGuide} via the website \footnote{https://o.mg.lol/setup/OMGCable/} or with custom firmware. \\  
+Once the device has been flashed, it is ready to be used. Once an active end received power from a USB host, it established a small Wifi network, with the default SSID O.MG and password 12345678, both of which can be changed. Through that network the WebUI to control the cable can be accessed via http://192.168.4.1 . \\
+The WebUI offers a lot of different features [TODO; add screenshot of the webUI]
+
+\begin{enumerate}
+    \item Payloads (Keystroke Injection, Example Payloads, Executing Payloads, USB Overclock, Mobile Payloads)
+    \item Geofencing
+    \item Self-Destruct
+    \item Keymap Viewer
+    \item Keylogger
+    \item Partition Editor
+    \item C2
+    \item HIDX StealthLink
+        Remote Shell / Covert Proxy
+            Windows PowerShell Remote Shell
+            Linux Remote Shell
+            macOS Python Remote Shell
+        Exfiltration to TCP
+            Windows PowerShell TCP Exfil
+            macOS Python TCP Exfil
+            Linux TCP Exfil
+
+\end{enumerate}
+
+The following subsections contain a short description of each of these features. 
+
+\subsection{Payloads}
+
+All O.MG devices that can be programmed for keyboard injection support an enhanced version of DuckyScript. Basic Duckyscript, as expanded upon in section \ref{DuckyScript} does not support all the extra features of the O.MG devices, such as self-destruct of GeoFencing. \\
+Payloads can be written directly in the WebUI, where they can be stored into slots. Depending on the model, the cable supports from 8-200 payload slots \cite{hak5MGCable}. They can be directly executed in the WebUI (executed on the host connected to the active end), simply stored, modified, and accessed, or set as a bootscript. Only one payload can be a bootscript; it is the script that is executed as soon as the active end is connected. \\
+USB overlock is a feature only available on the elite model that allows sending HIDX packets about 8 times as fast as usual. This can mean that the data is sent faster, than the host can receive it, in which case it is lost. 
+
+
+\subsection{Geofencing}
+
+Geofencing can be accomplished by a simple conditional statement. It can trigger or block actions depending on the presence or absence of a wifi network with a specific SSID. This is accomplished by a condition that is evaluated every time the O.MG device powers up. Alternatively, the cable can wait until a SSID or BSSID is present with the 'WAIT\_FOR\_PRESENT' keyword. It will either wait for a specific amount of time or run forever. Completing this feature, it is also possible to wait until out of reach of a network.  
+
+\subsection{Self-Destruct}
+
+Cleanup is an important part of an attack or pentetration test. This cable supports two kinds of self-destruct that can be triggered via the WebUI or with a keyword in the code.
+\begin{itemize}
+    \item  \textbf{Self-Destruct 1:} Completely erases all data on the cable and disconnects the data line. The cable will appear broken. To use it again, it has to be physically recovered and reflashed.  
+    \item  \textbf{Self-Destruct 2:}  Erases all the data but retains the data lines, turning the cable in a normal USB cable. Reflashing is also necessary to use the cable again. 
+\end{itemize}
+
+
+\subsection{Keymap Viewer}
+
+Since the O.MG cable imitates keyboard presses, it is dependent on the keyboard settings of the attacked host. Input in a US keyboard will not produce the same signal to the computer as a DE\_CH keyboard even though the same key is pressed. For this reason, the lanugage of a payload has to be set, which is explained in more detail in section (TODO!!). If the keyboard settings of the target are not known beforehand, obtaining this information in the reconnaissance phase is crucial. \\
+For this reason the Keymap Viewer exists. Through the WebUI the keyboard layout of a connected host can be determined. (TODO; try this out!!)
+
+\subsection{Keylogger}
+
+When an O.MG cable is connecting a physical keyboard with a detachable cable to a host, it can keylog the strokes from the keyboard and display them in real time on the WebUI. In order for this to work, the keyboard has to be Full Speed USB (12mbps) and not low (1.5mbps) or high speed (480mbps) 
+
+\subsection{Partition Editor}
+
+On specific models of the O.MG cable a user can device themselves how the available storage should be used with the partition editor. They can decide to redirect storage resources to payload slots, individual slot size, size of storage for exfiltrated data, or keylogging storage. 
+
+\subsection{C2}
+A C2 server eliminates the need for physical proximity to the O.MG device to connect to and communicate with it. The cable can connect to the C2 server as well as the attacker. This way it can be controlled from anywhere. 
+
+\subsection{HIDX Stealth Link}
+This feature is still in progress, but the idea is to enable more stealthy data exfiltration. Instead of establishing a network or sending the data via the host, the cable relays the data via the HID channels.  
+
+
+\section{ATT\&CK by MITRE}
 
 ATT\&CK \cite{MITREATTCK} is an openly accessible knowledge base of adversary tactics and techniques developed by the security advisor firm MITRE \cite{WhoWeAre}. It can be used for threat modeling and to get a general overview over the different types of cyber attacks that happen in the world.
 It features 14 attack categories that themselves are subdivided into 8-43 techniques. One example is the category Reconnaissance which is divided into Active Scanning, Gather Victim Host Information, Gather Victim Identity Information, Gather Victim Network Information, Gather Victim Org Information, Phishing for Information, Search Closed Sources, Search Open Technical Databases, Search Open Websites/Domains, Search Victim Owned Websites. 
@@ -30,70 +98,73 @@ It features 14 attack categories that themselves are subdivided into 8-43 techni
 
 In the following, this paper will dive into some of those categories and techniques and evaluate whether that can be executed via keyboard injection and whether or not a script for it is available online. To this end, scripts form the official open source GitHub page for O.MG \footnote{https://github.com/hak5/omg-payloads} by Hak5 are examined. \\
 It is important to note that the most basic attack that can be executed via Keyboard Injection is also the most versatile and one of the most dangerous ones. It is a simple script that downloads any malware of your choice, which as a result, could execute any attack that can be done via code.  
-
 This analysis will therefore focus on whether an attack has been implemented solely as keyboard injection and will not feature payloads that include downloading additional malware. It will not examine all 14 categories instead highlighting the most relevant ones. %is this fine or should i do all of them? 
 
 
 \subsubsection{Reconnaissance} % All of the descriptions of the attacks and what they are and include are from the Att&ck model on MITRE, do  still cite all of them individually?
 
-Reconnaissance is about actively or passively gathering information, often used before an attack. The gathered information can be used to inform the planning of a bigger attack or to further additional reconnaissance efforts. This category includes scanning of network traffic, gathering host information such as name, IP, operating system, hardware information, credentials, email, or information about their network. Phishing also belongs into this category, and purchasing information about the system from legal or illegal data brokers as well as gathering publicly available information, for example from the internet. 
+Reconnaissance is about actively or passively gathering information, often used before an attack. The gathered information can be used to inform the planning of a bigger attack or to further additional reconnaissance efforts. This category includes scanning of network traffic, gathering host information such as name, IP, operating system, hardware information, credentials, email, or information about their network. Phishing also belongs into this category, and purchasing information about the system from legal or illegal data brokers as well as gathering publicly available information, for example from the internet. \cite{MITREATTCK}
 
 This is a field in which keyboard injection can make considerable damage. There exist many exfiltration scripts, that download sensitive files, exfiltrate passwords, network information, and device information, or social engineer the user to enter sensitive data on malicious sites. 
 
-For example, \verb|(https://github.com/hak5/omg-payloads/blob/master/payloads/library/credentials/Harvester_OF_SORROW/payload.txt)| %how to cite this?? Esp if i have many of them in the end, the bibliograpy will be clutered) 
-exfiltrates login information from Firefox on Windows 10. \\ 
-Other examples for password extraction are \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/credentials/SudoSnatch| which exfiltrates sudo passwords, and \verb|https://github.com/hak5/omg-payloads/blob/master/payloads/library/credentials/WLAN-Windows-Passwords/README.md|which steals wlan passwords and sends them to the attacker via a discord webhook. 
-\verb|(https://github.com/hak5/omg-payloads/blob/master/payloads/library/credentials/OMGLogger/payload.txt)| leverages the logging capabilities of the O.MG cable and sends the keystrokes live to the attacker's server. \\
-The collection on GitHub has an entire folder for exfiltration scripts, that can find data on a network, a printer, a target's spotify, powershell history, log files, mysql history, FireFox browser cookies, fotos, or send periodic screenshots. \\
-Similarly there is a folder with scripts on phishing, however, it is less extensive. The three payloads build on the idea of faking a pop up, where they prompt the user to (re)submit login data and all require some previous installations to be present and they are all written for Linux. \\
-The recon folder contains a script that does device recon using a powershell script that can be hosted on a server and then downloaded via keyboard injection. 
+For example, \verb|Harvester_OF_SORROW| \cite{OmgpayloadsPayloadsLibrary} exfiltrates login information from Firefox on Windows 10. \\ 
+Other examples for password extraction are \verb|SudoSnatch| \cite{OmgpayloadsPayloadsLibrary} which exfiltrates sudo passwords, and \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}which steals wlan passwords and sends them to the attacker via a discord webhook. 
+\verb|OMGLogger| \cite{OmgpayloadsPayloadsLibrary} leverages the logging capabilities of the O.MG cable and sends the keystrokes live to the attacker's server. \\
+The collection on GitHub has an entire folder for exfiltration scripts, that can find data on a network, a printer, a target's Spotify, Powershell history, log files, MySql history, FireFox browser cookies, fotos, or send periodic screenshots. \\
+Similarly there is a folder with scripts on phishing  \cite{OmgpayloadsPayloadsLibrary}, however, it is less extensive. The three payloads build on the idea of faking a pop up, where they prompt the user to (re)submit login data and all require some previous installations to be present and they are all written for Linux. \\
+The recon folder contains a script that does device recon using a Powershell script that can be hosted on a server and then downloaded via keyboard injection. 
 
 
 \subsubsection{Resource Development}
 
-Resource Development is what a malicious actor does when they want to establish resources that can help them mount an attack, such as getting access to specific email addresses, system accounts, or target system. It also includes setting up servers or bots that could be used for an attack or creating and cultivating accounts to build a persona. \\
-Resource Development is an important part of injection attacks in conjunction with data exfiltration. This is apparent in payloads like \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/exfiltration/ExfiltrateLinuxLogFiles|, \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/credentials/WLAN-Windows-Passwords|, \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/credentials/-OMG-Credz-Plz|, or \verb|https://github.com/hak5/omg-payloads/blob/master/payloads/library/general/OMG-AwarenessTraining| which send the exfiltrated data to a webhook, discord webhook, or dropbox. Any kind of passing on of data from the O.MG cable to the attacker will require some resource for communication. 
+Resource Development is what a malicious actor does when they want to establish resources that can help them mount an attack, such as getting access to specific email addresses, system accounts, or target system. It also includes setting up servers or bots that could be used for an attack or creating and cultivating accounts to build a persona.\cite{MITREATTCK}\\
+Resource Development is an important part of injection attacks in conjunction with data exfiltration. This is apparent in payloads like \verb|ExfiltrateLinuxLogFiles| \cite{OmgpayloadsPayloadsLibrary}, \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}, \verb|-OMG-Credz-Plz| \cite{OmgpayloadsPayloadsLibrary}, or \verb|OMG-AwarenessTraining| \cite{OmgpayloadsPayloadsLibrary} which send the exfiltrated data to a webhook, discord webhook, or Dropbox. Any kind of passing on of data from the O.MG cable to the attacker will require some resource for communication. 
 
 
 \subsubsection{Initial Access}
 
-Initial Access is about an adversary trying to get access to a target network. One example for how this can be done with keyboard injection are \verb|https://github.com/hak5/usbrubberducky-payloads/tree/master/payloads/library/recon| payloads that establish remote control over a targeted computer. Through that access point, the network can be infiltrated. Similarly, passwords for networks can be exfiltrated from a target computer \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/credentials/WLAN-Windows-Passwords|\\
+Initial Access is about an adversary trying to get access to a target network\cite{MITREATTCK}. One example for how this can be done with keyboard injection are \verb|revshell_windows| and \verb|win_winrm-backdoor| \cite{OmgpayloadsPayloadsLibrary}; payloads that establish remote control over a targeted computer. Through that access point, the network can be infiltrated. Similarly, passwords for networks can be exfiltrated from a target computer \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}.\\
 
 \subsubsection{Execution}
 
-Execution covers all techniques used to get malicious code running on a target's computer or server using any kind of shell, coding environment, hotkeys, native APIs, or rely on the user to activate code execution, e.g. by clicking on a link or file.\\
+Execution covers all techniques used to get malicious code running on a target's computer or server using any kind of shell, coding environment, hotkeys, native APIs, or rely on the user to activate code execution, e.g. by clicking on a link or file.\cite{MITREATTCK}\\
 Running malicious code is a core component to the way Keyboard Injections are done. It is their alpha and omega and can be found in every script in the collection.
 
 \subsubsection{Persistence} \label{persistence}
 
-Persistence stresses the longevity and robustness of an attack over time, changed credentials. To this end, accounts and access rights can be manipulated , SSH keys stolen or modified, new devices registered for two factor authentication, create or modify system processes (i.e. modifying power shell profile scripts), by using external remote services, or manipulate pre-OS boot mechanisms. \\
-An example for this kind of technique is the remote access that can be gained by scripts like \verb|https://github.com/hak5/usbrubberducky-payloads/tree/master/payloads/library/recon| or remote control access establishment as demonstrated by \cite{bojovicRisingThreatHardware2019}. \\
+Persistence stresses the longevity and robustness of an attack over time, changed credentials. To this end, accounts and access rights can be manipulated, SSH keys stolen or modified, new devices registered for two factor authentication, create or modify system processes (i.e. modifying power shell profile scripts), by using external remote services, or manipulate pre-OS boot mechanisms.\cite{MITREATTCK} \\
+An example for this kind of technique is the remote access that can be gained by scripts like \verb|revshell_macOS| \cite{OmgpayloadsPayloadsLibrary} or remote control access establishment as demonstrated by \cite{bojovicRisingThreatHardware2019}. \\
 This category also includes attack scheduling, which can easily be achieved by DuckyScript, using the `DELAY` command, the remote trigger, or the Geo fencing \cite{hak5MGCable}.
 
 \subsubsection{Privilege Escalation}
 
-Privilege Escalation includes techniques used to gain higher-level permissions in a network or system, by bypassing account controls, abusing elevation control mechanisms, access token manipulation or theft, account manipulation, braking out of containers to gain access to a host, and many similar techniques as featured in \ref{persistence}. \\
-Account manipulation can easly be achieved with the correct recon. Especially if the login of an administrator can be logged \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/credentials/OMGLogger| or is stored somewhere on the system \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/credentials/SudoSnatch|, \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/exfiltration/Everything-Password-Stealer| privilege escalation is achievable.
+Privilege Escalation includes techniques used to gain higher-level permissions in a network or system, by bypassing account controls, abusing elevation control mechanisms, access token manipulation or theft, account manipulation, braking out of containers to gain access to a host \cite{MITREATTCK}, and many similar techniques as featured in \ref{persistence}. \\
+Account manipulation can easily be achieved with the correct recon. Especially if the login of an administrator can be logged \verb|OMGLogger| \cite{OmgpayloadsPayloadsLibrary} or is stored somewhere on the system \verb|SudoSnatch| \cite{OmgpayloadsPayloadsLibrary}, \verb|Everything-Password-Stealer| \cite{OmgpayloadsPayloadsLibrary} privilege escalation is achievable.
 
 \subsubsection{Credential Access}
 
-Credential Access means an adversary tries to steal usernames and passwords, which is a common application for the GitHub scripts, as mentioned in the previous subsections. Examples are \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/credentials/SudoSnatch|, \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/exfiltration/Everything-Password-Stealer|, or with BadUSB;  \cite{muslimImplementationAnalysisUSB2020}. 
+Credential Access means an adversary tries to steal usernames and passwords \cite{MITREATTCK}, which is a common application for the GitHub scripts, as mentioned in the previous subsections. Examples are \verb|SudoSnatch| \cite{OmgpayloadsPayloadsLibrary}, \verb|Everything-Password-Stealer| \cite{OmgpayloadsPayloadsLibrary}, or with BadUSB;  \cite{muslimImplementationAnalysisUSB2020}. 
 
 
 \subsubsection{Collection}
-After a target has been infiltrated, the data collection process can start. It includes of techniques like Man-in-the-Middle (MIM), compressing data, browser session hijacking, audio and or image capture, clipboard data exfiltration, email collection, keylogging, etc. \\
-Keylogging specifically is one of the main features of the O.MG cable, as desicussed preivously, and further extended by \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/execution/Persistent_Keylogger-Telegram_Based|, image capture is demonstrated by \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/exfiltration/Screen-Shock|, or the stealing of fotos by \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/exfiltration/ExfiltratePhotosThroughShell|. 
+After a target has been infiltrated, the data collection process can start. It includes of techniques like Man-in-the-Middle (MIM), compressing data, browser session hijacking, audio and or image capture, clipboard data exfiltration, email collection, keylogging, etc. \cite{MITREATTCK} \\
+Keylogging specifically is one of the main features of the O.MG cable, as discussed previously, and further extended by \verb|Persistent_Keylogger-Telegram_Based|  \cite{OmgpayloadsPayloadsLibrary}, image capture is demonstrated by \verb|Screen-Shock| \cite{OmgpayloadsPayloadsLibrary}, or the stealing of fotos by \verb|/ExfiltratePhotosThroughShell| \cite{OmgpayloadsPayloadsLibrary}. 
 
 
 \subsubsection{Exfiltration}
 
-Exfiltration is about how the stolen data can be relyed to the attacker. As discussed in the section about Data Reconnaissance, exfiltration can happen in a variety of ways. The examples from the GitHub repositories inlcude sending the data to (discord) webhooks, dropbox  ( \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/exfiltration/ExfiltrateLinuxLogFiles|, \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/credentials/WLAN-Windows-Passwords|, \verb|https://github.com/hak5/omg-payloads/tree/master/payloads/library/credentials/-OMG-Credz-Plz|, or \verb|https://github.com/hak5/omg-payloads/blob/master/payloads/library/general/OMG-AwarenessTraining|).
+Exfiltration is about how the stolen data can be relayed to the attacker \cite{MITREATTCK}. As discussed in the section about Data Reconnaissance, exfiltration can happen in a variety of ways. The examples from the GitHub repositories include sending the data to (discord) webhooks, dropbox  ( \verb|ExfiltrateLinuxLogFiles|, \verb|WLAN-Windows-Passwords|, \verb|-OMG-Credz-Plz|, or \verb|OMG-AwarenessTraining|  \cite{OmgpayloadsPayloadsLibrary}).
 
 \subsubsection{Impact}
 
-The techniques belonging to impact are not widely represented in the GitHub repository. They include scripts that try to manipulate, interrupt or destroy systems and data. However, it has been shown by \cite{lawalFacilitatingCyberenabledFraud2022} that it is possible to change, meaning manipulate, data on a target's computer without leaving traces of an attack, thereby framing the computer's user(s) for the data change. 
+The techniques belonging to impact are not widely represented in the GitHub repository. They include scripts that try to manipulate, interrupt or destroy systems and data. However, it has been shown by \cite{lawalFacilitatingCyberenabledFraud2022} that it is possible to change, meaning manipulate, data on a target's computer without leaving traces of an attack, thereby framing the computer's user(s) for the data change. \cite{MITREATTCK}
 
 
-\subsubsection{Intermediate Conlusion}
+\subsubsection{Intermediate Conclusion}
 
 From the examples above it is apparent, that a wide variety of attacks and techniques are available with DuckyScript and a malicious USB device. Many sections of the \verb|Att&ck| model play a role and are part of various scripts for the O.MG cable that already exist. The section that is most prevalent in the available code base is focused on the gathering and exfiltration of data and gaining access to systems and networks. 
+
+
+\section{Ducky Script} \label{DuckyScript}
+
+from the firmware wiki include: ["By default, payloads use US keyboard layouts. If your target system is using a different layout, you can change the O.MG's layout with DUCKY\_LANG at the top of the payload (Ex: DUCKY_LANG FR). We have 192 different layouts built-in with a complete list in the help menu. If you struggle to find the target's correct language, the Keymap Viewer (https://github.com/O-MG/O.MG-Firmware/wiki/Keymap-Viewer)  may help you to find the correct keymap."]
