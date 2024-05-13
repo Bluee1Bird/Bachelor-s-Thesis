@@ -1,90 +1,14 @@
-\chapter{Methodology and Architecture}
+\chapter{Methodology and Architecture} \label{Methodology}
 
 \section{Introduction}
 
-This chapter will describe the point of view of an attacker during a HID injection attack. To this end it will firstly explain the basics of a HID attack utilizing DuckyScript with the USB Rubber Ducky or the O.MG cable. Next, it will evaluate existing attack payloads and lastly, it will introduce new attacks. 
-
-\section{Setup for an HID Injection Attack}
-
-When preparing for an HID injection attack, a malicious actor has to pay attention to the following 5 points;
-\begin{enumerate}
-    \item Target
-    \item Circumstance and Place
-    \item Time and Timing
-    \item required Hardware
-    \item required Software
-\end{enumerate}
-
-(should i expand on this? I don't really have a source, this is just what I came up with myself to put some structure into the attack)
-
-\section{DuckyScript and the O.MG cable}
-
-As described shortly in sections \ref{Hak5Hardware} and \ref{HistoryOfAttacks} the O.MG cable is a BadUSB cable invented by MG \cite{MGCable2019a}, produced by Mischief Gadgets \cite{hak5MischiefGadgets} and sold in cooperation with Hak5 on their website \cite{hak5MischiefGadgets}. \\
-The cable does not have any physical markers; neither it's USB ends, the cable, nor the weight gives any indication that it has so many more capabilities than other USB cables. For the most part, it is a usual USB cable; the non-active (passthrough) end does not have any special abilities, and if it is not configured to execute a boot script, the cable can be used like any other. It's malicious active end is marked by a USB trident as found often on USB cables to indicate their compatibility with the USB standard. That end transmits the payloads on the device to the USB host. It is available in USB-A and USB-C.
-When setting up to use a O.MG cable ,the very first thing that need s to be done is flashing it. The cable has to be (re)flashed before it is used, or after a self-destruct was triggered. To flash it, a O.MG Programmer is needed \cite{hak5MGCable}. The active end of the O.MG cable is plugged into the programmer, which itself is connected to a computer by a regular USB cable. Flashing can either be done with the official open source firmware \cite{DuckyScriptSyntaxGuide} via the website \footnote{https://o.mg.lol/setup/OMGCable/} or with custom firmware. \\  
-Once the device has been flashed, it is ready to be used. Once an active end received power from a USB host, it established a small Wifi network, with the default SSID O.MG and password 12345678, both of which can be changed. Through that network the WebUI to control the cable can be accessed via http://192.168.4.1 . \\
-The WebUI offers a lot of different features [TODO; add screenshot of the webUI]
-
-\begin{enumerate}
-    \item Payloads (Keystroke Injection, Example Payloads, Executing Payloads, USB Overclock, Mobile Payloads)
-    \item Geofencing
-    \item Self-Destruct
-    \item Keymap Viewer
-    \item Keylogger
-    \item Partition Editor
-    \item C2
-    \item HIDX StealthLink
-        Remote Shell / Covert Proxy
-            Windows PowerShell Remote Shell
-            Linux Remote Shell
-            macOS Python Remote Shell
-        Exfiltration to TCP
-            Windows PowerShell TCP Exfil
-            macOS Python TCP Exfil
-            Linux TCP Exfil
-
-\end{enumerate}
-
-The following subsections contain a short description of each of these features. 
-
-\subsection{Payloads}
-
-All O.MG devices that can be programmed for keyboard injection support an enhanced version of DuckyScript. Basic Duckyscript, as expanded upon in section \ref{DuckyScript} does not support all the extra features of the O.MG devices, such as self-destruct of GeoFencing. \\
-Payloads can be written directly in the WebUI, where they can be stored into slots. Depending on the model, the cable supports from 8-200 payload slots \cite{hak5MGCable}. They can be directly executed in the WebUI (executed on the host connected to the active end), simply stored, modified, and accessed, or set as a bootscript. Only one payload can be a bootscript; it is the script that is executed as soon as the active end is connected. \\
-USB overlock is a feature only available on the elite model that allows sending HIDX packets about 8 times as fast as usual. This can mean that the data is sent faster, than the host can receive it, in which case it is lost. 
+This chapter will describe the point of view of an attacker during a HID injection attack. To this end it will firstly explain the evaluate existing attack payloads, describe a general architecture for an attack and lastly, it will introduce new attacks. 
 
 
-\subsection{Geofencing}
-
-Geofencing can be accomplished by a simple conditional statement. It can trigger or block actions depending on the presence or absence of a wifi network with a specific SSID. This is accomplished by a condition that is evaluated every time the O.MG device powers up. Alternatively, the cable can wait until a SSID or BSSID is present with the 'WAIT\_FOR\_PRESENT' keyword. It will either wait for a specific amount of time or run forever. Completing this feature, it is also possible to wait until out of reach of a network.  
-
-\subsection{Self-Destruct}
-
-Cleanup is an important part of an attack or pentetration test. This cable supports two kinds of self-destruct that can be triggered via the WebUI or with a keyword in the code.
-\begin{itemize}
-    \item  \textbf{Self-Destruct 1:} Completely erases all data on the cable and disconnects the data line. The cable will appear broken. To use it again, it has to be physically recovered and reflashed.  
-    \item  \textbf{Self-Destruct 2:}  Erases all the data but retains the data lines, turning the cable in a normal USB cable. Reflashing is also necessary to use the cable again. 
-\end{itemize}
-
-
-\subsection{Keymap Viewer}
-
-Since the O.MG cable imitates keyboard presses, it is dependent on the keyboard settings of the attacked host. Input in a US keyboard will not produce the same signal to the computer as a DE\_CH keyboard even though the same key is pressed. For this reason, the lanugage of a payload has to be set, which is explained in more detail in section (TODO!!). If the keyboard settings of the target are not known beforehand, obtaining this information in the reconnaissance phase is crucial. \\
-For this reason the Keymap Viewer exists. Through the WebUI the keyboard layout of a connected host can be determined. (TODO; try this out!!)
-
-\subsection{Keylogger}
-
-When an O.MG cable is connecting a physical keyboard with a detachable cable to a host, it can keylog the strokes from the keyboard and display them in real time on the WebUI. In order for this to work, the keyboard has to be Full Speed USB (12mbps) and not low (1.5mbps) or high speed (480mbps) 
-
-\subsection{Partition Editor}
-
-On specific models of the O.MG cable a user can device themselves how the available storage should be used with the partition editor. They can decide to redirect storage resources to payload slots, individual slot size, size of storage for exfiltrated data, or keylogging storage. 
-
-\subsection{C2}
-A C2 server eliminates the need for physical proximity to the O.MG device to connect to and communicate with it. The cable can connect to the C2 server as well as the attacker. This way it can be controlled from anywhere. 
-
-\subsection{HIDX Stealth Link}
-This feature is still in progress, but the idea is to enable more stealthy data exfiltration. Instead of establishing a network or sending the data via the host, the cable relays the data via the HID channels.  
+\section{Ethical Considerations}
+Attacks as described in this thesis can produce considerable harm to individuals, companies, and communities. For all the reasons explained and examples brought up in section \ref{TheDangersOfUSB} these attacks are not to be taken lightly and the potential for damage is real. For this exact reason it is important to raise awareness for this kind of attack, research existing vulnerabilities, new developments in the field, and how those can be counter acted. Investigating attacks in particular ones that are not available in a public GitHub repo is an important contribution to the scientific field and outweighs the negative. Just because these payloads cannot easily be found, does not mean they do not already exist. Which arguably makes them even more dangerous to the public and therefore their exploration is even more urgent. \\
+In section \ref{HistoryOfDefense} this thesis explains countermeasures that can be put in place to protect oneself and in section [TODO!!] new methods will be presented, specifically against new attacks introduced in section \ref{Implementation}.
+% bring up the balck/white /grey hat discussion again? or is his not scientific enough?
 
 
 \section{ATT\&CK by MITRE}
@@ -98,10 +22,9 @@ It features 14 attack categories that themselves are subdivided into 8-43 techni
 
 In the following, this paper will dive into some of those categories and techniques and evaluate whether that can be executed via keyboard injection and whether or not a script for it is available online. To this end, scripts form the official open source GitHub page for O.MG \footnote{https://github.com/hak5/omg-payloads} by Hak5 are examined. \\
 It is important to note that the most basic attack that can be executed via Keyboard Injection is also the most versatile and one of the most dangerous ones. It is a simple script that downloads any malware of your choice, which as a result, could execute any attack that can be done via code.  
-This analysis will therefore focus on whether an attack has been implemented solely as keyboard injection and will not feature payloads that include downloading additional malware. It will not examine all 14 categories instead highlighting the most relevant ones. %is this fine or should i do all of them? 
+This analysis will therefore focus on whether an attack has been implemented solely as keyboard injection and will not feature payloads that include downloading additional malware. It will not examine all 14 categories instead highlighting the most relevant ones. 
 
-
-\subsubsection{Reconnaissance} % All of the descriptions of the attacks and what they are and include are from the Att&ck model on MITRE, do  still cite all of them individually?
+\subsubsection{Reconnaissance}
 
 Reconnaissance is about actively or passively gathering information, often used before an attack. The gathered information can be used to inform the planning of a bigger attack or to further additional reconnaissance efforts. This category includes scanning of network traffic, gathering host information such as name, IP, operating system, hardware information, credentials, email, or information about their network. Phishing also belongs into this category, and purchasing information about the system from legal or illegal data brokers as well as gathering publicly available information, for example from the internet. \cite{MITREATTCK}
 
@@ -165,6 +88,22 @@ The techniques belonging to impact are not widely represented in the GitHub repo
 From the examples above it is apparent, that a wide variety of attacks and techniques are available with DuckyScript and a malicious USB device. Many sections of the \verb|Att&ck| model play a role and are part of various scripts for the O.MG cable that already exist. The section that is most prevalent in the available code base is focused on the gathering and exfiltration of data and gaining access to systems and networks. 
 
 
-\section{Ducky Script} \label{DuckyScript}
+\section{Setup for an HID Injection Attack}
 
-from the firmware wiki include: ["By default, payloads use US keyboard layouts. If your target system is using a different layout, you can change the O.MG's layout with DUCKY\_LANG at the top of the payload (Ex: DUCKY_LANG FR). We have 192 different layouts built-in with a complete list in the help menu. If you struggle to find the target's correct language, the Keymap Viewer (https://github.com/O-MG/O.MG-Firmware/wiki/Keymap-Viewer)  may help you to find the correct keymap."]
+When preparing for an HID injection attack, a malicious actor has to pay attention to the following 5 points;
+\begin{enumerate}
+    \item Target
+    \item Circumstance and Place
+    \item Time and Timing
+    \item required Hardware
+    \item required Software
+\end{enumerate}
+
+
+\subsubsection{Target}
+
+The foremost component to an attack is the target. It determines all other factors. Crucial is the goal of the attack, the level of available access, and the environment and characteristics of the target.\\
+The goal determines the type of attack, which will be further specified by the environment, chaarcteristics and access. [where am i going with this, in how far is it even relevant?] 
+
+\section{Implementation} \label{Implementation}
+

@@ -62,7 +62,7 @@ In order to be able to communicate with any USB device, a connection needs to be
 
 
 
-\section{The Dangers of USB}
+\section{The Dangers of USB} \label{TheDangersOfUSB}
 
 Some people might notice that during the initialization process described in section \ref{TheUSBProtocol} there is not verification or authorization steps. The protocol assumes that and physically connected USB device is trustworthy and does not take any precautions to check it's claims and properties. \\
 This is a big oversight and opens the door for a lot of malicious activity. 
@@ -73,7 +73,7 @@ A myriad of different attacks are possible through such an unsecured attack vect
 Through USB, data can be silently downloaded without the user's permission or knowledge from computers \cite{clarkHardwareTrojanHorse2009} as well as phones \cite{SharpIdeasDownloads2006}. USB drives developed to be able to do data manipulation, and with the increased popularity of U3, attackers could hack U3 images and replace them for their own malicious purposes to take advantage of auto-run. 
 How much damage could be done with this is best exemplified with Stuxnet \cite{kushnerRealStoryStuxnet2013}. It's a malware program that could travel via USB; a computer that came in contact with an infected USB stick would immediately be compromised. In this way, malware could spread even in an air-gaped environment. The highly sophisticated and targeted attack was discovered in 2010 and is confirmed to have damaged centrifuges that were part of Iran's Nuclear Program.\\
 But an attack via USB does not have to have the dimensions of an (alleged) geopolitical intelligence mission \cite{kushnerRealStoryStuxnet2013}, there are more examples of day-to-day threats to exemplify what USB can do. On Windows XP it is possible to emulate a CD-ROM device through an USB connection and hack the U3 autoplay feature \cite{al-zarouniRealityRisksConsented2006}, data can be exfiltrate from iOS6 through a USB charging cable \cite{lauMactansInjectingMalware2013}, USB can be used to propagate attacks from one computer to another, as demonstrated in \cite{wangExploitingSmartphoneUSB2010}, or destroy a target with power surges that irreparably damage the host \cite{USBKillDevices}, Fork Bomb attacks can be launched via USB \cite{efendyExploringPossibilityUSB2019}, and, most importantly, since USB does not require authentication, it can be used to emulate other devices, namely devices that are used for human input. Human Interface Devices (HID) such as keyboard and mouse present an unparalleled attack vector, where a hacker with physical access to an unlocked computer can remotely execute any action a user themselves could \cite{USBRubberDucky}, \cite{MGCable2019a}, \cite{lawalFacilitatingCyberenabledFraud2022}. \\
-How such HID attacks could look like, and the extent their damage can reach, will be discussed and exemplified in section !!TODO!!\ref{}.
+How such HID attacks could look like, and the extent their damage can reach, will be discussed and exemplified in section \ref{Methodology}.
 
 \subsection{Bad Hardware}
 
@@ -123,8 +123,95 @@ In 2019, the O.MG cable was made available at Hak5 \cite{MGCable2019a} marking t
 
 
 
-\subsection{Chapter Conclusion}
+\section{DuckyScript and the O.MG cable}
+
+
+This section will give an overview over the most prominent hardware in this thesis, the O.MG cable, and the scripting language it is equipped with; DuckyScript. 
+
+\subsection{The O.MG cable}
+
+As described shortly in sections \ref{Hak5Hardware} and \ref{HistoryOfAttacks} the O.MG cable is a BadUSB cable invented by MG \cite{MGCable2019a}, produced by Mischief Gadgets \cite{hak5MischiefGadgets} and sold in cooperation with Hak5 on their website \cite{hak5MischiefGadgets}. \\
+The cable does not have any physical markers; neither it's USB ends, the cable, nor the weight gives any indication that it has so many more capabilities than other USB cables. For the most part, it is a usual USB cable; the non-active (passthrough) end does not have any special abilities, and if it is not configured to execute a boot script, the cable can be used like any other. It's malicious active end is marked by a USB trident as found often on USB cables to indicate their compatibility with the USB standard. That end transmits the payloads on the device to the USB host. It is available in USB-A and USB-C.
+When setting up to use a O.MG cable ,the very first thing that need s to be done is flashing it. The cable has to be (re)flashed before it is used, or after a self-destruct was triggered. To flash it, a O.MG Programmer is needed \cite{hak5MGCable}. The active end of the O.MG cable is plugged into the programmer, which itself is connected to a computer by a regular USB cable. Flashing can either be done with the official open source firmware \cite{DuckyScriptSyntaxGuide} via the website \footnote{https://o.mg.lol/setup/OMGCable/} or with custom firmware. \\  
+Once the device has been flashed, it is ready to be used. Once an active end received power from a USB host, it established a small Wifi network, with the default SSID O.MG and password 12345678, both of which can be changed. Through that network the WebUI to control the cable can be accessed via http://192.168.4.1 . \\
+The WebUI offers a lot of different features [TODO; add screenshot of the webUI]
+
+\begin{enumerate}
+    \item Payloads
+    \item Geofencing
+    \item Self-Destruct
+    \item Keymap Viewer
+    \item Keylogger
+    \item Partition Editor
+    \item C2
+    \item HIDX StealthLink
+\end{enumerate}
+
+The following subsections contain a short description of each of these features. 
+
+\subsubsection{Payloads}
+
+All O.MG devices that can be programmed for keyboard injection support an enhanced version of DuckyScript. Basic Duckyscript, as expanded upon in section \ref{DuckyScript} does not support all the extra features of the O.MG devices, such as self-destruct of GeoFencing. \\
+Payloads can be written directly in the WebUI, where they can be stored into slots. Depending on the model, the cable supports from 8-200 payload slots \cite{hak5MGCable}. They can be directly executed in the WebUI (executed on the host connected to the active end), simply stored, modified, and accessed, or set as a bootscript. Only one payload can be a bootscript; it is the script that is executed as soon as the active end is connected. \\
+USB overlock is a feature only available on the elite model that allows sending HIDX packets about 8 times as fast as usual. This can mean that the data is sent faster, than the host can receive it, in which case it is lost. 
+
+
+\subsubsection{Geofencing}
+
+Geofencing can be accomplished by a simple conditional statement. It can trigger or block actions depending on the presence or absence of a wifi network with a specific SSID. This is accomplished by a condition that is evaluated every time the O.MG device powers up. Alternatively, the cable can wait until a SSID or BSSID is present with the 'WAIT\_FOR\_PRESENT' keyword. It will either wait for a specific amount of time or run forever. Completing this feature, it is also possible to wait until out of reach of a network.  
+
+\subsubsection{Self-Destruct}
+
+Cleanup is an important part of an attack or pentetration test. This cable supports two kinds of self-destruct that can be triggered via the WebUI or with a keyword in the code.
+\begin{itemize}
+    \item  \textbf{Self-Destruct 1:} Completely erases all data on the cable and disconnects the data line. The cable will appear broken. To use it again, it has to be physically recovered and reflashed.  
+    \item  \textbf{Self-Destruct 2:}  Erases all the data but retains the data lines, turning the cable in a normal USB cable. Reflashing is also necessary to use the cable again. 
+\end{itemize}
+
+
+\subsubsection{Keymap Viewer}
+
+Since the O.MG cable imitates keyboard presses, it is dependent on the keyboard settings of the attacked host. Input in a US keyboard will not produce the same signal to the computer as a DE\_CH keyboard even though the same key is pressed. For this reason, the lanugage of a payload has to be set, which is explained in more detail in section (TODO!!). If the keyboard settings of the target are not known beforehand, obtaining this information in the reconnaissance phase is crucial. \\
+For this reason the Keymap Viewer exists. Through the WebUI the keyboard layout of a connected host can be determined. (TODO; try this out!!)
+
+\subsubsection{Keylogger}
+
+When an O.MG cable is connecting a physical keyboard with a detachable cable to a host, it can keylog the strokes from the keyboard and display them in real time on the WebUI. In order for this to work, the keyboard has to be Full Speed USB (12mbps) and not low (1.5mbps) or high speed (480mbps) 
+
+\subsubsection{Partition Editor}
+
+On specific models of the O.MG cable a user can device themselves how the available storage should be used with the partition editor. They can decide to redirect storage resources to payload slots, individual slot size, size of storage for exfiltrated data, or keylogging storage. 
+
+\subsubsection{C2}
+A C2 server eliminates the need for physical proximity to the O.MG device to connect to and communicate with it. The cable can connect to the C2 server as well as the attacker. This way it can be controlled from anywhere. 
+
+\subsubsection{HIDX Stealth Link}
+This feature is still in progress, but the idea is to enable more stealthy data exfiltration. Instead of establishing a network or sending the data via the host, the cable relays the data via the HID channels.  
+
+
+\subsection{Ducky Script} \label{DuckyScript}
+
+[TODO: cite the book!]
+On top of supporting the basics of keyboard injection, being typing and delay, DuckyScript 3.0 is a structured, feature rich programming language that can handle control flow constructions like if/then/else, functions, or repetitions (for/while). It allows for Keystroke Reflection (exfiltration through keyboard side-channels), jitter or randomization. It couples with BASH, the shell scripting language to allow easy code execution in the terminal. A basic implementation of a Hello, World! Program could look like this:
+
+\begin{verbatim}
+REM Title: Hello, World!
+REM Description: Write Hello, World! in the terminal
+REM Target: Windows (including Powershell 2.0 or above)
+
+DELAY 3000
+GUI r
+DELAY 750
+STRING cmd
+ENTER
+DELAY 750
+STRING Hello, World!
+
+\end{verbatim}
+
+
+\section{Chapter Conclusion}
 
 This chapter introduced the USB standard and protocol and the vulnerabilities that come with it. \\
-It explained, how the lack of USB authentication can be leveraged by malicious actors to target users, in a stealthy and efficient way. The methods deployed for these attacks will be further described in chapter !!TODO!!\ref{}. \\
-Lastly, a basic overview over the hardware in this thesis was given. 
+It explained, how the lack of USB authentication can be leveraged by malicious actors to target users, in a stealthy and efficient way. 
+Lastly, a basic overview over the hardware in this thesis was given and the O.MG cable, as well as it's scripting language, DuckyScript was introduced. 
