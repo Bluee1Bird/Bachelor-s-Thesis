@@ -128,7 +128,7 @@ In 2019, the O.MG cable was made available at Hak5 \cite{MGCable2019a} marking t
 
 This section will give an overview over the most prominent hardware in this thesis, the O.MG cable, and the scripting language it is equipped with; DuckyScript. 
 
-\subsection{The O.MG cable}
+\subsection{The O.MG cable} \label{theOMGCable}
 
 As described shortly in sections \ref{Hak5Hardware} and \ref{HistoryOfAttacks} the O.MG cable is a BadUSB cable invented by MG \cite{MGCable2019a}, produced by Mischief Gadgets \cite{hak5MischiefGadgets} and sold in cooperation with Hak5 on their website \cite{hak5MischiefGadgets}. \\
 The cable does not have any physical markers; neither it's USB ends, the cable, nor the weight gives any indication that it has so many more capabilities than other USB cables. For the most part, it is a usual USB cable; the non-active (passthrough) end does not have any special abilities, and if it is not configured to execute a boot script, the cable can be used like any other. It's malicious active end is marked by a USB trident as found often on USB cables to indicate their compatibility with the USB standard. That end transmits the payloads on the device to the USB host. It is available in USB-A and USB-C.
@@ -191,8 +191,9 @@ This feature is still in progress, but the idea is to enable more stealthy data 
 
 \subsection{Ducky Script} \label{DuckyScript}
 
-[TODO: cite the book!]
-On top of supporting the basics of keyboard injection, being typing and delay, DuckyScript 3.0 is a structured, feature rich programming language that can handle control flow constructions like if/then/else, functions, or repetitions (for/while). It allows for Keystroke Reflection (exfiltration through keyboard side-channels), jitter or randomization. It couples with BASH, the shell scripting language to allow easy code execution in the terminal. A basic implementation of a Hello, World! Program could look like this:
+DuckyScript was invented by Darren Kitchen, the founder of Hak5. It evolved from a macro scripting language that could handle keyboard injections and delays in it's first iteration to a structured and feature rich programming language supporting injection attack specific commands (jitter, side-channel exfiltration) as well as control flow instructions, repetitions and functions in version 3.0. \cite{the book} [TODO cite the book!!] \\
+O.MG devices, as well as some other Hak5 gear, use an interpreted version of DuckyScript 1.0 that couples the BASH shell scripting language. \cite{Hak5Usbrubberduckypayloads2024} Additionally, the DuckyScript version licenced for the O.MG cable includes some device specific commands for the specific functionalities of the O.MG cable. \\
+A basic implementation of a Hello, World! Program for the O.MG cable could look like this:
 
 \begin{verbatim}
 REM Title: Hello, World!
@@ -208,6 +209,7 @@ DELAY 750
 STRING Hello, World!
 
 \end{verbatim}
+
 
 
 \section{Chapter Conclusion}
