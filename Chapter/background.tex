@@ -6,7 +6,7 @@ First off, it will explain what the USB protocol is and how it works, next the k
 
 \section{The USB Protocol} \label{TheUSBProtocol}
 
-The USB standard \cite{WaybackMachine2018} was first published in 1996. It was developed in a collaboration between the tech companies Compaq, DEC, IBM, Intel, Microsoft, NEC, and Nortel as a new standard to connect slow peripheral devices. To this end, they founded a new non-profit, called the USB Implementation Forum \cite{USBIFUSBIF}. It's goal were:
+The USB standard \cite{WaybackMachine2018} was first published in 1996. It was developed in a collaboration between the tech companies Compaq, DEC, IBM, Intel, Microsoft, NEC, and Nortel as a new standard to connect slow peripheral devices. To this end, they founded a new non-profit, called the USB Implementation Forum \cite{USBIFUSBIF}. It's goals were:
 \begin{itemize}
     \item "Ease of use for PC peripheral expansion"
     \item "Low-cost solution that supports transfer rates up to 12 Mbs"
@@ -28,7 +28,7 @@ It is apparent, that the creators wanted an universally applicable standard prot
     \cite{WaybackMachine2018}
 \end{figure}
 
-Connection is built upon four signal lines; a negative (Ground) powerline GND, a positive powerline VBUS for the power supply, and two data transfer lines D+ and D- as depicted in \ref{fig:usbsingalgraphic}. The two physical transfer data lines are aligned as a twisted pair. This alignment protects them from outside noise but does not mean that more than one logical line is available. They work together to transmit just logical signal, one bit. USB utilizes Non Return to Zero Inverted (NRZI) meaning that the bits on the bus are represented by a transition of physical levels, rather than the presence or absence of them. This allows data transfer while simultaneously allowing the participating parties to synchronise their bit clocks.  \\
+Connection is built upon four signal lines; a negative (Ground) powerline GND, a positive powerline VBUS for the power supply, and two data transfer lines D+ and D- as depicted in figure \ref{fig:usbsingalgraphic}. The two physical transfer data lines are aligned as a twisted pair. This alignment protects them from outside noise but does not mean that more than one logical line is available. They work together to transmit just logical signal, one bit. USB utilizes Non Return to Zero Inverted (NRZI) meaning that the bits on the bus are represented by a transition of physical levels, rather than the presence or absence of them. This allows data transfer while simultaneously allowing the participating parties to synchronise their bit clocks.  \\
 Since there is only one logical data line, data transfer can only happen in one direction at a time. Bi-directional communication happens in half-duplex mode. To deal with this restriction, a protocol that manages data and sender order has to be followed; the USB protocol.  
 
 This next section will expand on the functionalities of the USB protocol as described by \cite{nissimUSBbasedAttacks2017}. 
@@ -39,8 +39,8 @@ For bus-powered devices it is important to receive the power from the UBS cable 
 Every USB device is equipped with a microcontroller chip that manages the USB interactions with the host, and optionally also has a bootloader that allows loading firmware, for example for updates. \\
 One USB device consists of one to multiple logical subdevices that are known as device functions. For a webcam with built in audio this would correspond to a video and an audio function. Devices with multiple subdevices are referred to as composite devices. Each functions is managed through a separate endpoint on the bus with it's own logical address. One endpoint forms a logical communication channel called a pipe, of which there are two types.  
 \begin{enumerate}
-    \item Message Pipe: A message pipe is used for control transfers. That means they re used for short and simple commands sent to the USB device and status responses to the host.
-    \item Stream Pipe: A stream pip is used for actual data transfer.
+    \item Message Pipe: A message pipe is used for control transfers. That means they are used for short and simple commands sent to the USB device and status responses to the host.
+    \item Stream Pipe: A stream pipe is used for actual data transfer.
 \end{enumerate}
 Data transfer can only take place, if the host directly requests it. An USB device cannot transfer information autonomously. 
 
@@ -64,7 +64,7 @@ In order to be able to communicate with any USB device, a connection needs to be
 
 \section{The Dangers of USB} \label{TheDangersOfUSB}
 
-Some people might notice that during the initialization process described in section \ref{TheUSBProtocol} there is not verification or authorization steps. The protocol assumes that and physically connected USB device is trustworthy and does not take any precautions to check it's claims and properties. \\
+Some people might notice that during the initialization process described in section \ref{TheUSBProtocol} there is not verification or authorization steps. The protocol assumes that any physically connected USB device is trustworthy and does not take any precautions to check its claims and properties. \\
 This is a big oversight and opens the door for a lot of malicious activity. 
 On top of that USB devices are not perceived as a threat by a vast majority of people. In fact, many would absolutely pick up, plug in, and even interact with USB sticks they find lying around on the ground \cite{tischerUsersReallyPlug2016}. A study \cite{tischerUsersReallyPlug2016} conducted in 2016 found that USB sticks are a very effective attack vector. They explored whether USB sticks dropped on a university campus would really be picked up and plugged in. They found that users opened one or more files on 45\% of the flash drive and that 98\% of the drives were removed from the drop location by the time the experiment had ended. Based on this, the authors estimate that between 45\% and 98\% of drives were eventually plugged in. On the drives the authors placed information for a survey to explore the finder's motivation. From this survey it was concluded that the USB drives were plugged in mostly out of altruistic motives (to find the owner). The social engineering attack was an "expeditious" vector with a median time of connection of only 6.9 hours.  \\
 USB ports are common also in public, for convenient charging on the go, for example in Buses or Airports \cite{kumarJuiceJackingUSB2020}. People rarely think twice when they connect their laptop to an external display in a library or accept a charging cable from a friend. But for none of these actions are there any security measures in place, a newly connected USB device does not have to provide authentication.
@@ -192,7 +192,7 @@ This feature is still in progress, but the idea is to enable more stealthy data 
 \subsection{Ducky Script} \label{DuckyScript}
 
 DuckyScript was invented by Darren Kitchen, the founder of Hak5. It evolved from a macro scripting language that could handle keyboard injections and delays in it's first iteration to a structured and feature rich programming language supporting injection attack specific commands (jitter, side-channel exfiltration) as well as control flow instructions, repetitions and functions in version 3.0. \cite{the book} [TODO cite the book!!] \\
-O.MG devices, as well as some other Hak5 gear, use an interpreted version of DuckyScript 1.0 that couples the BASH shell scripting language. \cite{Hak5Usbrubberduckypayloads2024} Additionally, the DuckyScript version licenced for the O.MG cable includes some device specific commands for the specific functionalities of the O.MG cable. \\
+Some specific Hak5 gear like the BashBunny or LANTurtle use an interpreted version of DuckyScript 1.0 that couples the BASH shell scripting language. \cite{Hak5Usbrubberduckypayloads2024} The DuckyScript version licenced for the O.MG cable is based on DuckyScript 1.0 and additionally includes some device specific commands for the specific functionalities of the O.MG cable. The available DuckyScript 1.0 commads are limited to REM (marks a comment), DELAY (pauses the payload), STRING (injects keystrokes) and some buttons like ENTER, GUI, F11, PAGEUP, TAB; ESCAPE etc. \\
 A basic implementation of a Hello, World! Program for the O.MG cable could look like this:
 
 \begin{verbatim}
@@ -205,9 +205,8 @@ GUI r
 DELAY 750
 STRING cmd
 ENTER
-DELAY 750
+DELAY 2000
 STRING Hello, World!
-
 \end{verbatim}
 
 
