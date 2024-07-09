@@ -173,12 +173,15 @@ One under explored area of the Mitre Att\&ck framework is persistence. This Payl
 
 \section{Implementation} \label{Implementation}
 
-\subsection{Prerequistites}
-have windows
-have powershell
-be unlocked ? 
-know the keybaord lanugage
-have a timeframe where the target is not typing anything else
+\subsection{Prerequisites}
+
+The payloads presented in this chapter have the following prerequisites:
+\begin{enumerate}
+    \item Undisturbed input: while the payload is executing there may be no other HID input, especially no keypresses. A keypress will almost certainly throw off the execution of the payload, as will clicking, and especially switching focus to another window.
+    \item Windows: these payloads were written for Windows 11 with Powershell, it is not guaranteed that they will work on any other system.
+    \item Unlocked state: the payloads in this paper assume that the target computer is not locked. However, the payload can include a few lines to unlock the computer, if the password is known. If it is not known, it can be found out if the O.MG cable is used to keylog an external keyboard on which the password is typed. 
+    \item Known Keyboard language: These Payloads are written for a DE-CH layout but can be adjusted for any other layout. It is crucial that the layout set in the payload (default US) is the same as the layout language of the victim. If it is not known, the keymapper functionality of the keyboard can be used to determine it. 
+\end{enumerate}
 
 \subsection{Basics}
 
