@@ -292,7 +292,7 @@ DELAY 5
 STRINGLN }
 \end{lstlisting}
 
-The program features a while loop, which will keep it running continuously. It also includes a sleep to give the operating system time to actually terminate a process, before running Get-Process again thereby avoiding attention drawing error messages. In order for this payload to run, it is essential that the name in the white- or blacklist match exactly what the process name is that is returned by the Get-Process Powershell function. 
+The program features a while loop, which will keep it running continuously. It also includes a sleep to give the operating system time to actually terminate a process, before running Get-Process again thereby avoiding attention drawing error messages. In order for this payload to run, the name in the white- or blacklist must match exactly what the process name is that is returned by the Get-Process Powershell function. 
 
 
 
@@ -313,3 +313,72 @@ DELAY 200
 STRINGLN Register-ScheduledJob -Name ProcessJob -ScriptBlock {*enter script*} -Trigger $trigger -ScheduledJobOption $options
 DELAY 200
 \end{lstlisting}
+
+
+\section{Defence}
+
+In this section, the implementation of the defence strategies outlined in chapter \ref{Methodology} will be discussed. First, the classes will be presented, the USB capture process, then how the packets are analyzed and lastly the rate limiter implementation. 
+This implementation is written in python for no good reason other than that that's what i know to use for data analyis and i did not want to spend the time for this thesis on learning c# (TODO find better reason)
+
+
+\subsection{Classes}
+
+The two data classes used for this implementation are \verb|USBDevice| and \verb|Frame| in order to be able to track the connected USB devices and the Frames that come in.
+
+\begin{lstlisting}
+class USBDevice:
+    def __init__(self, source):
+        self.name = ""
+        self.manufacturer = ""
+        self.pid = ""
+        self.vid = ""
+        self.type = ""
+        self.source_port = source
+        self.remote_wakeup = None
+        self.self_powered = None
+        self.bDeviceProtocol = ""
+        self.bDeviceClass = ""
+        self.bInterfaceClass: list[str] = []
+        self.bInterfaceProtocol: list[str] = []
+        self.bString = ""
+        self.registered_keypresses = deque()
+\end{lstlisting}
+
+The USB device class stores identity information like name, pid, vid, interfaces, the source port as assigned by the host and a list of registered keypress from that source.
+
+\begin{lstlisting}
+class Frame:
+    def __init__(self):
+        self.header = None
+        self.source = None
+        self.destination = None
+        self.content = ""
+        self.URB_function = ""
+        self.HIDData = ""
+        self.isDeviceDescriptorPacket: bool = False
+        self.isInterfaceDescriptorPacket: bool = False
+\end{lstlisting}
+
+Important information for frames are their source and destination, what kind of function the frame has (URB_function), whether it is a device descriptor packet or an interface descriptor packet, and if available, the HID data it carries.
+
+
+\subsection{Packet Capturing}
+
+USB packets are continuously captured using Tshark \cite{TsharkTsharkDev}, the Wireshark command line application as described in section \ref{Traffic Capture}. To this end, a subprocess is started that runs the Tshark command in a terminal and relays the output to the program.
+For the Tshark command, the Wireshark capture interface index is required. Unfortunately, that interface does not always have the same index. Therefore, the method \verb|getTsharkUSBInterface()| runs another subprocess with the command \verb|tshark -D| first to extract the index for the interface USBPacp2.  \\
+After this index is acquired, Tshark is run with \verb|tshark -i {index} -V|. \verb|-V| stands for verbose output which is important to get all the information available.  
+
+
+\subsection{Packet Analysis}
+
+The output relayed from tshark is analyzed line by line. The beginning of a frame is marked by a substring matching the pattern \verb|Frame\s\d+:|. Similarly, if the line features source, destination, URB function, bString, HID Data, or Configuration bmAttributes in the line, their values are extracted and stored for that current frame. If the line contains the substrings 
+
+In either case, the line is added to the content attribute of the current frame to allow further extraction in the cases of device descriptors, interface descriptors or device disconnect packets.
+
+
+
+
+
+
+
+

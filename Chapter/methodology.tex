@@ -2,7 +2,7 @@
 
 \section{Introduction}
 
-This chapter will describe the point of view of an attacker during a HID injection attack. To this end, it will first evaluate existing attack payloads, describe a general architecture for an attack, introduce new attacks and their architecture, and novel defence methods against those attacks. 
+This chapter will describe the methodologies for the developed payloads and the defence against them. It will start with the attacker's point of view, examine existing attacks in the context of the MITRE Att\&ck framework, introduce new attacks and then move on to the defence system.
 
 
 \section{The MITRE Att\&ck Framework}
@@ -82,7 +82,12 @@ Another aspect to consider is that this repository is not designed to comply wit
 In line with this sentiment, this thesis will develop novel payloads in the following chapters. Splitting the enormous spectrum of all possible cyber attacks into only 14 categories means that each of those categories still covers a very big section of attack types, each of which in turn can have a multitude of aspects and implementations. For this reason, the payloads that will be developed in this thesis cannot exclusively be attributed to 'Impact' or another underrepresented category, but instead are a collection of novel payloads that can be attributed to subtechniques of different categories. Each of the payloads is inspired by such a subtechnique and does not yet exist in the O.MG payloads Github repository. They are realistic attacks for which it makes sense to use HID injection and naturally only represent a small selection of all the paylaods that are still 'missing' from the repository were it the goal to get full coverage. 
 
 
-\section{Setup for an HID Injection Attack}
+\section{New Payloads}
+
+
+This section will give an overview over the methodologies of the developed payloads and defences. Their implementations will be discussed in the next Section \ref{Implementation}. \\
+
+\subsection{Setup for an HID Injection Attack}
 
 When preparing for an HID injection attack, a malicious actor has to pay attention to the following 5 points;
 \begin{enumerate}
@@ -105,15 +110,7 @@ Naturally these steps influence each other or may overlap. This flow diagram ser
 \end{figure}
 
 
-
-\section{Methodology} \label{methodology}
-
-\subsection{Introduction}
-
-This section will give an overview over the methodologies of the developed payloads and defences. Their implementations will be discussed in the next Section \ref{Implementation}. \\
-
-
-\subsection{Payloads}
+\subsection{Payload Architectures}
 
 Payloads follow a combination of two main strategies; 
 \begin{enumerate}
@@ -188,64 +185,57 @@ One underexplored area of the Mitre Att\&ck framework is the persistance categor
 
 One under explored area of the Mitre Att\&ck framework is persistence. This Payloads aims to achieve persistence by registering processes that will run iteratively depending on a customizable trigger. This processes can be anything from recon scripts, to other persistence payloads, like for example the end processes payload \ref{Iteratively End Processes} which could run in the background if set up like this.
 
-\subsection{defence}
-
-In order to be able to defend against the existing and especially new threats introduced in this paper, this section will give an overview of the architecture for the announced defence framework.
-
-In general, these approaches are possible; ... and of course, it is always possible to partially or completely restrict access of USB devices to a host. As happens so often in cyber-security spaces, this is a question of usability vs security. Restricting access and thereby usage of USB devices necessarily also diminishes or extinguishes the additional value they might bring. The framework in this paper consists of components that try to minimize the impact of usability. The framework should be a support and not an additional vice on the users to ensure that it is not circumvented because it is too tedious to work with.  
-...
-
-To make sure the detection rate for malicious USB devices is as high as possible, this framework attempts to apply multiple distinct approaches which are introduced in the following;
-\begin{enumerate}
-    \item Rate Limiting
-    \item Packet Analysis
-    \item Random Text Input prompts upon Enumeration
-    \item Time Series Anomaly detection for packets in the enumeration phase
-    \item possibly more?
-\end{enumerate}
 
 
-\subsubsection{Rate Limiting}
-
-
-
-\subsubsection{Packet Analysis}
-
-As inspired by other works that analyzed USB packets, for example, USBSafe \cite{kharrazUSBESAFEEndPointSolution2019} this paper seeks to find differences in USB Packets that were produced in the enumeration phase of an O.MG cable versus those produced by various unmodified external keyboards. In contrast, USBSafe focused on the timing, types and payloads of the packets throughout an entire interaction and did not specifically compare two types of USB devices, instead, they trained a model that distinguishes between known (safe) patterns in USB traffic and unknown (malicious) patterns. 
-
-To this end, the following keyboards were examined:
-\begin{enumerate}
-    \item TODO!!
-\end{enumerate}
-
-USB packets can be captured with an application called Wireshark which is an application that captures general traffic, mainly web traffic. The open-source software 'USBPcap' integrates seamlessly with Wireshark to additionally allow the capture of USB packets.  USBPcap can also be run via the command line separately from Wireshark, however, the visualization in the Wireshark application makes analysis easier. 
-For this capture, Wireshark 4.2.5-x64 in combination with USBPcap version 1.5.4.0 was used on a Windows Surface 4 Laptop with Windows Home version 23H2. Wireshark has to be run as administrator to make the capture of USB traffic possible. Additionally, Bluetooth should be turned off, since the Bluetooth traffic is captured where it is translated from the receiver to USB and can thereby clutter the capture.    
-TODO; add the files in the appendix??
-Packets were compared starting at packet 13 until the enumeration was complete. Packets 1 through 12 recorded the traffic native to the Windows device, such as the enumeration of the built-in video camera. 
-The results of this comparison are presented in section \ref{TODO} of chapter \ref{Results}.
-
-
-
-
-\section{Defense Program}
+\section{defence Program}
 
 \subsection{Introduction}
 
-In order to be able to defend the payloads that were just introduced, the next section will outline a defense system.
-It is based on packet analysis; all USB communication is based on USB packets. As introduced in section [TODO!] a newly connected USB device will first establish itself with the host via a process called
-enumeration, during which the device's capabilities and services are communicated to the host. After this enumeration which follows the USB protocol, the device can be used by the host.
+To be able to defend against the existing and especially new threats introduced in this paper, this section will give an overview of the architecture for the announced defence framework.
+
+It has to be kept in mind, that most approaches are heuristics. Theoretically, it is always possible to circumvent them if enough resources are available. The only way to completely get rid of USB threat is to not use it. In a closed system, all USB ports could be permanently blocked and the use of outside technology forbidden. As is so often the case  often in cyber-security spaces, this is a question of usability vs security. Restricting access and thereby usage of USB devices necessarily also diminishes or extinguishes the additional value they might bring. The framework in this paper consists of components that try to minimize the impact of usability. The framework should be a support and not an additional vice on the users to ensure that it is not circumvented because it is too tedious to work with.  
+
+In order to be able to defend the payloads that were just introduced, the next section will outline a defence system.
+This defence has two pillars:
+\begin{enumerate}
+    \item A classic rate limiter as seen in other papers (for example \cite{neunerUSBlockBlockingUSBBased2018}
+    \item Packet Analysis
+\end{enumerate}
+
+Rate Limiting aims to catch the superhuman input speeds of O.MG cables (up to 890 keystrokes per second \cite{hak5MGCable}) while packet analysis is focused on monitoring the properties of connected devices for abnormalities.
+
+
+\subsection{Traffic Capture} \label{Traffic Capture}
+
+On Windows, USB packets can be captured with Wireshark which is an application written to capture general web traffic \cite{WiresharkGoDeep}. It can be extended with 'USBPcap' \cite{USBPcap}, an open source software that allows the additional capture of USB packets in Wireshark. USBPcap can also be run via the command line separately from Wireshark, however, the visualization in the Wireshark application make manual analysis easier.  Additionally Bluetooth should be turned off for viusal inspection since it's packets are translated into USB and will therefore show up when using Wireshark with Pcap. For automated analysis with code Wireshark provides a command line application called Tshark \cite{TsharkTsharkDev}. 
+
+For this capture, Wireshark 4.2.5-x64 in combination with USBPcap version 1.5.4.0 was used on a Windows Surface 4 Laptop with Windows Home version 23H2. Wireshark has to be run as administrator to make the capture of USB traffic possible.
+
+
+\subsection{Packet Analysis}
+
+
+As inspired by other works that analyzed USB packets, for example, USBSafe \cite{kharrazUSBESAFEEndPointSolution2019} this paper seeks to find differences in USB Packets that were produced in the enumeration phase of an O.MG cable versus those produced by unmodified external keyboards. In contrast, USBSafe focused on the timing, types and payloads of the packets throughout an entire interaction and did not specifically compare two types of USB devices, instead, they trained a model that distinguishes between known (safe) patterns in USB traffic and unknown (malicious) patterns. 
+
+To this end, the following keyboards were examined:
+\begin{enumerate}
+    \item Ducky One 2 SF
+    \item Sharkoon
+    \item Glorious ??
+\end{enumerate}
+
+
+All USB communication is based on USB packets. As introduced in section \ref{TheUSBProtocol} a newly connected USB device will first establish itself with the host via a process called enumeration, during which the device's capabilities and services are communicated to the host. After this enumeration which follows the USB protocol, the device can be used by the host.
 All information transferred during and after this process, is packaged in USB packets, also called USB frames. The frames are then interpreted by the operating system (OS) to determine their meaning and the commands they contain.
 
-\subsubsection{Traffic Capture}
-
-describe Wireshark, tshark and Pcap
 
 
-\subsubsection{Packet Analysis}
+\subsubsection{Basics of Packet Analysis}
 
 The frames exchanged during the enumeration process contain information about the connected device, which is especially valuable for identifying the type of connected device.
-Through packets such as Device Descriptors and Interface Descriptors allow making conclusions about a device's functionality. Take for example the following frame:
+Through packets such as Device Descriptors and Interface Descriptors, conclusions about a device's functionality can be made. Take for example the following frame:
 
+\begin{lstlisting}
 Frame 8: 46 bytes on wire (368 bits), 46 bytes captured (368 bits) on interface \\.\USBPcap2, id 1
 USB URB
     [Source: 2.2.0]
@@ -282,7 +272,7 @@ DEVICE DESCRIPTOR
     iProduct: 0
     iSerialNumber: 0
     bNumConfigurations: 1
-
+\end{lstlisting}
 
 The first section of the frame contains meta information, such as the status, the function, length of the pseudo header. The second section contains the actual information that is transferred;
 this is a device descriptor packet, if communicates to the host what kind of device it is. In this case, it is a wireless controller that follows the bluetooth programming interface. It also specifies the
@@ -292,7 +282,7 @@ speaker for example, there would be constant traffic generated from streaming mu
 For this reason, extracting information such as the device classes and protocols are important. A Device Descriptor for a keyboard could look something like this
 
 
-
+\begin{lstlisting}
 DEVICE DESCRIPTOR
     bLength: 18
     bDescriptorType: 0x01 (DEVICE)
@@ -308,13 +298,14 @@ DEVICE DESCRIPTOR
     iProduct: 2
     iSerialNumber: 0
     bNumConfigurations: 1
-
+\end{lstlisting}
 
 
 This is a device descriptor from a Sharkoon Keyboard. It does not carry Keyboard specific information and rather describes the device as generically as possible. This is not always the case, for example Glorious gaming keyboards carry this line: 'idProduct: Backlit Gaming Keyboard (0x652f)'. Nevertheless,
 it means that the Device Descriptor packets alone are not enough to determine what device the host is dealing with. This is where the interface descriptor packets come intp play.
 This is the interface descriptor for the Sharkoon Keyboard whose very gerneric device descriptor was discussed right above.
 
+\begin{lstlisting}
 INTERFACE DESCRIPTOR (0.0): class HID
     bLength: 9
     bDescriptorType: 0x04 (INTERFACE)
@@ -325,6 +316,7 @@ INTERFACE DESCRIPTOR (0.0): class HID
     bInterfaceSubClass: Boot Interface (0x01)
     bInterfaceProtocol: Keyboard (0x01)
     iInterface: 0
+\end{lstlisting}
 
 It specifically describes the device as Human Interface Device (HID)  and the interface protocol as 'keyboard' with the corresponding hexidecimal HID code for a keyboard; '0x01'.
 
@@ -332,7 +324,7 @@ Device descriptor and interface packets describe the function of a USB device an
 First off, it is important to note that the cable is not enumerated as a keyboard right away. When inserted into a host, no communication happens, since it is acting as a simple cable which does not require communication with the host. However, every time a payload is executed, the cable enumerates as a keyboard.
 These are it's device descriptor and interface packets;
 
-
+\begin{lstlisting}
 DEVICE DESCRIPTOR
     bLength: 18
     bDescriptorType: 0x01 (DEVICE)
@@ -360,25 +352,101 @@ INTERFACE DESCRIPTOR (1.0): class HID
     bInterfaceSubClass: Boot Interface (0x01)
     bInterfaceProtocol: Keyboard (0x01)
     iInterface: 0
-
+\end{lstlisting}
 
 As we can see, there are no relevant differences between the packets from the Sharkoon keyboard vs the O.MG cable besides some technical differences like their maximum packet size or their release numbers in binary-coded decimal (bcdUSB). This raises the question whether the O.MG cable is at all distinguishable
-from a non malicious keyboard through it's USB traffic. In theory, it does not have to be; to the host it acts like any other keyboard in every regard with the same functionality. There are no obvious differences. in the following, this paper analyses the USB traffic in more detail to find out if this is really the case.
+from a non malicious keyboard through it's USB traffic. In theory, it does not have to be; to the host it acts like any other keyboard in every regard with the same functionality. There are no obvious differences. in the following, this paper analyses the USB traffic in more detail to find out if this is the case.
+
+
+\subsubsection{Remote Wakeup}
+
+Early in the enumeration, packet 16, the first big difference can be found: While all three external keyboards describe themselves to have the attribute 'REMOTE-WAKEUP' the O.MG cable specifies in the same packet that it has 'NO REMOTE WAKEUP'. This difference can be seen in figure \ref{fig:packet16OMG} vs \ref{fig:packet16Ducky}. Keyboards with 'REMOTE WAKEUP' can send a signal to a 'sleeping' host that can wake it. This is common for human interface devices and can also be seen in mice that can be moved to wake a host. The O.MG cable, however, does not have that capability. When a payload is executed while the target is asleep, it is not woken up and therefore the input is not processed. This is a weird anomaly. A HID device, specifically a keyboard, should be able to wake the host. How else, would for example a desktop without built in HID device be woken up? A HID devive without this functionality does not provide a basic feature of human-computer interaction and is therefore suspicious.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{visuals/no-remote-wakeup-100mA.png}
+    \caption{Packet no. 16 of an O.MG Cable enumeration}
+    \label{fig:packet16OMG}
+\end{figure}
+
+\subsubsection{Technical Data}
+
+Just like the REMOTE WAKEUP property, the amount of power a non-self-powered device requires is specified within the first packets, specifically in packet nr 16. The difference that can be observed here is between the Ducky keyboard and the rest of the devices. While 3 of the 4 devices specify 'bMaxPower' in packet 15 to be "100 (200mA)" (figure \ref{fig:packet16OMG}, the Ducky's current consumption is "50 (100mA)" as seen in \ref{fig:packet16Ducky}. Maximum current consumption can therefore not be used as an indicator for the presence of an O.MG cable. 
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{visuals/no-remote-wakeup-100mA.png}
+    \caption{Packet no. 16 of a Ducky Keyboard enumeration}
+    \label{fig:packet16Ducky}
+\end{figure}
+
+
+\subsubsection{Register as multiple devices}
+
+All the devices register as multiple HID devices. The Sharkoon and Glorious keyboards first register as a keyboard, then as a mouse. The Ducky registers as keyboard first and as multiple different 'HID Report's later. The O.MG cable is the only one that registers as a mouse first and as a keyboard second. This can be seen in packet 18 for all the devices; figure \ref{fig:packet18Glorious} shows an example of the Glorious Keyboard specifying the enumeration as keyboard and mouse. 
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{visuals/packet18glorious.png}
+    \caption{Packet no. 18 of a Glorious Keyboard enumeration}
+    \label{fig:packet18Glorious}
+\end{figure}
+
+\subsubsection{Length of Descriptors}
+
+In various instances the devices differ in their meta data. For example in packet 26 of the Sharkoon keyboard the bLength descriptor is 46, while for the Ducky it is 36, the Glorious 22 and the O.MG 10. Similarly, number for wLength differ in packet 27. These descriptors vary every time they occur, and between all the devices. Therefore, they cannot be used as a differentiator between malicious and harmless devices. Furthermore, since the lengths of the descriptors depend on the descriptors themselves, and the O.MG descriptors can easily be changed, this is not a reliable metric.
+This also explains the differences in the bString itself, for example in packet 28, where the manufacturer's name is spelled out. Any manufacturer can easily be spoofed by an O.MG cable. 
 
 
 
 
+\subsubsection{Unrecognized Packets}
+
+All external keyboards have packet exchanges that Wireshark flags as 'Unknown type' which seems to be some Wireshark error for reading and interpreting the packets. The issue seems to have to do with the descriptors request that are specific for Windows \cite{USBPcapDidNot}. Noticeably, however, the O.MG does not have any 'Unknown type' packets in its enumeration.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{visuals/unknownPacketsSharkoon.png}
+    \caption{Unknown type Packets as an example from the Sharkoon enumeration}
+    \label{fig:unknownPacketsSharkoon}
+\end{figure}
 
 
+\subsubsection{Larger Differences in Packet Types, Number and Order}
 
+Due to some unrecognized packets and differences in enumeration order and the number and types of devices that are enumerated, the packets start to lose their alignment with each other around packet 30. From thereon, they are hard to compare directly. Some devices have more unrecognized packets, some different numbers of 'collection', 'usage page', 'usage', 'set\_report', and 'descriptor' packets. However, there seem to be no discernable patterns for this reason and the differences also occur within the harmless external keyboard group. From the sample size available, the O.MG has the smallest number of packets exchanged for enumeration. 
+
+
+\subsubsection{Conclusion Packet Analysis}
+
+The biggest difference in the enumeration phase of these devices is in the number and type of packets, however, they still follow the same pattern, given by the USB protocol. There does not seem to be a reliable pattern in this sample, however. A pattern might be found with a much bigger sample size and statistical analysis. This is out of scope for this thesis but should be considered in future works. (TODO; add this to limitations). Generally speaking, the cable seems to be more efficient than the external keyboards while enumerating using the least amount of packets overall.
+Differences in descriptors, lengths and other meta data (like technical specifications) are non-conclusive for distinguishing the O.MG cable. 
+The most apparent and striking difference is that the O.MG cable is enumerated with the 'NO REMOTE WAKEUP' attribute, which sets it apart from all other keyboards.
+A defence system based on qualitative packet analysis can be built on this difference. It requires tracking the enumeration of all UBS devices that enumerate as keyboards and checking for their remote wakeup attribute. 
+
+It is not surprising that the enumeration of the O.MG cable does not differ more obviously from that of usual external keyboards. For the host, it looks like any other keyboard and functions like one too. Enumeration is therefore also the same. Additionally, the possible differences are restricted because of the established USB protocol.
+
+It is important to note that while this thesis can only conclude the presence of one clear factor that points to the presence of an O.MG cable, it does not mean that more do not exist. Possibly patterns could be found with a scientific experiment featuring a big and statistically significant number of external keyboards (100+) and multiple O.MG cables.
+
+\subsection{Rate Limiting}
+
+A second use of monitoring USB traffic is rate limiting. Aditionally to the qualitative analysis of enumeration traffic, this quantitative approach detects anomalies in keyboard input. O.MG cables can generate keystrokes at superhuman speeds; 890 keystrokes per second (keys/sec) for the elite version and 120 keystrokes per second for the basic version. This is way above what humans will ever be able to achieve. Currently, what is considered as elite human typists are speed around 200 to even close to 300 words per minute (TODO you can see this with a youtube search ,how would i cite this??). Words per minute are calculated as the number of typed characters divided by 5 \cite{travisWhatWordsMinute2015}. 300 words per minute would therefore be 300x5 / 60 = 25 keystrokes per second, about a fifth of what a basic O.MG cable can achieve.
+Keystrokes this far are a suspicious and indicate a non-human input. A rate limiter would monitor all keyboard input and their speed, once a threshold is reached, it will alarm the user and disconnect the device to stop the attack. \\
+The diffculty with the design of such a rate limiter is the threshold. While it is a clear case in theory, practice is not as cut and dry. What should the threshold effectively be? A measurement like this requires a time window in which it is measured, the more data available, meaning the longer this window is, the more accurate the conclusion. However, this means more time for executing an attack; if the cable can input 120 keystrokes per second and a rate limiter has a window of one second for measurements, all payloads under 120 keystrokes are theoretically able to circumvent the defence mechanism. These attacks only work in theory, in practice payloads have to implement delays to let the system execute commands like opening a run window. 
+Delays would also enable payloads bigger than 120 keystrokes. To illustrate, pressing Windows Key + R opens the Run window, followed by a brief pause to allow the host to respond, before entering 'Powershell' and pressing Enter. Assuming that the input + wait time would take one second, that is an input speed of 12 keys/sec half the speed of attainable human input. Simply delaying a payload after every 10 keystrokes circumvents a rate limiter that checks one second intervals.  \\
+Another possible approach is measuring the input time between individual keystrokes, which might become a problem for key combinations, gaming and spamming keys manually. 25 keystrokes per second means a limit of 2.4 miliseconds between keys. [TODO, adjust the implementation to idk whatever works best? maybe have different options? this part of the eval?]
+
+To measure these speeds, the defence framework has to store the times at which HID input packets arrive for a specific keyboard. These packets have to be mapped to their sources, to ensure that the program knows which USB device it has to disconnect to stop the attack. This means that this kind of monitoring has to be connected to the packet analysis to not falsely be triggered by mouse or Bluetooth traffic. 
 
 
 
 \section{Conlcusion}
 
 This chapter introduced the underlying architecture and methodology for both the attack side through the newly developed payloads as well as the defence by introducing the developed defence system and its components. 
-It started off by introducing the MITRE ATT\&CK framework and some of it's 14 categories. Then, it mapped the payloads from the official open source O.MG payloads repository on GitHub onto those categories to find out which techniques were already present and available and which ones were underrepresented or missing completely. After that, it introduced the architecture of a few payloads that would fill some of those gaps using the techniques that had not yet been featured in the source code. \\
-In a second section of the chapter, the thesis outlined a defence framework that featured ... [TODO]
+It started by introducing the MITRE ATT\&CK framework and some of its 14 categories. Then, it mapped the payloads from the official open-source O.MG payloads repository on GitHub onto those categories to find out which techniques were already present and available and which ones were underrepresented or missing completely. After that, it introduced the architecture of a few payloads that would fill some of those gaps using techniques that had not yet been featured in the source code. \\
+In a second section of the chapter, the thesis outlined a defence framework that featured qualitative and quantitative packet analysis, monitoring traffic for a specific enumeration signature of O.MG cables and the speed at which HID input packets are received.
 
 
 
