@@ -177,6 +177,153 @@ One underexplored area of the Mitre Att\&ck framework is the persistance categor
 One under explored area of the Mitre Att\&ck framework is persistence. This Payloads aims to achieve persistence by registering processes that will run iteratively depending on a customizable trigger. This processes can be anything from recon scripts, to other persistence payloads, like for example the end processes payload \ref{Iteratively End Processes} which could run in the background if set up like this.
 
 
+\section{Defense Program}
+
+\subsection{Introduction}
+
+In order to be able to defend the payloads that were just introduced, the next section will outline a defense system.
+It is based on packet analysis; all USB communication is based on USB packets. As introduced in section [TODO!] a newly connected USB device will first establish itself with the host via a process called
+enumeration, during which the device's capabilities and services are communicated to the host. After this enumeration which follows the USB protocol, the device can be used by the host.
+All information transferred during and after this process, is packaged in USB packets, also called USB frames. The frames are then interpreted by the operating system (OS) to determine their meaning and the commands they contain.
+
+\subsubsection{Traffic Capture}
+
+describe Wireshark, tshark and Pcap
+
+
+\subsubsection{Packet Analysis}
+
+The frames exchanged during the enumeration process contain information about the connected device, which is especially valuable for identifying the type of connected device.
+Through packets such as Device Descriptors and Interface Descriptors allow making conclusions about a device's functionality. Take for example the following frame:
+
+Frame 8: 46 bytes on wire (368 bits), 46 bytes captured (368 bits) on interface \\.\USBPcap2, id 1
+USB URB
+    [Source: 2.2.0]
+    [Destination: host]
+    USBPcap pseudoheader length: 28
+    IRP ID: 0x0000000000000000
+    IRP USBD_STATUS: USBD_STATUS_SUCCESS (0x00000000)
+    URB Function: URB_FUNCTION_CONTROL_TRANSFER (0x0008)
+    IRP information: 0x01, Direction: PDO -> FDO
+        0000 000. = Reserved: 0x00
+        .... ...1 = Direction: PDO -> FDO (0x1)
+    URB bus id: 2
+    Device address: 2
+    Endpoint: 0x80, Direction: IN
+        1... .... = Direction: IN (1)
+        .... 0000 = Endpoint number: 0
+    URB transfer type: URB_CONTROL (0x02)
+    Packet Data Length: 18
+    [Request in: 7]
+    [Time from request: 0.000000000 seconds]
+    Control transfer stage: Complete (3)
+DEVICE DESCRIPTOR
+    bLength: 18
+    bDescriptorType: 0x01 (DEVICE)
+    bcdUSB: 0x0201
+    bDeviceClass: Wireless Controller (0xe0)
+    bDeviceSubClass: 1
+    bDeviceProtocol: 1 (Bluetooth Programming Interface)
+    bMaxPacketSize0: 64
+    idVendor: Intel Corp. (0x8087)
+    idProduct: AX201 Bluetooth (0x0026)
+    bcdDevice: 0x0002
+    iManufacturer: 0
+    iProduct: 0
+    iSerialNumber: 0
+    bNumConfigurations: 1
+
+
+The first section of the frame contains meta information, such as the status, the function, length of the pseudo header. The second section contains the actual information that is transferred;
+this is a device descriptor packet, if communicates to the host what kind of device it is. In this case, it is a wireless controller that follows the bluetooth programming interface. It also specifies the
+vendor and product ID. Some information such as the manufacturer, product and serial number are left blank here.
+This device is the built in  ....[TODO] ... ?? of my computer. It illustrates one of the challenges of packet analysis; filtering out noise in traffic. If one were to capture USB traffic while the host is connected to a bluetooth
+speaker for example, there would be constant traffic generated from streaming music. This traffic should not be considered for rate limiting since it is automatically generated and required to be fast.
+For this reason, extracting information such as the device classes and protocols are important. A Device Descriptor for a keyboard could look something like this
+
+
+
+DEVICE DESCRIPTOR
+    bLength: 18
+    bDescriptorType: 0x01 (DEVICE)
+    bcdUSB: 0x0200
+    bDeviceClass: Device (0x00)
+    bDeviceSubClass: 0
+    bDeviceProtocol: 0 (Use class code info from Interface Descriptors)
+    bMaxPacketSize0: 64
+    idVendor: Unknown (0x320f)
+    idProduct: Unknown (0x5016)
+    bcdDevice: 0x0119
+    iManufacturer: 1
+    iProduct: 2
+    iSerialNumber: 0
+    bNumConfigurations: 1
+
+
+
+This is a device descriptor from a Sharkoon Keyboard. It does not carry Keyboard specific information and rather describes the device as generically as possible. This is not always the case, for example Glorious gaming keyboards carry this line: 'idProduct: Backlit Gaming Keyboard (0x652f)'. Nevertheless,
+it means that the Device Descriptor packets alone are not enough to determine what device the host is dealing with. This is where the interface descriptor packets come intp play.
+This is the interface descriptor for the Sharkoon Keyboard whose very gerneric device descriptor was discussed right above.
+
+INTERFACE DESCRIPTOR (0.0): class HID
+    bLength: 9
+    bDescriptorType: 0x04 (INTERFACE)
+    bInterfaceNumber: 0
+    bAlternateSetting: 0
+    bNumEndpoints: 1
+    bInterfaceClass: HID (0x03)
+    bInterfaceSubClass: Boot Interface (0x01)
+    bInterfaceProtocol: Keyboard (0x01)
+    iInterface: 0
+
+It specifically describes the device as Human Interface Device (HID)  and the interface protocol as 'keyboard' with the corresponding hexidecimal HID code for a keyboard; '0x01'.
+
+Device descriptor and interface packets describe the function of a USB device and identify it as a keyboard to the host. In order to spoof a keyboard, an O.MG cable would have to do the same. So what do these packets look like for an O.MG cable?
+First off, it is important to note that the cable is not enumerated as a keyboard right away. When inserted into a host, no communication happens, since it is acting as a simple cable which does not require communication with the host. However, every time a payload is executed, the cable enumerates as a keyboard.
+These are it's device descriptor and interface packets;
+
+
+DEVICE DESCRIPTOR
+    bLength: 18
+    bDescriptorType: 0x01 (DEVICE)
+    bcdUSB: 0x0110
+    bDeviceClass: Device (0x00)
+    bDeviceSubClass: 0
+    bDeviceProtocol: 0 (Use class code info from Interface Descriptors)
+    bMaxPacketSize0: 8
+    idVendor: Unknown (0xd3c0)
+    idProduct: Unknown (0xd34d)
+    bcdDevice: 0x0002
+    iManufacturer: 1
+    iProduct: 2
+    iSerialNumber: 3
+    bNumConfigurations: 1
+
+
+INTERFACE DESCRIPTOR (1.0): class HID
+    bLength: 9
+    bDescriptorType: 0x04 (INTERFACE)
+    bInterfaceNumber: 1
+    bAlternateSetting: 0
+    bNumEndpoints: 1
+    bInterfaceClass: HID (0x03)
+    bInterfaceSubClass: Boot Interface (0x01)
+    bInterfaceProtocol: Keyboard (0x01)
+    iInterface: 0
+
+
+As we can see, there are no relevant differences between the packets from the Sharkoon keyboard vs the O.MG cable besides some technical differences like their maximum packet size or their release numbers in binary-coded decimal (bcdUSB). This raises the question whether the O.MG cable is at all distinguishable
+from a non malicious keyboard through it's USB traffic. In theory, it does not have to be; to the host it acts like any other keyboard in every regard with the same functionality. There are no obvious differences. in the following, this paper analyses the USB traffic in more detail to find out if this is really the case.
+
+
+
+
+
+
+
+
+
+
 \section{Conlcusion}
 
 This chapter introduced the underlying architecture and methodology for both the attack side through the newly developed payloads as well as the defense by introducing the developed defense system and its components. 
