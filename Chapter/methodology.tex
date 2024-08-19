@@ -2,13 +2,13 @@
 
 \section{Introduction}
 
-This chapter will describe the point of view of an attacker during a HID injection attack. To this end it will firstly evaluate existing attack payloads, describe a general architecture for an attack and it will introduce new attacks and their architecture as well as novel defense methods against those attacks. 
+This chapter will describe the point of view of an attacker during a HID injection attack. To this end, it will first evaluate existing attack payloads, describe a general architecture for an attack, introduce new attacks and their architecture, and novel defence methods against those attacks. 
 
 
 \section{The MITRE Att\&ck Framework}
 
-ATT\&CK \cite{MITREATTCK} is an openly accessible knowledge base of adversary tactics and techniques developed by the security advisor firm MITRE \cite{WhoWeAre}. It can be used for threat modeling and to get a general overview over the different types of cyber attacks that happen in the world.
-It features 14 attack categories that themselves are subdivided into 8-43 techniques. One example is the category Reconnaissance which is divided into Active Scanning, Gather Victim Host Information, Gather Victim Identity Information, Gather Victim Network Information, Gather Victim Org Information, Phishing for Information, Search Closed Sources, Search Open Technical Databases, Search Open Websites/Domains and Search Victim Owned Websites. 
+ATT\&CK \cite{MITREATTCK} is an openly accessible knowledge base of adversary tactics and techniques developed by the security advisor firm MITRE \cite{WhoWeAre}. It can be used for threat modelling and to get a general overview of the different types of cyber-attacks that happen in the world.
+It features 14 attack categories subdivided into 8-43 techniques. One example is the category Reconnaissance which is divided into Active Scanning, Gather Victim Host Information, Gather Victim Identity Information, Gather Victim Network Information, Gather Victim Org Information, Phishing for Information, Search Closed Sources, Search Open Technical Databases, Search Open Websites/Domains and Search Victim Owned Websites. 
 
 
 
@@ -93,11 +93,16 @@ When preparing for an HID injection attack, a malicious actor has to pay attenti
     \item Place and Timing
 \end{enumerate}
 
-The target is the most crucial element and specifically for injection attacks it is much more important \emph{what} the target is instead of who. The answer to this question determines which kind of attack is carried out and what the basic payload is. The question of \emph{who} is important in so far as it influences the next point: Circumstance. For example a target that always locks their computer when stepping away from it creates the circumstance of a locked screen, in which case a password has to be acquired and injected first. Circumstance is also the target's operating system, all the information about their hardware, the defense software that might be in place, and other recon on the target, for example their habits. Once these two factors have been sufficiently explored, the question of hardware will come up. What should be used? In some specific situations a USB stick might be best. This could for example be the case when the attacker has access to a target's work station and can place the stick in an envelope with the target's name on it to trick them into plugging it in. In other situations it might be ideal to modify a keyboard and build the malicious hardware into it, or to alter a charging port in a public space. For many stealthy situations, the O.MG cable can be perfect because it seems so harmless. With a clear goal, enough information about the target's circumstance and the hardware question decided, the payload may be developed. While a basic script might already exist, it is very likely that it has to be modified to fit the specific situation. For example if it will need adjustments if it includes commands that require administrative rights or absolute file paths, or it might profit from adapting delays depending on the speed of the target's machine. \\
+The target is the most crucial element and specifically for injection attacks it is much more important \emph{what} the target is instead of who. The answer to this question determines which kind of attack is carried out and what the basic payload is. The question of \emph{who} is important in so far as it influences the next point: Circumstance. For example a target that always locks their computer when stepping away from it creates the circumstance of a locked screen, in which case a password has to be acquired and injected first. Circumstance is also the target's operating system, all the information about their hardware, the defence software that might be in place, and other recon on the target, for example their habits. Once these two factors have been sufficiently explored, the question of hardware will come up. What should be used? In some specific situations a USB stick might be best. This could for example be the case when the attacker has access to a target's work station and can place the stick in an envelope with the target's name on it to trick them into plugging it in. In other situations it might be ideal to modify a keyboard and build the malicious hardware into it, or to alter a charging port in a public space. For many stealthy situations, the O.MG cable can be perfect because it seems so harmless. With a clear goal, enough information about the target's circumstance and the hardware question decided, the payload may be developed. While a basic script might already exist, it is very likely that it has to be modified to fit the specific situation. For example if it will need adjustments if it includes commands that require administrative rights or absolute file paths, or it might profit from adapting delays depending on the speed of the target's machine. \\
 Once the setup is complete, the payload has to be injected at the right time and place. The O.MG cable's remote trigger and geofencing features come in handy for this purpose. To avoid detection of and interference with the payload it is best to execute it when no one is watching or such a fast fashion that it is over before it is registered to have taken place.\\
 Naturally these steps influence each other or may overlap. This flow diagram servers as a visualization of the process:
 
-\includepdf[pages=1]{attack_flowchart.pdf}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{visuals/attack_dev.png}
+    \caption{Development process for a payload}
+\end{figure}
 
 
 
@@ -105,7 +110,7 @@ Naturally these steps influence each other or may overlap. This flow diagram ser
 
 \subsection{Introduction}
 
-This section will give an overview over the methodologies of the developed payloads and defenses. Their implementations will be discussed in the next Section \ref{Implementation}. \\
+This section will give an overview over the methodologies of the developed payloads and defences. Their implementations will be discussed in the next Section \ref{Implementation}. \\
 
 
 \subsection{Payloads}
@@ -123,18 +128,25 @@ Fewer detail problems of this sort are caused by the CLI approach. It allows for
 Drawbacks of this method might be that it can be more easily detected since it is such unexpected user behaviour. An average user would not use the command line to send an email, if they ever even use a command line. Therefore actions like opening the Windows run window and starting powershell.exe can easily be flagged as suspicious behaviour. Another obstacle might be user priviledges. Some commands require admin access, which is easy to deal with if the target is the admin user on the computer (simply deal with the popup) but requires the admin user's password if the target is not admin themselves. 
 
 
-The following sections will present these payloads, with their respective ATT&CK categories in parentheses:
+The following sections will present these payloads, with their respective ATT\&CK categories in parentheses:
 \begin{enumerate}
     \item Register Email Forwarding (Collection)
-    \item Disable Windows Event Logging (Defense Evasion)
-    \item Extract SSH Hashes (Defense Evasion)
-    \item Extract Private Key Files (Defense Evasion)
-    \item Steal Web Session Cookies (Defense Evasion)
+    \item Disable Windows Event Logging (defence Evasion)
+    \item Extract SSH Hashes (defence Evasion)
+    \item Extract Private Key Files (defence Evasion)
+    \item Steal Web Session Cookies (defence Evasion)
     \item Iteratively End Processes (Impact)
     \item Schedule Processes (Persistence)
 \end{enumerate}
 
-\includepdf[pages=1]{payloads_treediagram.pdf}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{visuals/payloads_overview.png}
+    \caption{Overview over the featured payloads in terms of ATT\&CK categories}
+\end{figure}
+
+
 
 
 
@@ -147,13 +159,13 @@ For reconnaissance it is always interesting to spy on the emails a (potential) v
 \subsubsection{Disable Windows Event Logging}
 
 Windows event logging is a built in windows functionality that does logs the system's activity. There are multiple event types; Error, Warning, Information, Success Audit, Failure Audit logged in multiple different categories; System Log, Application Log, Security, Setup and Forwarded Events. 
-Some actions on a system might raise errors, warnings or other types of events in one of the logs, indicating that an attack has taken or is taking place. In order to avoid being found out during or after the attack, a hacker might therefore attempt to disable the logging to leave as few traces as possible. For this reason, this kind of attack is classified under the ATT\&CK Defense Evasion category. \\
+Some actions on a system might raise errors, warnings or other types of events in one of the logs, indicating that an attack has taken or is taking place. In order to avoid being found out during or after the attack, a hacker might therefore attempt to disable the logging to leave as few traces as possible. For this reason, this kind of attack is classified under the ATT\&CK defence Evasion category. \\
 There are multiple ways to disable windows event logging, in the implementation chapter, an UI option and a CLI option will be presented. 
 
 
 \subsubsection{Extract SSH hashes}
 
-The Security Account Registry (SAM) on windows stores passwords as hashes. These hashes can be exfiltrated and used to spoof the victim. This is used as a technique in the Att\&ck lateral movement and Defense Evasion techniques \cite{UseAlternateAuthentication}. \\
+The Security Account Registry (SAM) on windows stores passwords as hashes. These hashes can be exfiltrated and used to spoof the victim. This is used as a technique in the Att\&ck lateral movement and defence Evasion techniques \cite{UseAlternateAuthentication}. \\
 Access to these files is restricted to admin privileges on Windows, so this payload also has to contain and admin access step.
 
 \subsubsection{Extract Private Key Files}
@@ -175,6 +187,44 @@ One underexplored area of the Mitre Att\&ck framework is the persistance categor
 \subsubsection{Schedule Processes}
 
 One under explored area of the Mitre Att\&ck framework is persistence. This Payloads aims to achieve persistence by registering processes that will run iteratively depending on a customizable trigger. This processes can be anything from recon scripts, to other persistence payloads, like for example the end processes payload \ref{Iteratively End Processes} which could run in the background if set up like this.
+
+\subsection{defence}
+
+In order to be able to defend against the existing and especially new threats introduced in this paper, this section will give an overview of the architecture for the announced defence framework.
+
+In general, these approaches are possible; ... and of course, it is always possible to partially or completely restrict access of USB devices to a host. As happens so often in cyber-security spaces, this is a question of usability vs security. Restricting access and thereby usage of USB devices necessarily also diminishes or extinguishes the additional value they might bring. The framework in this paper consists of components that try to minimize the impact of usability. The framework should be a support and not an additional vice on the users to ensure that it is not circumvented because it is too tedious to work with.  
+...
+
+To make sure the detection rate for malicious USB devices is as high as possible, this framework attempts to apply multiple distinct approaches which are introduced in the following;
+\begin{enumerate}
+    \item Rate Limiting
+    \item Packet Analysis
+    \item Random Text Input prompts upon Enumeration
+    \item Time Series Anomaly detection for packets in the enumeration phase
+    \item possibly more?
+\end{enumerate}
+
+
+\subsubsection{Rate Limiting}
+
+
+
+\subsubsection{Packet Analysis}
+
+As inspired by other works that analyzed USB packets, for example, USBSafe \cite{kharrazUSBESAFEEndPointSolution2019} this paper seeks to find differences in USB Packets that were produced in the enumeration phase of an O.MG cable versus those produced by various unmodified external keyboards. In contrast, USBSafe focused on the timing, types and payloads of the packets throughout an entire interaction and did not specifically compare two types of USB devices, instead, they trained a model that distinguishes between known (safe) patterns in USB traffic and unknown (malicious) patterns. 
+
+To this end, the following keyboards were examined:
+\begin{enumerate}
+    \item TODO!!
+\end{enumerate}
+
+USB packets can be captured with an application called Wireshark which is an application that captures general traffic, mainly web traffic. The open-source software 'USBPcap' integrates seamlessly with Wireshark to additionally allow the capture of USB packets.  USBPcap can also be run via the command line separately from Wireshark, however, the visualization in the Wireshark application makes analysis easier. 
+For this capture, Wireshark 4.2.5-x64 in combination with USBPcap version 1.5.4.0 was used on a Windows Surface 4 Laptop with Windows Home version 23H2. Wireshark has to be run as administrator to make the capture of USB traffic possible. Additionally, Bluetooth should be turned off, since the Bluetooth traffic is captured where it is translated from the receiver to USB and can thereby clutter the capture.    
+TODO; add the files in the appendix??
+Packets were compared starting at packet 13 until the enumeration was complete. Packets 1 through 12 recorded the traffic native to the Windows device, such as the enumeration of the built-in video camera. 
+The results of this comparison are presented in section \ref{TODO} of chapter \ref{Results}.
+
+
 
 
 \section{Defense Program}
@@ -326,9 +376,9 @@ from a non malicious keyboard through it's USB traffic. In theory, it does not h
 
 \section{Conlcusion}
 
-This chapter introduced the underlying architecture and methodology for both the attack side through the newly developed payloads as well as the defense by introducing the developed defense system and its components. 
-It started off by introducing the MITRE ATT\&CK framework and some of it's 14 categories. Then, it mapped the payloads form the official open source O.MG payloads repository on GitHub onto those categories to find out which techniques were already present and available and which ones were underrepresented or missing completely. After that, it introduced the architecture of a few payloads that would fill some of those gaps using the techniques that had not yet been featured in the source code. \\
-In a second section of the chapter, the thesis outlined a defense framework that featured ... [TODO]
+This chapter introduced the underlying architecture and methodology for both the attack side through the newly developed payloads as well as the defence by introducing the developed defence system and its components. 
+It started off by introducing the MITRE ATT\&CK framework and some of it's 14 categories. Then, it mapped the payloads from the official open source O.MG payloads repository on GitHub onto those categories to find out which techniques were already present and available and which ones were underrepresented or missing completely. After that, it introduced the architecture of a few payloads that would fill some of those gaps using the techniques that had not yet been featured in the source code. \\
+In a second section of the chapter, the thesis outlined a defence framework that featured ... [TODO]
 
 
 
