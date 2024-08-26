@@ -327,7 +327,7 @@ For the script to run all the dependencies mentioned in chapter \ref{Methodology
 
 
 
-\subsection{Usage and Command Line Argumets} \label{Usage and Command Line Argumets}
+\subsection{Usage and Command Line Arguments} \label{Usage and Command Line Argumets}
 
 The script can be started via the command line and supports some customization. Specifically, it is required to input the absolute path to the USBDeview installation. For the rate limiter functionality as discussed in section \ref{Methodology} there are a few options the user can choose from. They can opt out of rate limiting and only make use of the enumeration analysis the script provides by using the -r flag, or they can choose between either option for monitoring the rate of input. For Time Windows Analysis the flag \verb|--time-window| has to be set that takes as argument a string of "(time window in seconds, allowed keystrokes)". The other option is choosing interarrival time analysis with the \verb|--interarrival_time| and the specifications "(interarrival time, average over n keystrokes)". \\
 These inputs are checked at the beginning of the script to ensure that all necessary information is available and no impossible combination of flags is set. For example, it should not be possible to set both 
@@ -336,7 +336,7 @@ These inputs are checked at the beginning of the script to ensure that all neces
 This is the help message for the detection script:
 
  TODO; adjust this to the final version
-\begin{lstlisting}
+\begin{lstlisting}[caption={Defense Script Help Message },captionpos=b]
   -h, --help            show this help message and exit
   -i INTERARRIVAL_TIME, --interarrival_time INTERARRIVAL_TIME
                         Rate limiting by average of interarrival time format:(time,keystrokes). Recommended: (0.05, 3)
@@ -352,7 +352,7 @@ This is the help message for the detection script:
 
 The two data classes used for this implementation are \verb|USBDevice| and \verb|Frame| in order to be able to track the connected USB devices and the Frames that come in.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={USBDevice class definition},captionpos=b]
 class USBDevice:
     def __init__(self, source):
         self.name = ""
@@ -373,7 +373,7 @@ class USBDevice:
 
 The USB device class stores identity information like name, PID, VID, interfaces, the source port as assigned by the host and a list of registered keypresses from that source.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Frame class definition},captionpos=b]
 class Frame:
     def __init__(self):
         self.header = None
@@ -421,7 +421,7 @@ After these filters have been applied, the actual rate-limiting mechanism can be
 
 
 First, we will look at the number of keystrokes within a time window. The two variable factors for this are the number of keypresses 'n' that will define the threshold and the time 's' over which they are measured. 
-Upon the arrival of a frame that was identified as a keystroke and passed all the previously mentioned filters, a timestamp is recorded. This timestamp is then added to a queue attribute on the USBDevice class, called \verb|registered_keypresses|. Next, the script iterates through the timestamps in that queue and removes all the timestamps that happened before the considered time window: if timestamp < current time - time window t it is removed from the queue. If the length of the cleaned queue is above the threshold for keystrokes n, then more than the allowed number of keystrokes were recorded within the time window and the rate limit is exceeded. The \verb|disable_device()| method is called to disconnect the device and make sure the suspected attack is interrupted. The effectiveness of different values for n and s will be discussed in section TODO. 
+Upon the arrival of a frame that was identified as a keystroke and passed all the previously mentioned filters, a timestamp is recorded. This timestamp is then added to a queue attribute on the USBDevice class, called \verb|registered_keypresses|. Next, the script iterates through the timestamps in that queue and removes all the timestamps that happened before the considered time window: if timestamp < current time - time window t it is removed from the queue. If the length of the cleaned queue is above the threshold for keystrokes n, then more than the allowed number of keystrokes were recorded within the time window and the rate limit is exceeded. The \verb|disable_device()| method is called to disconnect the device and make sure the suspected attack is interrupted. The effectiveness of different values for n and s will be discussed in section \ref{Evaluation}. 
 
 
 The other option is to look at the time interarrival time, which is the time that elapses between keystrokes. The user can set a suspicious threshold by choosing the interarrival time t and the number of keystrokes n to average it over. Similarly to the time window approach, all entries in the queue are first checked for their relevance, only the the n latest keystrokes should remain in the queue. Then the elapsed time is calculated by subtracting the first relevant timestamp from the last relevant timestamp. Finally, this value is divided by n to get the average over the desired number of keystrokes a value which is checked against the minimum interarrival time set by the user. If the input is faster than expected the device is disconnected by calling the \verb|disable_device()| method. 
