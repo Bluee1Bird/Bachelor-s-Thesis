@@ -89,7 +89,7 @@ Another common shortcut for closing focused windows is \textit{Alt F4}.
 \begin{lstlisting}[caption={Close a window with ALT F4}, captionpos=b]
 ALT F4
 \end{lstlisting}
-\\
+
 
 An option specifically for closing PowerShell windows is the shell keyword '\textit{exit}' :
 \begin{lstlisting} [caption={Close PowerShell with the \textit{exit} keyword}, captionpos=b]
@@ -102,7 +102,7 @@ STRINGLN exit
 When gathering some information from the victim's laptop, the question arises of how this information can be forwarded to the attacker. While there is a myriad of possibilities for this, ranging from physical attraction to Bluetooth, to basic IP packets, this thesis will elaborate on two ways to send information using a connection to an internet network.
 One option to send out information is to send it to an already-established server. The O.MG repository on GitHub features examples for sending intel to a Dropbox or discord server, sending via Teams, Email and more. The advantage of sending information over a frequently used communication channel like this is that it looks very inconspicuous and will probably pass through firewalls.\\
 One example of sending an Extensible Markup Language (XML) object to a discord webhook given the webhook address and the content for the XML object:
-\begin{lstlisting}[caption=Send an XML object through PowerShell}, captionpos=b]
+\begin{lstlisting}[caption={Send an XML object through PowerShell}, captionpos=b]
 STRING $xmlObject = [xml]$xmlContent
 ENTER
 STRING $Payload = @{xml = $xmlObject}
@@ -435,16 +435,4 @@ The other option is to look at the time interarrival time, which is the time tha
 \section{Conclusion}
 
 This chapter discussed the implementation of the architectures introduced in chapter \ref{Methodology}. First it described the development of the novel payloads, detailing the approaches to their implementations and their basic repeating components. The second part of the chapter described the implementation of the the counterpart to the first part; the defense script. It described the mechansims behind the packet analysis and information extraction as well as the detail of the implementation for the two rate limiting methods; time window analysis and interarrival time analysis. In addition, it explained what external software the script depends on and how it can be used via command line. The next chapter will assess the effectiveness of the discussed implementations in achieving their goals.   
-
-
-
-
-
-
-
-
-
-
-
-
 
