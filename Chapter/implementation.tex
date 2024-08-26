@@ -330,8 +330,8 @@ For the script to run all the dependencies mentioned in chapter \ref{Methodology
 \subsection{Usage and Command Line Argumets} \label{Usage and Command Line Argumets}
 
 The script can be started via the command line and supports some customization. Specifically, it is required to input the absolute path to the USBDeview installation. For the rate limiter functionality as discussed in section \ref{Methodology} there are a few options the user can choose from. They can opt out of rate limiting and only make use of the enumeration analysis the script provides by using the -r flag, or they can choose between either option for monitoring the rate of input. For Time Windows Analysis the flag \verb|--time-window| has to be set that takes as argument a string of "(time window in seconds, allowed keystrokes)". The other option is choosing interarrival time analysis with the \verb|--interarrival_time| and the specifications "(interarrival time, average over n keystrokes)". \\
-These inputs are checked at the beginning of the script to ensure that every necessary information is available and no impossible combination of flags is set. For example, it should not be possible to set both 
-\verb|--interarrival_time --time-window| or to set either without their specifications. 
+These inputs are checked at the beginning of the script to ensure that all necessary information is available and no impossible combination of flags is set. For example, it should not be possible to set both 
+\verb|--interarrival_time --time-window| or to set either without their numerical specifications. 
 
 This is the help message for the detection script:
 
@@ -371,7 +371,7 @@ class USBDevice:
         self.registered_keypresses = deque()
 \end{lstlisting}
 
-The USB device class stores identity information like name, PID, VID, interfaces, the source port as assigned by the host and a list of registered keypress from that source.
+The USB device class stores identity information like name, PID, VID, interfaces, the source port as assigned by the host and a list of registered keypresses from that source.
 
 \begin{lstlisting}
 class Frame:
@@ -386,14 +386,14 @@ class Frame:
         self.isInterfaceDescriptorPacket: bool = False
 \end{lstlisting}
 
-Important information for frames are their source and destination, what kind of function the frame has (URB\_function), whether it is a device descriptor packet or an interface descriptor packet, and if available, the HID data it carries.
+Key attributes of frames include their source and destination, their function (URB\_function), whether they are device descriptor packets or interface descriptor packets, and any HID data they may carry, if available.
 
 
 \subsection{Packet Capturing}
 
 USB packets are continuously captured using Tshark \cite{TsharkTsharkDev}, the Wireshark command line application as described in section \ref{Traffic Capture}. To this end, a subprocess is started that runs the Tshark command in a terminal and relays the output to the program.
-For the Tshark command, the Wireshark capture interface index is required. Unfortunately, that interface does not always have the same index. Therefore, the method \verb|getTsharkUSBInterface()| runs another subprocess with the command \verb|tshark -D| first to extract the index for the interface USBPacp2.  \\
-After this index is acquired, Tshark is run with \verb|tshark -i {index} -V|. \verb|-V| stands for verbose output which is important to get all the information available.  
+For the Tshark command, the Wireshark capture interface index is required. Unfortunately, that interface does not always have the same index. Therefore, the method \verb|getTsharkUSBInterface()| runs another subprocess with the command \verb|tshark -D| to extract the index for the interface for USBPacp2.  \\
+After this index is acquired, Tshark is run with \verb|tshark -i {index} -V|. The \verb|-V| flag (--verbose) ensures verbose output which is important to get all available information.  
 
 
 \subsection{Information Extraction}
