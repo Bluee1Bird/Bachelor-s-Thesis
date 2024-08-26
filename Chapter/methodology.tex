@@ -14,31 +14,31 @@ It features 14 attack categories subdivided into 8-43 techniques. One example is
 
 \subsection{Evaluation of Existing Attack Scripts}
 
-In the following, this thesis will dive into some of those categories and techniques and evaluate whether they can be executed via keyboard injection and whether or not a script for it is available online. To this end, scripts from the official open-source GitHub page for O.MG \cite{Hak5Omgpayloads2024} by Hak5 are examined. \\
-It is important to note that the most basic attack that can be executed via Keyboard Injection is also the most versatile and one of the most dangerous ones. It is a simple script that downloads any malware of your choice, which as a result, could execute any software-based attack.  
+In the following, this thesis will dive into some of those categories and techniques and evaluate whether that can be executed via keyboard injection and whether or not a script for it is available online. To this end, scripts from the official open source GitHub page for O.MG \cite{Hak5Omgpayloads2024} by Hak5 are examined. \\
+It is important to note that the most basic attack that can be executed via Keyboard Injection is also the most versatile and one of the most dangerous ones. It is a simple script that downloads any malware of your choice, which as a result, could execute any software based attack.  
 This analysis will therefore focus on whether an attack has been implemented solely as keyboard injection and will not feature payloads that include downloading additional malware. It will not examine all 14 categories and instead highlight the most relevant ones. 
 
 \subsubsection{Reconnaissance}
 
-Reconnaissance involves actively or passively gathering information, often used before an attack. The gathered information can be used to inform the planning of a bigger attack or to further additional reconnaissance efforts. This category includes scanning network traffic and gathering host information such as name, IP, operating system, hardware information, credentials, email, or information about their network. Phishing also belongs into this category, and purchasing information about the system from legal or illegal data brokers as well as gathering publicly available information, for example from the internet \cite{MITREATTCK}.
+Reconnaissance invovles actively or passively gathering information, often used before an attack. The gathered information can be used to inform the planning of a bigger attack or to further additional reconnaissance efforts. This category includes scanning of network traffic, gathering host information such as name, IP, operating system, hardware information, credentials, email, or information about their network. Phishing also belongs into this category, and purchasing information about the system from legal or illegal data brokers as well as gathering publicly available information, for example from the internet \cite{MITREATTCK}.
 
-This is a field in which keyboard injection can cause considerable damage. There exist many exfiltration scripts, that download sensitive files, exfiltrate passwords, network information, and device information, or social engineer the user to enter sensitive data on malicious sites. 
-For example, \verb|Harvester_OF_SORROW| \cite{OmgpayloadsPayloadsLibrary} exfiltrates login information from Firefox on Windows 10. Other examples for password extraction are \verb|SudoSnatch| \cite{OmgpayloadsPayloadsLibrary} which exfiltrates sudo passwords, and \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}which steals WLAN passwords and sends them to the attacker via a discord webhook. 
+This is a field in which keyboard injection can make considerable damage. There exist many exfiltration scripts, that download sensitive files, exfiltrate passwords, network information, and device information, or social engineer the user to enter sensitive data on malicious sites. 
+For example, \verb|Harvester_OF_SORROW| \cite{OmgpayloadsPayloadsLibrary} exfiltrates login information from Firefox on Windows 10. Other examples for password extraction are \verb|SudoSnatch| \cite{OmgpayloadsPayloadsLibrary} which exfiltrates sudo passwords, and \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}which steals wlan passwords and sends them to the attacker via a discord webhook. 
 \verb|OMGLogger| \cite{OmgpayloadsPayloadsLibrary} leverages the logging capabilities of the O.MG cable and sends the keystrokes live to the attacker's server. \\
-The collection on GitHub has an entire folder for exfiltration scripts, that can find data on a network, a printer, a target's Spotify, Powershell history, log files, MySql history, Firefox browser cookies, photos, or send periodic screenshots. \\
-Similarly, there is a folder with scripts on phishing  \cite{OmgpayloadsPayloadsLibrary}, however, it is less extensive. The three payloads build on the idea of faking a pop-up, where they prompt the user to (re)submit login data and all require some previous installations to be present and they are all written for Linux. \\
+The collection on GitHub has an entire folder for exfiltration scripts, that can find data on a network, a printer, a target's Spotify, Powershell history, log files, MySql history, FireFox browser cookies, fotos, or send periodic screenshots. \\
+Similarly there is a folder with scripts on phishing  \cite{OmgpayloadsPayloadsLibrary}, however, it is less extensive. The three payloads build on the idea of faking a pop up, where they prompt the user to (re)submit login data and all require some previous installations to be present and they are all written for Linux. \\
 The recon folder contains a script that does device recon using a Powershell script that can be hosted on a server and then downloaded via keyboard injection. 
 
 
 \subsubsection{Resource Development}
 
-Resource Development is what a malicious actor does when they want to establish resources that can help them mount an attack, such as getting access to specific email addresses, system accounts, or target systems. It also includes setting up servers or bots that could be used for an attack or creating and cultivating accounts to build a persona \cite{MITREATTCK}.\\
-Resource Development is an important part of injection attacks in conjunction with data exfiltration. This is apparent in payloads like \verb|ExfiltrateLinuxLogFiles| \cite{OmgpayloadsPayloadsLibrary}, \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}, \verb|-OMG-Credz-Plz| \cite{OmgpayloadsPayloadsLibrary}, or \verb|OMG-AwarenessTraining| \cite{OmgpayloadsPayloadsLibrary} which send the exfiltrated data to a webhook, discord webhook, or Dropbox. Any kind of passing on of data from the O.MG cable to the attacker will require some resources for communication. 
+Resource Development is what a malicious actor does when they want to establish resources that can help them mount an attack, such as getting access to specific email addresses, system accounts, or target system. It also includes setting up servers or bots that could be used for an attack or creating and cultivating accounts to build a persona \cite{MITREATTCK}.\\
+Resource Development is an important part of injection attacks in conjunction with data exfiltration. This is apparent in payloads like \verb|ExfiltrateLinuxLogFiles| \cite{OmgpayloadsPayloadsLibrary}, \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}, \verb|-OMG-Credz-Plz| \cite{OmgpayloadsPayloadsLibrary}, or \verb|OMG-AwarenessTraining| \cite{OmgpayloadsPayloadsLibrary} which send the exfiltrated data to a webhook, discord webhook, or Dropbox. Any kind of passing on of data from the O.MG cable to the attacker will require some resource for communication. 
 
 
 \subsubsection{Initial Access}
 
-Initial Access is about an adversary trying to get access to a target network\cite{MITREATTCK}. One example of how this can be done with keyboard injection are \verb|revshell_windows| and \verb|win_winrm-backdoor| \cite{OmgpayloadsPayloadsLibrary}; payloads that establish remote control over a targeted computer. Through that access point, the network can be infiltrated. Similarly, passwords for networks can be exfiltrated from a target computer using \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}.\\
+Initial Access is about an adversary trying to get access to a target network\cite{MITREATTCK}. One example for how this can be done with keyboard injection are \verb|revshell_windows| and \verb|win_winrm-backdoor| \cite{OmgpayloadsPayloadsLibrary}; payloads that establish remote control over a targeted computer. Through that access point, the network can be infiltrated. Similarly, passwords for networks can be exfiltrated from a target computer using \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}.\\
 
 \subsubsection{Execution}
 
@@ -149,7 +149,7 @@ The following sections will present these payloads, with their respective ATT\&C
 
 \subsubsection{Register Email Forwarding}
 
-For reconnaissance it is always interesting to spy on the emails a (potential) victim might receive, to see personal, maybe sensitive information, or possibly also to get access to two factor authentication codes in order to be able to log in somewhere. One simple way to achieve this, which is not yet present in the official O.MG payload repository, is by registering email forwarding. 
+For reconnaissance it is always interesting to spy on the emails a (potential) victim might receive, to see personal, maybe sensitive information, or possibly also to get access to two-factor authentication codes in order to be able to log in somewhere. One simple way to achieve this, which is not yet present in the official O.MG payload repository, is by registering email forwarding. 
 
 
 
