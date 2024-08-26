@@ -318,7 +318,33 @@ DELAY 200
 \section{Defence}
 
 In this section, the implementation of the defence strategies outlined in chapter \ref{Methodology} will be discussed. First, the classes will be presented, the USB capture process, then how the packets are analyzed and lastly the rate limiter implementation. 
-This implementation is written in python for no good reason other than that that's what i know to use for data analyis and i did not want to spend the time for this thesis on learning c# (TODO find better reason)
+This implementation is written in python for no good reason other than that that's what i know to use for data analyis and i did not want to spend the time for this thesis on learning c\# (TODO find better reason)
+
+\subsection{Dependencies}
+
+For the script to run it is impotrant that all the dependencies mentioned in chapter \ref{Methodology} are installed and working. Those are namely Wireshark with tshark, USBPcap and USBDeview. For USBDeview specifically it is important that the file location is known such that it can be passed to the script as described in sub section \ref{Usage and Command Line Argumets}.
+
+
+
+\subsection{Usage and Command Line Argumets} \label{Usage and Command Line Argumets}
+
+The script can be started via command line and supports some customization. Specifically it is required to input the absolute path to the USBdeview installation. For the rate limiter functionality as discused in section \ref{Methodology} there are a few options the user can choose from. They can opt out of rate limiting and only make use of the enumeration analysis the script provides by using the -r flag, or they can choose between either option for monitoring the rate of input. For Time Windows Analysis the flag \verb|--time-window| has to be set that takes as argument a string of "(time window in seconds, allowed keystrokes)". The other option is chosing interarrival time anaylsis with the \verb|--interarrival_time| and the specifications "(interarrival time, average over n keystrokes)". \\
+These inputs are checked at the beginning of the script to ensure that every necessary information is available and no impossible combination of flags is set. For example it should not be possible to set both 
+\verb|--interarrival_time --time-window| or to set either without their specifications. 
+
+This is the help message for the detection script:
+
+ TODO; adjust this to final version
+\begin{lstlisting}
+  -h, --help            show this help message and exit
+  -i INTERARRIVAL_TIME, --interarrival_time INTERARRIVAL_TIME
+                        Rate limiting by average of interarrival time format:(time,keystrokes). Recommended: (0.05, 3)
+  -t TIME_WINDOW, --time_window TIME_WINDOW
+                        Rate limiting by checking keystrokes in a time window format: (time,keystrokes). Recommended:
+                        (3, 40)
+  -r, --rate_limiter    Option to disable the rate limiter function, enabled by default.
+\end{lstlisting}
+
 
 
 \subsection{Classes}
@@ -369,11 +395,42 @@ For the Tshark command, the Wireshark capture interface index is required. Unfor
 After this index is acquired, Tshark is run with \verb|tshark -i {index} -V|. \verb|-V| stands for verbose output which is important to get all the information available.  
 
 
-\subsection{Packet Analysis}
+\subsection{Information Extraction}
 
-The output relayed from tshark is analyzed line by line. The beginning of a frame is marked by a substring matching the pattern \verb|Frame\s\d+:|. Similarly, if the line features source, destination, URB function, bString, HID Data, or Configuration bmAttributes in the line, their values are extracted and stored for that current frame. If the line contains the substrings 
+The output relayed from tshark is analyzed line by line. The beginning of a frame is marked by a substring matching the pattern \verb|Frame\s\d+:|. With this knowledge, every line after can be addedas the content to the Frame and analyzed for information it's context. \\ 
+All information is extracted from the stream of output lines like this by searching for the keywords that announce the information. After finding a frame line for instance, the program will check the line for the presence of another marker like "[Source:" or "[Destination:". The bmAttributes, who specify the remote wakeup and self power attribtues of a USB device, bString, which is the device's name, HID data (for example which key was pressed) and the function (URB FUnction) of the frame are found the same way. After their extraction, they are stored in the a Frame instance stored under the current_frame variable. \\
+If the frame is a device or an interface descriptor it is detected through the presence of the respective substring. However, because the information that is stored in these frames is distributed over multiple lines that have not yet arrived by the time the 'INTERFACE DESCRIPTOR' or 'DEVICE DESCRIPTOR'  lines are examined. For this reason, the Frame has to be analyzed again, once all of its content has arrived. So, when a new Frame starts the program first checks whether the previous frame was marked as interface or device descriptor and if that is the case, it will call a helper method to extract the missing information. \\
+Per the definition of the USB protocol, a device descriptor frame will be sent before an interface descriptor or any of the other device specific information like bStrings and bmAttributes. A device descriptor packet therefore triggers a device registration, wherein a new USBDevice instance is created and populated with the device descriptor information, such as the vendor and product ID, the device class and the device protocol. The Device is then stored in a device dictionary to make sure it can be accessed again to store and retrieve information. The unique key for every device in this dictionary is the bus and port where it is registered on the host. These are assigned at the very beginning of the enumeration process before any communication takes place, as described in section \ref{TheUSBProtocol}. Since the host too has to have a reliable way to keep all devices apart, no two devices ever share a source. The same machanism happens for interface descriptors, except that their source device should already be registred in the program and can be retrieved by the source of the frame. The interface class and interface protocol are extracted from the frame content and added to the USBDevice class.\\
+Devices also have to be deregistered when they disconnect in order to not mess up the index of connected devices. A disconnect can be detected by the URB function \verb|URB_FUNCTION_ABORT_PIPE|. If it is detected, the source from which it is sent is deleted from the dictionary of registered devices.
 
-In either case, the line is added to the content attribute of the current frame to allow further extraction in the cases of device descriptors, interface descriptors or device disconnect packets.
+
+\subsection{O.MG detection}
+
+As previously mentioned in section \ref{Packet Analysis}, O.MG cables have a unique enumeration fingerprint. Although they register as Keyboards, they do not support remote wakeup, one crucial feature of human interface devices. On top of that, O.MG cables have a default for their bStrings which is 'O.MG' which although it can be changed, is still a clear indicator for the O.MG cable if it appears. Either information is extracted as soon as it appears in a packet. The substring ""Configuration bmAttributes" triggers the extraction of the remote wakeup and self power properties of a device. At the end of that process is a function call to a method called CheckForOMG. Since the bmAttributes are specified after the device and interface desriptors, extensive information about the source USB device should already be present. Should the program conclude, that although the device is registered as a keyboard it does not support remote wakeup, a disconnection process is triggered. The same happens, if the bString of the device is set to 'O.MG'. \\
+Disabling or disconnecting a USB device is done with the help of the USBDeview utility \cite{ViewAnyInstalled}. USBDeview is a small utility developed by Nir Sofer. It is mainly a tool that provides a UI overview over all connected USB devices and their information. On top of that it is also allows disconnecting USB devices as identified by their product and vendor IDs. This functionality can be used in a terminal. The program therefore starts a subprocess, switched to the directory where USBDeview is stored and issues the disconnect command with the PID and VID as stored in the USBDevice class.
+
+\subsection{Rate Limiter}
+
+Everytime a key is pressed, a total of four frames are exchanged between the host and the keyboard. The first frame is generated by the keyboard and signals to the device that a key is pressed. This is followed by the host with an acknowledgement. The third frame is the key release package signalling that the pressed key was also released. If the key had been pressed continuously, the amount of characters that would have been generated would be deducted from the time between the first keypress package and the release package. The release package can be distinguished from the key press package by the content of it's HID data which is not the HID code for any possible input but instead just 16 zeroes. \\
+These keypress packages are of URB function type \verb|URB_FUNCTION_BULK_OR_INTERRUPT_TRANSFER|. Every time such a package is received, the rate limiter method is called. However, packages with this function are also sent during the enumeration process, where they do not signal keyboard input. In order to distuinguish those packets, the HID payload for the frames has to be known. Bulk or interrupt transfer packages from the enumeration process do not carry HID data. For this reason, the rate limiter method can only be called once the entire package and its optional HID payload was received. This puts this check in the same category as the device descriptor and interface frames that are evaluated after the entire frame was received. Once the program detects the start of a new frame when the previous one was a urb funtion bulk or interrupt frame, it calls the rate limiter method. That method first ignores all packages that are sent from the host or any devices that are not registered as a keyboard. Then it ignores all packages of that UBR type that do not have HID data, these kinds of packages are part of the enumeration process and do not represent actual keyboard input. Lastly it will also disregard keypress release packages. \\
+
+After these filters have been applied, the actual rate limiting mechanism can begin. As discussed in section \ref{Methodology} Methodology multiple appraoches are possible, each with their own pros and cons. \\
+
+
+First we will look at the number of keystrokes over time. The two variable factors for this are the number of keypresses n that will define the threshold and the time s over which they are measured. 
+Upon the arrival of a Frame that was identified as a keystroke and passed all the previously mentioned filters, a timestampt is recorded. This timestampt is then added to a queue attribute on the USBDevice class, called \verb|registered_keypresses|. Next the script iterates through the timestamps in that queue and removes all the keypresses that happened before the consdidered time window: if timestmap < current time - time window t it is removed from the queue. If the length of the queue is above the threshold for keystrokes n after all the entries have been checked for relevance, then more than the allowed number of keystrokes were recorded within the time window and the rate limit is exceeded. The \verb|disable_device()| method is called to disconnect the device and make sure suspected attack is interrupted. The effectiveness of different values for n and s will be discussed in section TODO. 
+
+
+The other option is to look at the time interarrival time, which is the time that elapses between keystrokes. Options here the interarrival time t set as suspicious threshold and the number of keystrokes n it is averaged over. Similarly to the time window approach, all entries in the queue are first checked for their relevance, on the the n latest keystrokes should remain in the queue. Then the elapsed time is calculated by subtracting the first relevant timestampt from the last relevant timestamp. Finally this value is divided by n to get the average over the desired number of keystrokes a value which is checked against the minimum interarrival time set by the user. If the input is faster than expected the device is disconnected by calling the \verb|disable_device()| method. 
+
+
+(A similar implementation was done by \cite{neunerUSBlockBlockingUSBBased2018} who described a detection mechanism for what they call Rapid Keypress event sequence (RES). A RES would be detected every time a sequence s of consecutive keypresses that arrive with an interarrival time less than a defined threshold between each of them. They concluded that t should be at 0.02 with an s of 3 to allow some averaging while ruling out false negatives for short attacks. TODO maybe put this into eval? )
+
+
+
+
+
+
 
 
 
