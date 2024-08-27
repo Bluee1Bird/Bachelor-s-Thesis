@@ -60,9 +60,30 @@ Conclusively it can be said that this payload works very well when applying the 
 
 \subsubsection{Extract SSH hashes}
 
-GOAL:\\
-PREREQUISITES:
+GOAL:\\ Extract SSH hashes from a default storage on a device and send them to a command and control (C\&C) server.
+PREREQUISITES: Windows 11 and a running C\&C server, in this case Dropbox. Administrator rights are required
 
+Since this script is working with defaults Windows settings, there are not a lot of challenges to be expected. On the MSI laptop it worked flawlessly, after some adjusting on the delays for opening the terminal. Since administrator access is not a given on the custom gaming computer, the payload had to be adjusted to include the administrator password. With this adjustment it was able to run successfully. The best results were again on the Windows Surface Latop, where it executed flawlessly. 
+
+
+\subsubsection{{Extract Private Key Files}
+
+GOAL: Find files that have extensions commonly used for private key files and send them to a C\&C server. \\
+PREREQUISITES: Knowledge about the file system
+
+This payload needs an entry point, some path to a local folder from which it can search through the files. If this is chosen too generally there may be permission issues. The entry point also heavily influences the time this payload takes to execute since it determines how many files the loop has to go through. The longer the script takes to execute, the easier it is to spot. \\
+Since this payload does not require admin privileges one challenging step of opening an admin terminal is eliminated. One unexpected factor for errors is the validity length for the Dropbox access token. It expires within 4 hours. This means that in between saving the payload to the cable and the execution not more than those few hours may elapse. It was not a problem to adjust the payload for manual testing, however, this eliminates a C\&C server like Dropbox for boot scripts with unknown execution times. \\
+
+The payload generally worked well on the Microsoft Surface laptop; it's file system is known and an adequate entry point could be chosen. The execution was a success on the MSI laptop and the custom desktop as well. These good results could be due to the fact that apart from starting PowerShell, there are no loading times that can throw off the execution of the payload. Even waiting for the loop to end was not a problem; although delays were not adjusted to the expected search time, PowerShell still recognized and executed the command after finishing the loop.
+
+
+
+\subsubsection{Steal Web Session Cookies}
+
+GOAL: Figure out the default browser of the target, then steal the websession cookies. \\
+PREREQUISITES: None
+
+This payload is pretty straight forward and simple. Nevertheless, challenges for it's flexibility arise. Executing the payload on the Microsoft Surface device went expectedly well, however, upon execution on the MSI laptop an error message occurred. Although the default browser on both of these devices is set to Firefox, their versions differ. While the Surface latptop had a slightly older version ( 129.0.1) the MSI laptop ran on the newest release, 129.0.2. This reflects in the path to their cookies file. The .2 version stores the cookies at '\\Mozilla\\Firefox\\Profiles\\dpsymep9.default-release\\cookies.sqlite'  while .1 stores them at 'Mozilla\\Firefox\\Profiles\\umva4gfp.default-release\\cookies.sqlite' . This unexpected little, but crucial detail, derailed the exectuion of the script on the MSI laptop. The chrome cookies path seems to be more robust; it worked without adjustments after changing the default for the MSI laptop to Chrome. 
 
 
 GOAL:\\
