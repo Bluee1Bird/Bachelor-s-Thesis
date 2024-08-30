@@ -205,7 +205,7 @@ Such an attack first has to determine which browser should be targeted. For this
 
 \subsubsection{Iteratively End Processes} \label{Iteratively End Processes}
 
-One underexplored area of the Mitre Att\&ck framework is the category 'Persistence'. This payload aims to achieve persistence by iteratively ending running processes. There are two modes to the payload; white- and blacklist. It can easily be modified to only end a predefined set of applications when it detects them as running, or it can end everything except for a predefined set of applications. This modification can be done depending on the goal of the attacker. 
+One underexplored area of the Mitre Att\&ck framework is the category 'Persistence'. This payload aims to achieve persistence by iteratively ending running processes. From all the running processes, the payload should stop those defined on a whitelist.
 
 
 \subsubsection{Schedule Processes}

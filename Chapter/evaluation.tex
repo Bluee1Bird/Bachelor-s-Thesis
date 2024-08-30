@@ -80,19 +80,47 @@ The payload generally worked well on the Microsoft Surface laptop; it's file sys
 
 \subsubsection{Steal Web Session Cookies}
 
-GOAL: Figure out the default browser of the target, then steal the websession cookies. \\
+GOAL: Figure out the target's default browser, then steal the web session cookies. \\
 PREREQUISITES: None
 
-This payload is pretty straight forward and simple. Nevertheless, challenges for it's flexibility arise. Executing the payload on the Microsoft Surface device went expectedly well, however, upon execution on the MSI laptop an error message occurred. Although the default browser on both of these devices is set to Firefox, their versions differ. While the Surface latptop had a slightly older version ( 129.0.1) the MSI laptop ran on the newest release, 129.0.2. This reflects in the path to their cookies file. The .2 version stores the cookies at '\\Mozilla\\Firefox\\Profiles\\dpsymep9.default-release\\cookies.sqlite'  while .1 stores them at 'Mozilla\\Firefox\\Profiles\\umva4gfp.default-release\\cookies.sqlite' . This unexpected little, but crucial detail, derailed the exectuion of the script on the MSI laptop. The chrome cookies path seems to be more robust; it worked without adjustments after changing the default for the MSI laptop to Chrome. 
+This payload is pretty straightforward. Nevertheless, challenges for its flexibility arise. Executing the payload on the Microsoft Surface device went expectedly well, however, upon execution on the MSI laptop an error message occurred. Although the default browser on both of these devices is set to Firefox, their versions differ. While the Surface laptop had a slightly older version ( 129.0.1) the MSI laptop ran on the newest release, 129.0.2. This is reflected in the path to their cookies file. The .2 version stores the cookies at '\\Mozilla\\Firefox\\Profiles\\dpsymep9.default-release\\cookies.sqlite'  while .1 stores them at 'Mozilla\\Firefox\\Profiles\\umva4gfp.default-release\\cookies.sqlite' . This unexpected little, but crucial detail, derailed the execution of the script on the MSI laptop. The Chrome cookies path seems to be more robust; it worked without adjustments after changing the default for the MSI laptop to Chrome. The same problem occurred with the execution on the custom-built computer; it is running Firefox version wkbzpjnx. A more flexible version of this payload would check for versions and insert them as variables in the string, similar to how it does it with the Username environment variable. 
+
+Apart from the version issues this payload performed well and as expected. 
 
 
-GOAL:\\
-PREREQUISITES:
+\subsubsection{Iteratively End Processes}
+
+
+
+GOAL: Certain processes should be ended as soon as they are detected as running. In whitelist mode all programmes except a few should be ended when they are detected as running.\\
+PREREQUISITES: Windows 11, no admin rights required
+
+
+This payload worked surprisingly well on the very first try. The MSI laptop posed no problem at all, not even delay adjustments had to be made. It worked as expected, terminating processes from the whitelist. As expected, the payload executed well on the Microsoft Surface, and on the desktop as well. \\
+The only aspect that posed some problems was the minimizing of the window after the execution of the payload. It seemed that the 'ALT SPACE' keypresses were not registered by the device and were not acted upon. On every device, the window was simply left open creating an obvious drawback for this payload; it is easy to spot and stop manually. 
+
+\subsubsection{Schedule Processes}
+
+GOAL: Schedule a job on the target device to execute a chosen script at a chosen time. \\
+PREREQUISITES: Windows, administrator privileges
+
+In order to test this payload, I set the script of the job to be \verb|Get-Process|. Execution on the MSI laptop worked well. However, it is important to note, that executing the payload twice back to back will generate an error because the process 'ProcessJob' is already registered. To confirm the registration of the job, the Windows Scheduler Application can be used. The process should be listed under task scheduler library -> Microsoft -> Windows -> PowerShell -> ScheduledJobs. \\
+Execution on the Surface Laptop went without issues as well. A challenge for the desktop is that the payload requires admin privileges. After adjusting the payload to enter the admin password, the payload executed perfectly. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{visuals/task_scheduler_MSI.jpeg}
+    \caption{Task Scheduler on the MSI laptop after successful registration of the Job}
+    \label{fig:TaskScheduler}
+\end{figure}
+
+
 
 
 \subsection{Specific Usecases}
 
 gaming
+through a hub
 
 \subsection{Windows 10 Home}
 

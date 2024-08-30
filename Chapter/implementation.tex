@@ -284,8 +284,8 @@ STRINGLN cd "C:\Users\maaik\AppData\Local\Google\Chrome\User Data\Default\Networ
 
 \subsubsection{Iteratively End Processes}
 
-Finding and ending processes on Windows can be done with PowerShell and without admin privileges. The payload first defines the black- or whitelist, depending on the mode of the attack, then gets a list of all running processes. Next, it will either end all running processes that are also on the whitelist, or it will end every running process that is not on the blacklist. \\
-This is an excerpt of the whitelist mode;
+Finding and ending processes on Windows can be done with PowerShell and without admin privileges. The payload first defines the whitelist then gets a list of all running processes. Next, it will check for every running process whether it is on the whitelist and end it if that condition is fulfilled. \\
+This is an excerpt of the payload;
 
 \begin{lstlisting}[caption={Exceprt: a PowerShell looop that ends a running process if it is contained in the whitelist}, captionpos=b]
 STRINGLN $criticalProcessesWhitelist = @( "firefox" , "ROCCAT_Swarm_Monitor", "Notepad" )
