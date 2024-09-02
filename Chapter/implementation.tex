@@ -100,10 +100,10 @@ STRINGLN exit
 \subsubsection{Sending Recon to a Server}
 
 When gathering some information from the victim's laptop, the question arises of how this information can be forwarded to the attacker. While there is a myriad of possibilities for this, ranging from physical attraction to Bluetooth, to basic IP packets, this thesis will elaborate on two ways to send information using a connection to an internet network.
-One option to send out information is to send it to an already-established server. The O.MG repository on GitHub features examples for sending intel to a Dropbox or discord server, sending via Teams, Email and more. The advantage of sending information over a frequently used communication channel like this is that it looks very inconspicuous and will probably pass through firewalls.\\
+One option to send out information is to send it to an already-established server. The O.MG repository on GitHub features examples for sending intel to a Dropbox or Discord server, sending via Teams, Email and more. The advantage of sending information over a frequently used communication channel like this is that it looks very inconspicuous and will probably pass through firewalls.\\
 
 
-One example of sending an Extensible Markup Language (XML) object to a discord webhook given the webhook address and the content for the XML object:
+One example of sending an Extensible Markup Language (XML) object to a Discord webhook given the webhook address and the content for the XML object:
 \begin{lstlisting}[caption={Send an XML object through PowerShell}, captionpos=b]
 STRING $xmlObject = [xml]$xmlContent
 ENTER
@@ -336,12 +336,12 @@ DELAY 200
 
 \section{Defence}
 
-In this section, the implementation of the defence strategies outlined in chapter \ref{Methodology} will be discussed. First, the classes will be presented, the USB capture process, then how the packets are analyzed and lastly the rate limiter implementation. 
+In this section, the implementation of the defence strategies outlined in Chapter \ref{Methodology} will be discussed. First, the classes will be presented, the USB capture process, then how the packets are analyzed and lastly the rate limiter implementation. 
 This implementation is written in Python.
 
 \subsection{Dependencies}
 
-For the script to run all the dependencies mentioned in chapter \ref{Methodology} must be installed and working. Those are namely Wireshark with Tshark, USBPcap and USBDeview. For USBDeview specifically, the file location must be known such that it can be passed to the script as described in sub-section \ref{Usage and Command Line Argumets}.
+For the script to run all the dependencies mentioned in Chapter \ref{Methodology} must be installed and working. Those are namely Wireshark with Tshark, USBPcap and USBDeview. For USBDeview specifically, the file location must be known such that it can be passed to the script as described in sub-section \ref{Usage and Command Line Argumets}.
 
 
 
@@ -426,7 +426,7 @@ Devices also have to be deregistered when they disconnect in order to not mess u
 
 \subsection{O.MG detection}
 
-As previously mentioned in section \ref{Packet Analysis}, O.MG cables have a unique enumeration fingerprint. Although they register as keyboards, they do not support remote wakeup, a crucial feature of human interface devices. On top of that, O.MG cables have a default for their bStrings: 'O.MG'. Although it can be changed, is still a clear indicator for the O.MG cable if it appears. Either information is extracted as soon as it appears in a packet. The substring "Configuration bmAttributes" triggers the extraction of the remote wakeup and self-power properties of a device. At the end of that process is a function call to a method called check\_for\_omg(). Since the bmAttributes are specified after the device and interface descriptors, extensive information about the source USB device should already be present. Should the program conclude that although the device is registered as a keyboard it does not support remote wakeup, a disconnection process is triggered. The same happens if the bString of the device is set to 'O.MG'. \\
+As previously mentioned in Section \ref{Packet Analysis}, O.MG cables have a unique enumeration fingerprint. Although they register as keyboards, they do not support remote wakeup, a crucial feature of human interface devices. On top of that, O.MG cables have a default for their bStrings: 'O.MG'. Although it can be changed, is still a clear indicator for the O.MG cable if it appears. Either information is extracted as soon as it appears in a packet. The substring "Configuration bmAttributes" triggers the extraction of the remote wakeup and self-power properties of a device. At the end of that process is a function call to a method called check\_for\_omg(). Since the bmAttributes are specified after the device and interface descriptors, extensive information about the source USB device should already be present. Should the program conclude that although the device is registered as a keyboard it does not support remote wakeup, a disconnection process is triggered. The same happens if the bString of the device is set to 'O.MG'. \\
 Disabling or disconnecting a USB device is done with the help of the USBDeview utility \cite{ViewAnyInstalled}. USBDeview is a small utility developed by Nir Sofer. It is mainly a tool that provides a UI overview of all connected USB devices and their information. In addition, it allows disconnecting USB devices as identified by their product and vendor IDs. This functionality can be used in a terminal. When prompted for a disconnect the deregister\_device() method starts a subprocess, switches to the directory where USBDeview is stored and issues the disconnect command with the PID and VID as taken from the USBDevice instance.
 
 \subsection{Rate Limiter}
@@ -439,18 +439,15 @@ After these filters have been applied, the actual rate-limiting mechanism can be
 
 
 First, we will look at the number of keystrokes within a time window. The two variable factors for this are the number of keypresses 'n' that will define the threshold and the time 's' over which they are measured. 
-Upon the arrival of a frame that was identified as a keystroke and passed all the previously mentioned filters, a timestamp is recorded. This timestamp is then added to a queue attribute on the USBDevice class, called \verb|registered_keypresses|. Next, the script iterates through the timestamps in that queue and removes all the timestamps that happened before the considered time window: if timestamp < current time - time window t it is removed from the queue. If the length of the cleaned queue is above the threshold for keystrokes n, then more than the allowed number of keystrokes were recorded within the time window and the rate limit is exceeded. The \verb|disable_device()| method is called to disconnect the device and make sure the suspected attack is interrupted. The effectiveness of different values for n and s will be discussed in section \ref{Evaluation}. 
+Upon the arrival of a frame that was identified as a keystroke and passed all the previously mentioned filters, a timestamp is recorded. This timestamp is then added to a queue attribute on the USBDevice class, called \verb|registered_keypresses|. Next, the script iterates through the timestamps in that queue and removes all the timestamps that happened before the considered time window: if timestamp < current time - time window t it is removed from the queue. If the length of the cleaned queue is above the threshold for keystrokes n, then more than the allowed number of keystrokes were recorded within the time window and the rate limit is exceeded. The \verb|disable_device()| method is called to disconnect the device and make sure the suspected attack is interrupted. The effectiveness of different values for n and s will be discussed in Section \ref{Evaluation}. 
 
 
 The other option is to look at the time interarrival time, which is the time that elapses between keystrokes. The user can set a suspicious threshold by choosing the interarrival time t and the number of keystrokes n to average it over. Similarly to the time window approach, all entries in the queue are first checked for their relevance, only the the n latest keystrokes should remain in the queue. Then the elapsed time is calculated by subtracting the first relevant timestamp from the last relevant timestamp. Finally, this value is divided by n to get the average over the desired number of keystrokes a value which is checked against the minimum interarrival time set by the user. If the input is faster than expected the device is disconnected by calling the \verb|disable_device()| method. 
-
-
-(A similar implementation was done by \cite{neunerUSBlockBlockingUSBBased2018} who described a detection mechanism for what they call Rapid Keypress event sequence (RES). A RES would be detected every time a sequence s of consecutive keypresses arrive with an interarrival time less than a defined threshold between each of them. They concluded that t should be at 0.02 with an s of 3 to allow some averaging while ruling out false negatives for short attacks. TODO maybe put this into eval? )
 
 
 
 
 \section{Conclusion}
 
-This chapter discussed the implementation of the architectures introduced in chapter \ref{Methodology}. First, it described the development of the novel payloads, detailing the approaches to their implementations and their basic repeating components. The second part of the chapter describes the implementation of the counterpart to the first part; the defence script. It described the mechanisms behind the packet analysis and information extraction as well as the detail of the implementation for the two rate-limiting methods; time window analysis and interarrival time analysis. In addition, it explained what external software the script depends on and how it can be used via the command line. The next chapter will assess the effectiveness of the discussed implementations in achieving their goals.   
+This chapter discussed the implementation of the architectures introduced in Chapter \ref{Methodology}. First, it described the development of the novel payloads, detailing the approaches to their implementations and their basic repeating components. The second part of the chapter describes the implementation of the counterpart to the first part; the defence script. It described the mechanisms behind the packet analysis and information extraction as well as the detail of the implementation for the two rate-limiting methods; time window analysis and interarrival time analysis. In addition, it explained what external software the script depends on and how it can be used via the command line. The next chapter will assess the effectiveness of the discussed implementations in achieving their goals.   
 

@@ -2,13 +2,13 @@
 
 \section{Introduction}
 
-This chapter will describe the methodologies for the developed payloads and the defence against them. It will start with the attacker's point of view, examine existing attacks in the context of the MITRE Att\&ck framework, introduce new attacks and then move on to the defence system.
+This chapter describes the methodologies for the developed payloads and the defence against them. It will start with the attacker's point of view, examine existing attacks in the context of the MITRE Att\&ck framework, introduce new attacks and then move on to the defence system.
 
 
 \section{The MITRE Att\&ck Framework}
 
-ATT\&CK~\cite{MITREATTCK} is an openly accessible knowledge base of adversary tactics and techniques developed by the security advisor firm MITRE~\cite{WhoWeAre}. It can be used for threat modelling and to get a general overview of the different types of cyber-attacks that happen in the world.
-It features 14 attack categories subdivided into 8-43 techniques. One example is the category Reconnaissance itself is subdivided into Active Scanning,
+ATT\&CK~\cite{MITREATTCK} is an openly accessible knowledge base of adversary tactics and techniques developed by the security advisor firm MITRE~\cite{WhoWeAre}. It can be used for threat modelling and to get a general overview of the different types of cyber-attacks.
+It features 14 attack categories subdivided into 8-43 techniques. One example is the category Reconnaissance which is subdivided into Active Scanning,
 Gather Victim Host Information, Gather Victim Identity Information, Gather Victim Network Information, Gather Victim Org Information,
 Phishing for Information, Search Closed Sources, Search Open Technical Databases, Search Open Websites/Domains and Search Victim Owned Websites.
 
@@ -16,11 +16,11 @@ Phishing for Information, Search Closed Sources, Search Open Technical Databases
 
 \subsection{Evaluation of Existing Attack Scripts}
 
-In the following, this thesis will dive into some of those categories and techniques and evaluate whether that can be executed via keyboard injection
+In the following, this thesis will dive into some of those categories and techniques and evaluate whether those attacks can be executed via keyboard injection
 and whether or not a script for it is available online in the official O.MG Payloads GitHub repository \cite{Hak5Omgpayloads2024}. \\
 It is important to note that the most basic attack that can be executed via Keyboard Injection is also the most versatile and one of the most dangerous ones.
 It is a simple script that downloads any malware of your choice, which as a result, could execute any software-based attack.
-This analysis will therefore focus on whether an attack has been implemented solely as keyboard injection and will not feature payloads that include downloading additional malware.
+This analysis will therefore focus on whether an attack has been implemented solely based on keyboard injection and will not feature payloads that include downloading additional malware.
 It will not examine all 14 categories and instead highlight the most relevant ones.
 
 \subsubsection{Reconnaissance}
@@ -28,13 +28,13 @@ It will not examine all 14 categories and instead highlight the most relevant on
 Reconnaissance involves actively or passively gathering information. The gathered information can be used to inform the planning
 of a bigger attack or to further additional reconnaissance efforts. This category includes scanning network traffic and gathering host information such as name, IP, operating system,
 hardware information, credentials, email, or information about a network. Phishing also belongs into this category, as does the purchase of information about the system from legal
-or illegal data brokers or gathering publicly available information, for example from the internet \cite{MITREATTCK}.
+or illegal data brokers or gathering publicly available information, for example from the Internet \cite{MITREATTCK}.
 
 This is a field in which keyboard injection can cause considerable damage. There exist many exfiltration scripts, that download sensitive files, exfiltrate passwords,
 gather network and device information, or social engineer the user to enter sensitive data on malicious sites.
 For example, \verb|Harvester_OF_SORROW| \cite{OmgpayloadsPayloadsLibrary} exfiltrates login information from Firefox on Windows 10. Other examples for password extraction are \verb|SudoSnatch| \cite{OmgpayloadsPayloadsLibrary} which exfiltrates sudo passwords, and \verb|WLAN-Windows-Passwords| \cite{OmgpayloadsPayloadsLibrary}which steals WLAN passwords and sends them to the attacker via a Discord webhook. 
 \verb|OMGLogger| \cite{OmgpayloadsPayloadsLibrary} which leverages the logging capabilities of the O.MG cable and sends the keystrokes live to the attacker's server. \\
-The collection on GitHub has an entire folder for exfiltration scripts, that can find data on a network, a printer, a target's Spotify, PowerShell history, log files, MySql history,
+The collection on GitHub contains a folder dedicated to exfiltration scripts, that can find data on a network, a printer, a target's Spotify, PowerShell history, log files, MySQL history,
 Firefox browser cookies, photos, or send periodic screenshots. \\
 Similarly, there is a folder with scripts on phishing  \cite{OmgpayloadsPayloadsLibrary}, however, it is less extensive. The three payloads build on the idea of faking a pop-up,
 where the user is prompted to (re)submit login data. Each of the existing phishing scripts has software prerequisites and is written for Linux. \\
@@ -74,7 +74,7 @@ This category also includes attack scheduling, which can easily be achieved by D
 \subsubsection{Privilege Escalation}
 
 Privilege Escalation includes techniques used to gain higher-level permissions in a network or system, by bypassing account controls, abusing elevation control mechanisms, accessing or stealing tokens, account manipulation, or breaking out of containers to gain access to a host \cite{MITREATTCK}. \\
-Account manipulation can easily be achieved with the correct recon. Especially if the login credentials of an administrator can be logged \verb|OMGLogger| \cite{OmgpayloadsPayloadsLibrary} or are stored somewhere in the system \verb|SudoSnatch| \cite{OmgpayloadsPayloadsLibrary}, \verb|Everything-Password-Stealer| \cite{OmgpayloadsPayloadsLibrary}.
+Account manipulation can easily be achieved with the correct recon. Especially if the login credentials of an administrator can be logged (for example with \verb|OMGLogger| \cite{OmgpayloadsPayloadsLibrary} )or are stored somewhere in the system, such as in: \verb|SudoSnatch| \cite{OmgpayloadsPayloadsLibrary}, \verb|Everything-Password-Stealer| \cite{OmgpayloadsPayloadsLibrary}.
 
 \subsubsection{Credential Access}
 
@@ -100,39 +100,43 @@ The techniques in the category Impact are not widely represented in the GitHub r
 However, it has been shown by \cite{lawalFacilitatingCyberenabledFraud2022} that it is possible to change, meaning manipulate, data on a target's
 computer without leaving traces of an attack, thereby framing the computer's user(s) for the data change. It has therefore also been shown to be possible to use the O.MG cable for Impact.
 
-\subsection{Conclusions drawn from existing Payloads}KK
+\subsection{Conclusions drawn from existing Payloads}
 
-From the examples above it is apparent, that a wide variety of attacks and techniques are available with DuckyScript and a malicious USB device. Many sections of the ATT\&CK model play a role and are part of various scripts for the O.MG cable that already exist. The most prevalent ATT\&CK categories from the available code base are focused on the collection and exfiltration of data and the gaining of access to systems and networks.The 'Impact' category is scarcely covered by existing payloads, suggesting significant room for development in this area.
-Differences in coverage might be explained through the nature of the attack type; for some attacks, it is simply not effective to use keyboard injection. Take for example 'Supply Chain Compromise' (ID T1195) which describes supply chain attacks for which products are manipulated before their usage. Although it would theoretically be possible to manipulate for example firmware of a computer chip, there may be much more effective vectors than a keyboard injection attack; it simply requires too much very detailed intelligence. Attacks for which the O.MG cable is more useful, like simple attacks utilizing PowerShell commands, or pranks like playing a video, sounds, or changing background pictures are more common. 
+From the examples above it is apparent, that a wide variety of attacks and techniques are available with DuckyScript and a malicious USB device. Many sections of the ATT\&CK model play a role and are part of various scripts for the O.MG cable that already exist. The most prevalent ATT\&CK categories from the available code base are focused on the collection and exfiltration of data and the infiltration of systems and networks. The ``impact'' category is scarcely covered by existing payloads, suggesting significant room for development in this area.
+Differences in coverage might be explained through the nature of the attack type; for some attacks, it is simply not effective to use keyboard injection. Take for example 'Supply Chain Compromise' (ID T1195) which describes supply chain attacks for which products are manipulated before their usage. Although it would theoretically be possible to manipulate, for example, firmware of a computer chip, there may be much more effective vectors than a keyboard injection attack; it simply requires too much very detailed intelligence. Attacks for which the O.MG cable is more useful, like simple attacks utilizing PowerShell commands, or pranks like playing a video, sounds, or changing background pictures are more common. 
 Another aspect to consider is that this repository is not designed to comply with the Mitre ATT\&CK framework and has only 36 contributors. Open-source programmers might simply make payloads for topics that interest them or that are in their area of expertise. Their goal is not to cover as many attacks as possible. One last consideration concerning the payloads in the repository is content moderation. It is possible that some payloads are not tolerated on the repository. However, this theory is unlikely since the entire premise of Hak5 is to make the dangers and attacks of the black hat world as widely known as possible to be able to defend against them.\\  
 In line with this sentiment, this thesis will develop novel payloads in the following chapters. Splitting the enormous spectrum of all possible cyber attacks into only 14 categories means that each of those categories still covers a large section of attack types, each of which in turn can have a multitude of aspects and implementations. For this reason, the payloads developed in this thesis cannot be exclusively attributed to 'Impact' or other underrepresented categories. Instead, they represent a collection of novel payloads associated with subtechniques from various categories. Each payload is inspired by a specific subtechnique and has not yet been included in the O.MG Payloads GitHub repository. These are realistic attacks where HID injection is possible, representing only a small selection of potential payloads still 'missing' from the repository if achieving full coverage were the goal.
 
-
+\newpage
 \section{Payload Architecture}
 
 
 This section will give an overview of the methodologies of the developed payloads and defences. Their implementations will be discussed in the next Section \ref{Implementation}. \\
 
+
 \subsection{Setup for an HID Injection Attack}
 
-When preparing for an HID injection attack, a malicious actor has to pay attention to the following 5 points;
-\begin{enumerate}
+When preparing for an HID injection attack, a malicious actor has to pay attention to the following 5 points:
+
+\begin{enumerate}[noitemsep]
     \item Target
-    \item Circumstance 
+    \item Circumstance
     \item Required Hardware
     \item Required Software
     \item Place and Timing
 \end{enumerate}
 
-The target is the most crucial element and specifically for injection attacks it is much more important \emph{what} the target is instead of who. The answer to this question determines which kind of attack is carried out and what the basic payload is. The question of \emph{who} is important in so far as it influences the next point: Circumstance. For example, a target that always locks their computer when stepping away from it creates the circumstance of a locked screen, in which case a password must be acquired and injected first. A circumstance is also the target's operating system, all the information about their hardware, the defence software that might be in place, and other behavioural information on the target, for example, their habits. Once these two factors have been sufficiently explored, the question of hardware comes up. What should be used? In some specific situations, a USB stick might be best. This could for example be the case when the attacker has access to a target's workstation and can place the stick in an envelope with the target's name on it to trick them into plugging it in. In other situations, it might be ideal to modify a keyboard and build the malicious hardware into it, or to alter a charging port in a public space. For many stealthy situations, the O.MG cable can be perfect because it seems so harmless. With a clear goal, enough information about the target's circumstance and the hardware question decided, the payload may be developed. While a basic script might already exist, it likely has to be modified to fit the specific situation. For example, it will need adjustments if it includes commands that require administrative rights or absolute file paths, or it might profit from adapting delays depending on the speed of the target's machine. \\
+
+The target is the most crucial element and specifically for injection attacks it is much more important \emph{what} the target is instead of who. The answer to this question determines which kind of attack is carried out and what the basic payload is. The question of \emph{who} is important in so far as it influences the next point: Circumstance. For example, a target that always locks their computer when stepping away from it creates the circumstance of a locked screen, in which case a password must be acquired and injected first. A circumstance is also the target's operating system, all the information about their hardware, the defence software that might be in place, and other behavioural information on the target, for example, their habits. Once these two factors have been sufficiently explored, the question of hardware comes up. What should be used? In some specific situations, a USB stick might be best. This could, for example, be the case when the attacker has access to a target's workstation and can place the stick in an envelope with the target's name on it to trick them into plugging it in. In other situations, it might be ideal to modify a keyboard and build the malicious hardware into it, or to alter a charging port in a public space. For many stealthy situations, the O.MG cable can be perfect because it seems so harmless. With a clear goal, enough information about the target's circumstance and the hardware question decided, the payload may be developed. While a basic script might already exist, it likely has to be modified to fit the specific situation. For example, it will need adjustments if it includes commands that require administrative rights or absolute file paths, or it might profit from adapting delays depending on the speed of the target's machine. \\
 Once the setup is complete, the payload has to be injected at the right time and place. The O.MG cable's remote trigger and geofencing features come in handy for this purpose. To avoid detection of and interference with the payload it is best to execute it when no one is watching or in such a fast fashion that it is over before it is noticed.\\
-Naturally, these steps influence each other or may overlap. This flow diagram serves as a visualization of the process:
+Naturally, these steps influence each other or may overlap. Figure \ref{Flow Diagram Development process payload} serves as a visualization of the process:
 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{visuals/attack_dev.png}
     \caption{Development process for a payload}
+    \label{Flow Diagram Development process payload}
 \end{figure}
 
 
@@ -145,7 +149,7 @@ Payloads follow a combination of two main strategies;
 \end{itemize}
 
 UI-based payloads follow the line of action a typical UI-focused user would take. For example, for sending an email, such a user might search for the email application icon on their desktop, click on it, then click on 'new Mail', fill out all the fields of the email form, and finally click on send. A payload that mimics this behaviour, would navigate in the same way, using the keyboard instead of the mouse. For instance, if the Outlook icon was the fourth icon on the taskbar, it could be selected with the Windows key + 3. The 'new Mail' button would be reached with 16 tabs or by using  Ctrl + N. All navigation can be done in this manner and therefore programmed as a O.MG script. \\
-Possible issues with this approach are obvious; How can you determine the location of Outlook on the taskbar? What if the computer is not connected to the internet and instead of opening Outlook an error message pops up? What if the computer is very slow and  Ctrl + N is sent before the application has fully loaded?  Some of these issues can be accounted for, Outlook for instance can also be opened by searching for it in the start menu, however, determining whether the application has loaded is impossible with the O.MG cable. The risk can be mitigated by implementing long delays between commands. Unfortunately, this creates time overhead which can be a big drawback in time-sensitive situations. \\
+Possible issues with this approach are obvious; How can you determine the location of Outlook on the taskbar? What if the computer is not connected to the Internet and instead of opening Outlook an error message pops up? What if the computer is very slow and  Ctrl + N is sent before the application has fully loaded?  Some of these issues can be accounted for, Outlook for instance can also be opened by searching for it in the start menu, however, determining whether the application has loaded is impossible with the O.MG cable. The risk can be mitigated by implementing long delays between commands. Unfortunately, this creates time overhead which can be a big drawback in time-sensitive situations. \\
 
 A command-line-based approach eliminates such problems. It allows for a cleaner and more concise execution of an attack. It simplifies many actions and is often more direct and therefore faster. Take the mail example again. PowerShell has a cmdlet that allows you to send emails directly. This cuts down nearly all navigation and the risks and time overhead that come with it. \\
 One drawback of this method is that it can more easily be identified as malicious activity. An average user would not use the command line to send an email let alone use it for anything else. Therefore actions like opening the Windows run window and starting powershell.exe can easily be flagged as suspicious behaviour. Another obstacle might be user privileges. Some commands require admin access, which is easy to deal with if the target is the admin user on the computer (simply deal with the popup) but requires the admin user's password if the target is not an administrator. 
@@ -157,7 +161,7 @@ This section provides an overview of the methodology for the newly developed pay
 \begin{enumerate}
     \item Register Email Forwarding (Collection)
     \item Disable Windows Event Logging (Defence Evasion)
-    \item Extract SSH Hashes (defence Evasion)
+    \item Extract SSH Hashes (Defence Evasion)
     \item Extract Private Key Files (Defence Evasion)
     \item Steal Web Session Cookies (Defence Evasion)
     \item Iteratively End Processes (Impact)
@@ -252,7 +256,7 @@ To this end, the following keyboards were examined:
 \end{enumerate}
 
 
-All USB communication is based on USB packets. As introduced in section \ref{TheUSBProtocol} a newly connected USB device will first establish itself with the host via a process called enumeration, during which the device's capabilities and services are communicated to the host. Once the device has completed enumeration following the USB protocol, it is ready for use.
+All USB communication is based on USB packets. As introduced in Section \ref{TheUSBProtocol} a newly connected USB device will first establish itself with the host via a process called enumeration, during which the device's capabilities and services are communicated to the host. Once the device has completed enumeration following the USB protocol, it is ready for use.
 All information transferred during and after this process, is packaged in USB packets, also called USB frames. The frames are then interpreted by the operating system (OS) to determine their meaning and the commands they contain.
 
 
@@ -387,7 +391,7 @@ from a non-malicious keyboard through its USB traffic. In theory, it does not ha
 
 \subsubsection{Remote Wakeup}
 
-Early in the enumeration, packet 16, the first big difference can be found: While all three external keyboards describe themselves to have the attribute 'REMOTE-WAKEUP' the O.MG cable specifies in this packet that it has 'NO REMOTE WAKEUP'. This difference can be seen in figure \ref{fig:packet16OMG} vs \ref{fig:packet16Ducky}. Keyboards with 'REMOTE WAKEUP' can send a signal to a 'sleeping' host that can wake it. This is common for human interface devices and can also be seen in mice that can be moved to wake a host. The O.MG cable, however, does not have that capability. When a payload is executed while the target is asleep, it is not woken up and therefore the input is not processed. This is a weird anomaly. A HID device, specifically a keyboard, should be able to wake the host. How else, would a desktop without built-in HID devices be woken up? An HID device without this functionality does not provide a basic feature of human-computer interaction and is therefore suspicious.
+Early in the enumeration, packet 16, the first big difference can be found: While all three external keyboards describe themselves to have the attribute 'REMOTE-WAKEUP' the O.MG cable specifies in this packet that it has 'NO REMOTE WAKEUP'. This difference can be seen in Figure \ref{fig:packet16OMG} vs \ref{fig:packet16Ducky}. Keyboards with 'REMOTE WAKEUP' can send a signal to a 'sleeping' host that can wake it. This is common for human interface devices and can also be seen in mice that can be moved to wake a host. The O.MG cable, however, does not have that capability. When a payload is executed while the target is asleep, it is not woken up and therefore the input is not processed. This is a weird anomaly. A HID device, specifically a keyboard, should be able to wake the host. How else, would a desktop without built-in HID devices be woken up? An HID device without this functionality does not provide a basic feature of human-computer interaction and is therefore suspicious.
 
 \begin{figure}[H]
     \centering
@@ -448,7 +452,7 @@ Due to some unrecognized packets and differences in enumeration order and the nu
 The biggest difference in the enumeration phase of these devices is in the number and type of packets, however, they still follow the same pattern, given by the USB protocol. More reliable patterns might be found with a much bigger sample size and statistical analysis. This is out of scope for this thesis but should be considered in future works. (TODO; add this to limitations). Generally speaking, the cable seems to be more efficient than the external keyboards while enumerating using the least amount of packets overall.
 Differences in descriptors, lengths and other metadata (like technical specifications) are non-conclusive for distinguishing the O.MG cable. 
 The most apparent and striking difference is that the O.MG cable is enumerated with the 'NO REMOTE WAKEUP' attribute, which sets it apart from all other keyboards.
-A defence system based on qualitative packet analysis can be built on this difference. It requires tracking the enumeration of all UBS devices that enumerate as keyboards and checking for their remote wakeup attribute. 
+A defence system based on qualitative packet analysis can be built on this difference. It requires tracking the enumeration of all USB devices that enumerate as keyboards and checking for their remote wakeup attribute. 
 
 It is not surprising that the enumeration of the O.MG cable does not differ more extremely from that of usual external keyboards. For the host, it looks like any other keyboard and functions like one too. Enumeration is therefore also the same. Additionally, the possible differences are restricted because of the established USB protocol.
 
@@ -456,17 +460,18 @@ It is important to note that while this thesis can only conclude the presence of
 
 \subsection{Rate Limiting}
 
-A second use of monitoring USB traffic is rate limiting. In addition to the qualitative analysis of enumeration traffic, this quantitative approach detects anomalies in keyboard input. O.MG cables can generate keystrokes at superhuman speeds; 890 keystrokes per second (keys/sec) for the elite version and 120 keystrokes per second for the basic version. This is way above what humans will ever be able to achieve. Currently, what is considered elite human typing is speeds around 200 to 300 words per minute (TODO you can see this with a youtube search ,how would i cite this?). Words per minute are calculated as the number of typed characters divided by 5 \cite{travisWhatWordsMinute2015}. 300 words per minute would therefore be 300x5 / 60 = 25 keystrokes per second, about a fifth of what a basic O.MG cable can achieve.
+A second use of monitoring USB traffic is rate limiting. In addition to the qualitative analysis of enumeration traffic, this quantitative approach detects anomalies in keyboard input. O.MG cables can generate keystrokes at superhuman speeds; 890 keystrokes per second (keys/sec) for the elite version and 120 keystrokes per second for the basic version. Currently, what is considered elite human typing are speeds around 200 to 300 words per minute \cite{mythicalrocketTYPING305WPM2023}. Words per minute are calculated as the number of typed characters divided by 5 \cite{travisWhatWordsMinute2015}. 300 words per minute would therefore be 300x5 / 60 = 25 keystrokes per second, about a fifth of what a basic O.MG cable can achieve.
 Keystrokes this fast are suspicious and indicate non-human input. A rate limiter should monitor all keyboard input and their speed. Once inputs surpass a threshold, the user should be alarmed and the device disconnected to stop the attack. \\
-The challenge in the design of such a rate limiter is the threshold. What should the threshold effectively be? A measurement like this requires a time window in which it is measured. The more data available, meaning the longer this measuring window, the more accurate the conclusion. However, this means more time for executing an attack; if the cable can input 120 keystrokes per second and a rate limiter has a window of one second, all payloads under 120 keystrokes are in theory able to circumvent the defence mechanism. In practice, these payloads would also wait times which will put them above an execution time of one second soon. 
+The challenge in the design of such a rate limiter is the threshold. What should the threshold effectively be? A measurement like this requires a time window in which it is measured. The greater the amount of available data, which implies a longer measurement window, the more accurate the conclusion. However, this means more time for executing an attack; if the cable can input 120 keystrokes per second and a rate limiter has a window of one second, all payloads under 120 keystrokes are theoretically able to circumvent the defence mechanism. In practice, these payloads would also need to introduce delays, pushing their total execution time beyond one second.
 Such delays would, however, also enable payloads longer than 120 keystrokes. To illustrate, pressing Windows Key + R opens the Run window, followed by a brief pause to allow the host to respond, before entering 'PowerShell' and pressing Enter. Assuming that the input + wait time would take one second, that is an input speed of 12 keys/sec half the speed of attainable human input. Simply delaying a payload after every 10 keystrokes circumvents a rate limiter that checks one-second intervals.\\
 Another possible approach is measuring the input time between individual keystrokes, which might become a problem for key combinations, gaming and spamming keys manually. 25 keystrokes per second comes out to a limit of 2.4 milliseconds interarrival time between keys for human input. All interarrival times below this threshold ought to be considered machine-generated. Similarly to the time window approach, this value could also be calculated as an average over a number of keystrokes. To circumvent it, many small delays are necessary between the individual keystrokes.\\
 Either method can be circumvented with delays, however, they can still be useful for catching less intricate attacks that are unprepared against rate limiting.
 Chapter \ref{Implementation} will explain how both approaches can be realized and their results will be discussed in chapter \ref{Evaluation}.
 
 
-To measure these speeds, the defence framework has to store the times at which HID input packets arrive for a specific keyboard. These packets have to be mapped to their sources, to ensure that the program knows which USB device it has to disconnect to stop the attack. This means that this kind of monitoring has to be connected to the packet analysis to not falsely be triggered by mouse or Bluetooth traffic. 
+To measure these speeds, the defence framework has to store the times at which HID input packets arrive for a specific keyboard. These packets have to be mapped to their sources, to ensure that the program knows which USB device it has to disconnect to stop the attack. This means this type of monitoring must be linked to packet analysis to avoid false triggers from mouse or Bluetooth traffic.
 
+Figure \ref{defense_flowchart} visualizes the defense processs as a flow chart; 
 
 \begin{figure}[H]
     \centering
