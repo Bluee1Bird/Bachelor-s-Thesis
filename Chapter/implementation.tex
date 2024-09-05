@@ -1,8 +1,8 @@
 \chapter{Implementation} \label{Implementation}
 
-\section{Attack}
+\section{Attack Implementation} \label{Attack Implementation}
 
-The first part of this chapter will describe the implementation of the payloads as outlined in Section \ref{methodology}. It introduces the reader to the attacker's point of few, which prerequisites their attacks have, what steps they have to take to develop them, and how exactly they can be implemented. 
+The first part of this chapter will describe the implementation of the payloads as outlined in Section \ref{methodology}. It introduces the reader to the attacker's point of view, which prerequisites their attacks have, what steps they have to take to develop them, and how exactly they can be implemented. 
 
 
 \subsection{Prerequisites}
@@ -99,7 +99,7 @@ STRINGLN exit
 
 \subsubsection{Sending Recon to a Server}
 
-When gathering some information from the victim's laptop, the question arises of how this information can be forwarded to the attacker. While there is a myriad of possibilities for this, ranging from physical attraction to Bluetooth, to basic IP packets, this thesis will elaborate on two ways to send information using a connection to an internet network.
+When gathering some information from the victim's laptop, the question arises of how this information can be forwarded to the attacker. While there is a myriad of possibilities for this, ranging from physical extraction to Bluetooth, to basic IP packets, this thesis will elaborate on two ways to send information from the target to a destination over the internet.
 One option to send out information is to send it to an already-established server. The O.MG repository on GitHub features examples for sending intel to a Dropbox or Discord server, sending via Teams, Email and more. The advantage of sending information over a frequently used communication channel like this is that it looks very inconspicuous and will probably pass through firewalls.\\
 
 
@@ -139,13 +139,13 @@ STRINGLN Invoke-RestMethod -Uri $uploadUrl -Headers $headers -Method Post -Body 
 
 \subsubsection{Register Email Forwarding}
 
-This payload is UI based since it is using Outlook. The difficulty of using the command line, or any tool really, is that it is designed to work without knowing the user's password. So using the most widely used email client, Outlook, is a natural approach. \\
-The payload opens Outlook through the Windows search menu, waits a considerable amount of time to let it start up and then navigates to the correct menu. This is a good example of how tricky it can be to use the UI approach; every menu option that is selected prompts a small load delay that has to be factored into the payload. Simply running all the navigation and selection without or with small delays only, can very swiftly derail the attack because the computer simply is not yet ready for the next command. \\
+This payload aims to user Outlook to register email forwarding to a foreign Email, it is therefore UI based. \\
+The payload opens Outlook through the Windows search menu, waits a few seconds to let it start up and then navigates to the correct menu. This is a good example of how tricky it can be to use the UI approach; every menu option that is selected prompts a small load delay that has to be factored into the payload. Simply running all the navigation and selection without or with small delays only, can very swiftly derail the attack because the computer simply is not yet ready for the next command. \\
 Once the payload has navigated to the correct menu, it can select the email for which the forwarding should be selected and where the emails should be forwarded. After that, it closes the menu. One important thing to know for this payload is that this action will prompt a little dialogue window in the top right corner when the application is opened for the first time after the settings change, reminding the user of the new forwarding. Therefore, to mask their steps, the attacker should restart Outlook to close the message such that the victim has less chance of discovering the attack. \\
 To illustrate this attack the following lines show some of the navigational steps:
 
 
-\begin{lstlisting} [caption={Example for navigation in a UI-based payload: exceprt from navigating to Outlook Menu to change the email forwarding settings}, captionpos=b]
+\begin{lstlisting} [caption={Example for navigation in a UI-based payload}, captionpos=b]
 DELAY 100
 DOWNARROW
 DELAY 100
@@ -186,7 +186,7 @@ This thesis presents two approaches to Windows event logging.
 \textbf{UI} 
 
 This implementation opens the Windows Event log application through the Windows Run window and navigates to the correct pane where it disables the logging.
-This approach mimics the action of a UI-focused user. As explained in Section \ref{methodology} this has some drawbacks attached to it, namely the risk of unexpected UI behaviour and irregular loading times. This payload snippet exemplifies the approach of adding long delays between commands to ensure all actions are executed to completion before triggering the next command.\\
+This approach mimics the action of a UI-focused user. As explained in Section \ref{Methodology} this has some drawbacks attached to it, namely the risk of unexpected UI behaviour and irregular loading times. This payload snippet exemplifies the approach of adding long delays between commands to ensure all actions are executed to completion before triggering the next command.\\
 The implementation of this payload contains a lot of tabs, due to the navigational nature. This is an excerpt for illustration:
 
 \begin{lstlisting}[caption={Exceprt: disable Windows Event Logging by navigating UI}, captionpos=b]
@@ -211,7 +211,7 @@ DELAY 2000
 
 \textbf{CLI}
 
-Using the Command Line for this attack does not have the same weaknesses as the UI approach. There is less chance for unexpected pop-ups and since it is much shorter and requires fewer steps, loading times don't have as big an impact. On the other hand, executing admin-level commands might pose a problem, as discussed in Section \ref{methodology} \\
+Using the Command Line for this attack does not have the same weaknesses as the UI approach. There is less chance for unexpected pop-ups and since it is much shorter and requires fewer steps, loading times don't have as big an impact. On the other hand, executing admin-level commands might pose a problem, as discussed in Section \ref{Methodology} \\
 
 Once the admin problem has been navigated, the payload is straightforward and consists of entering commands and closing the PowerShell window.
 The CLI approach is more reliable and concise, however, it requires admin privileges for the shell. This can be achieved through the WinX menu, where the admin shell is opened directly. Then the payload consists only of a few more lines:
@@ -285,9 +285,9 @@ STRINGLN cd "C:\Users\maaik\AppData\Local\Google\Chrome\User Data\Default\Networ
 \subsubsection{Iteratively End Processes}
 
 Finding and ending processes on Windows can be done with PowerShell and without admin privileges. The payload first defines the whitelist then gets a list of all running processes. Next, it will check for every running process whether it is on the whitelist and end it if that condition is fulfilled. \\
-This is an excerpt of the payload;
+Listing \ref{lst:excerpt_iteratively_end} presents an excerpt of this payload.
 
-\begin{lstlisting}[caption={Exceprt: a PowerShell looop that ends a running process if it is contained in the whitelist}, captionpos=b]
+\begin{lstlisting}[caption={Exceprt: a PowerShell looop that ends a running process if it is contained in the whitelist}, label={lst:excerpt_iteratively_end}, captionpos=b]
 STRINGLN $criticalProcessesWhitelist = @( "firefox" , "ROCCAT_Swarm_Monitor", "Notepad" )
 DELAY 5
 STRINGLN while("true"){
@@ -433,16 +433,12 @@ Disabling or disconnecting a USB device is done with the help of the USBDeview u
 
 Every time a key is pressed, a total of four frames are exchanged between the host and the keyboard. The first frame is generated by the keyboard and signals to the device that a key is pressed. This is followed by a message of acknowledgement from the host. The third frame is the key release package signalling that the pressed key was released sent by the keyboard. If the key is pressed continuously, the amount of characters is deducted from the time elapsed time between the keypress package and the release package. The release package can be distinguished from the key press package by the content of its HID data which is not the HID code for any possible input and instead contains 16 zeroes. \\
 These keypress packages are of URB function type \verb|URB_FUNCTION_BULK_OR_INTERRUPT_TRANSFER|. Every time such a package is acquired, the rate limiter method is called. However, packages of this URB function type are also sent during the enumeration process, where they don't signal keyboard input. In order to distinguish those packets, the HID payload for the frames has to be known. Bulk or interrupt transfer packages from the enumeration process do not carry HID data. For this reason, the rate limiter method can only be called once the entire package and its optional HID payload have been received. This puts this check in the same category as the device descriptor and interface frames that are evaluated after the entire frame has been received. When the program detects the start of a new frame following a previous URB function bulk or interrupt frame, it triggers the rate limiter method. \\
-The rate limiter method first filters out all packages that are sent from the host or any devices that are not registered as a keyboard. Then it ignores all packages of that do not carry HID data. Lastly, it will also disregard keypress release packages. \\
-
-After these filters have been applied, the actual rate-limiting mechanism can begin. As discussed in section \ref{Methodology} two main approaches are considered by this thesis. \\
-
-
+The rate limiter method first filters out all packages that are sent from the host or any devices that are not registered as a keyboard. Then it ignores all packages of that do not carry HID data. Lastly, it will also disregard keypress release packages. After these filters have been applied, the actual rate-limiting mechanism can begin. As discussed in section \ref{Methodology} two main approaches are considered by this thesis. \\
 First, we will look at the number of keystrokes within a time window. The two variable factors for this are the number of keypresses 'n' that will define the threshold and the time 's' over which they are measured. 
-Upon the arrival of a frame that was identified as a keystroke and passed all the previously mentioned filters, a timestamp is recorded. This timestamp is then added to a queue attribute on the USBDevice class, called \verb|registered_keypresses|. Next, the script iterates through the timestamps in that queue and removes all the timestamps that happened before the considered time window: if timestamp < current time - time window t it is removed from the queue. If the length of the cleaned queue is above the threshold for keystrokes n, then more than the allowed number of keystrokes were recorded within the time window and the rate limit is exceeded. The \verb|disable_device()| method is called to disconnect the device and make sure the suspected attack is interrupted. The effectiveness of different values for n and s will be discussed in Section \ref{Evaluation}. 
+Upon the arrival of a frame that was identified as a keystroke and passed all the previously mentioned filters, a timestamp is recorded. This timestamp is then added to a queue attribute on the USBDevice class, called \verb|registered_keypresses|. Next, the script iterates through the timestamps in that queue and removes all the timestamps that happened before the considered time window: if {timestamp < current time - time window t} it is removed from the queue. If the length of the cleaned queue is above the threshold for keystrokes n, then more than the allowed number of keystrokes were recorded within the time window and the rate limit is exceeded. The \verb|disable_device()| method is called to disconnect the device and make sure the suspected attack is interrupted. The effectiveness of different values for n and s will be discussed in Section \ref{Evaluation}. 
 
 
-The other option is to look at the time interarrival time, which is the time that elapses between keystrokes. The user can set a suspicious threshold by choosing the interarrival time t and the number of keystrokes n to average it over. Similarly to the time window approach, all entries in the queue are first checked for their relevance, only the the n latest keystrokes should remain in the queue. Then the elapsed time is calculated by subtracting the first relevant timestamp from the last relevant timestamp. Finally, this value is divided by n to get the average over the desired number of keystrokes a value which is checked against the minimum interarrival time set by the user. If the input is faster than expected the device is disconnected by calling the \verb|disable_device()| method. 
+The other option is to look at the time interarrival time, which is the time that elapses between keystrokes. The user can set a suspicious threshold by choosing the interarrival time t and the number of keystrokes n to average it over. Similarly to the time window approach, all entries in the queue are first checked for their relevance, only the n latest keystrokes should remain in the queue. Then the elapsed time is calculated by subtracting the first relevant timestamp from the last relevant timestamp. Finally, this value is divided by n to get the average over the desired number of keystrokes a value which is checked against the minimum interarrival time set by the user. If the input is faster than expected the device is disconnected by calling the \verb|disable_device()| method. 
 
 
 
