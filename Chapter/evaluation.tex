@@ -10,7 +10,6 @@ It is difficult to find an objective, quantitative measure of the effectiveness 
 \begin{itemize}
     \item Microsoft Surface Laptop 4, Processor: 11th Gen Intel(R) Core(TM) i7-1185G7 @3.00GHz, 16.0 GB installed RAM running Windows 11 Home version 23H2 (Used for payload development), without any additional Antivirus or Bad USB protection
     \item MSI Stealth 16 Studio A13V, Processor: 13th Gen Intel(R) Core(TM) i7-13700H @2.40 GHz, 32 GB installed RAM running Windows11 Home version 23H2, without any additional antivirus or BAD USB protection.
-    \item family home computer
     \item silvan?
 \end{itemize}
     
@@ -148,12 +147,12 @@ This defence is not expected to have any differences in performance between the 
 The following list explains the qualitative and quantitative progress every payload made.
 
 \begin{itemize}
-    \item  \emph{''a`` spam}: 23 ''a``s were written by the payload before it stopped. | 23/2670
-    \item  \emph{Register Email Forwarding:} The interruption happened after the Windows Search Menu was opened and 'outlook(new) typed in.  |  14/70 
+    \item  \emph{''a`` spam}: 243 ''a``s were written by the payload before it stopped. | 243/2670
+    \item  \emph{Register Email Forwarding:} The interruption happened after the Windows Search Menu was opened, without the payload being able to search for anything  |  1/70 
     \item  \emph{Disable Windows Event Logging CLI:}  Execution stopped at the pop-up to confirm user privileges. | 3/88
-    \item  \emph{Disable Windows Event Logging UI:} The attack reached the Windows run window and entered ''services.msc`` | 14/47
+    \item  \emph{Disable Windows Event Logging UI:} The attack reached the Windows run window without typing anything in | 2/47
     \item  \emph{Extract Hashes:}  The payload progressed until the pop-up window confirming user privileges. | 3/728 
-    \item  \emph{Extract Private Key Files:}  | Although no input was made, the payload did manage to open PowerShell. 14/1024
+    \item  \emph{Extract Private Key Files:}  | Although no input was made, the payload did manage to open PowerShell. 164/1024
     \item  \emph{Steal Websession Cookies:} The attack was stopped right after opening PowerShell. | 16/1157
     \item  \emph{Iteratively End Processes:} Again the cable was disconnected after opening PowerShell. | 16/386
     \item  \emph{Schedule Processes:} The disconnect happened during the User Account Control popup to confirm admin rights. | 3/209
@@ -165,17 +164,17 @@ The following list explains the qualitative and quantitative progress every payl
 \hline
 Name & EPA  \\
 \hline
-''a`` spam & 23/2670 \\
+''a`` spam & 243/2670 \\
 \hline
 Register Email Forwarding & 14/70 \\
 \hline
-Disable Windows Event Logging CLI & 3/88 \\
+Disable Windows Event Logging CLI & 3/94 \\
 \hline
-Disable Windows Event Logging UI & 14/47 \\
+Disable Windows Event Logging UI & 4/47 \\
 \hline
 Extract Hashes & 3/728  \\
 \hline
-Extract Private Key Files & 14/1024 \\
+Extract Private Key Files & 16/1024 \\
 \hline
 Steal Websession Cookies & 16/1157 \\
 \hline
@@ -188,7 +187,7 @@ Schedule Processes & 3/209 \\
 \label{table:EPA_results}
 \end{table}
 
-Every execution was interrupted successfully before it could make any impact, often before any of its intentions were clear. The effect of delays becomes obvious when comparing scripts that require admin rights with those that don't. That first group has many delays at the start of the script to open menus and wait for pop-ups. This gives the script a lot of time to react and disconnect the cable, hence the very low execution rates. The other group, on the other hand, uses the widows run menu to open PowerShell or Windows Services which is more input-heavy compared to the navigation of the first group. Start-heavy payloads are therefore able to input more keystrokes before the disconnect. In either case, the defence is a success, it detects the attack in 100\% of cases before anything can be executed. \\
+Every execution was interrupted successfully before it could make any impact, often before any of its intentions were clear. The effect of delays becomes obvious when comparing scripts that require admin rights with those that don't. That first group had many delays at the start of the script when opening menus and waiting for pop-ups. This gives the script a lot of time to react and disconnect the cable, hence the very low execution rates. The other group, on the other hand, uses the widows run menu to open PowerShell or Windows Services which is more input-heavy compared to the navigation of the first group. Start-heavy payloads are therefore able to input more keystrokes before the disconnect. In either case, the defence is a success, it detects the attack in 100\% of cases before anything can be executed. \\
 However, still, the execution rates are not zero and are proof of the latency of the defence script. The result of the spam payload shows, that it is possible to enter 23 consecutive keystrokes into a target machine before this defence would step in. Fortunately for possible victims, this is only a theoretical scenario; every payload in practice would have to waste time with delays and could not get near the 23 keystrokes, as visible in the results chart of Listing \ref{table:EPA_results}\
 
 
@@ -199,36 +198,81 @@ As a baseline, the speed of input for O.MG cables is determined. Theoretically, 
 Running the payload three times results in a consistent measured execution time of 43.0 seconds. This is equivalent to 69.0 keystrokes/second, 12.9 times slower than expected. it is therefore much closer to what has been established as humanly possible in section \ref{Methodology} at 25 keystrokes/second. TODO; find out why \\
 Typing time can be categorized into two components: the interval between keystrokes and the duration each key is pressed. The duration of each keypress can be determined using the timestamps from the input frames; subtracting the timestamp of the initial press signal from the release frame timestamp provides the press duration. This data yields a key press duration time of 7.9 to 8.1 milliseconds. Taking the 43 seconds the O.MG cable took to input 2670 keystrokes and subtracting the press time for each of these keys: 43 - (0.008*2670) results in a total interarrival time of 21.64 seconds. Considering that over 2670 keystrokes there are 2669 interarrival slots, an interarrival time of 21.64/2669 = 0.0081 seconds, or 8.1 milliseconds for O.MG input can be derived. These calculations serve as the basis for establishing reasonable inputs for the rate limiter options in the following subsections.  
 
+
+MSI: 22.247s for qwerty script
+
 \subsubsection{Interarrival Time Analysis}
 
 
 Interarrival Time Analysis (ITA) was implemented by \cite{neunerUSBlockBlockingUSBBased2018} who described a detection mechanism for what they call Rapid Keypress event sequence (RES). A RES would be detected every time a sequence \emph{s} of consecutive keypresses arrives with an interarrival time less than a defined threshold \emph{t} between each of them. They concluded that \emph{t} should be at 0.02 s with an \emph{s} of 3 to allow some averaging while ruling out false negatives for short attacks. To come to their conclusion, the paper assumes a minimum interarrival time for organically generated keypresses of 80ms, based on a study from 1985 \cite{umphressIdentityVerificationKeyboard1985}. It has to be kept in mind that this value might be outdated.
 
-To test these assumptions the script can be run with the command shown in Listing \ref{lst:start_script_ita}
+To test these assumptions the script can be run with the command shown in Listing \ref{lst:start_script_ita_0.02,3}
 
 
-\begin{lstlisting}[caption={start Defense Script with ITA (0.02,3)},label={lst:start_script_ita}, captionpos=b]
- py .\omg_detection.py "USBDeview file path" -de --i "(0.02,3)
+\begin{lstlisting}[caption={start Defense Script with ITA (0.02,3)},label={lst:start_script_ita_0.02,3}, captionpos=b]
+ py .\omg_detection.py "USBDeview file path" -de --i "(0.02,3)"
 \end{lstlisting}
 
 \begin{itemize}
-    \item  \emph{Register Email Forwarding:} {''a`` spam}: 47 ''a``s were written by the payload before it stopped. | 47/2670
+    \item  \emph{''a`` spam}: 160 ''a``s were written by the payload before it stopped. | 160/2670
     \item  \emph{Register Email Forwarding:} The payload was interrupted after searching for Outlook(new) in the Windows Search Menu without opening it.  | 14/70 
-    \item  \emph{Disable Windows Event Logging CLI:} Execution progressed until opening the power user menu to start PowerShell. | 2/88
+    \item  \emph{Disable Windows Event Logging CLI:} Execution stopped after executing the first line of the powershell script which already disabeld eventlogging, at this point a large part of the damage is already done. | 44/94
     \item  \emph{Disable Windows Event Logging UI:} It reached the Windows Services settings, where it would navigate to disable the event logging. However, execution stopped before any navigation could take place.  | 14/47
-    \item  \emph{Extract Hashes:} Opened PowerShell in administrator mode without making any input. | 5/728 
+    \item  \emph{Extract Hashes:} Opened PowerShell in administrator mode and executed one and a half lines of the script, at which point no damage is done yet. |36/728 
     \item  \emph{Extract Private Key Files:} The disconnect happened right after PowerShell was opened. | 16/1024
     \item  \emph{Steal Websession Cookies:} Identically to the private key file extraction, this payload ran until the PowerShell Window opened. | 16/1157
     \item  \emph{Iteratively End Processes:} This payload also reached PowerShell without being able to input anything. | 16/386
-    \item  \emph{Schedule Processes:} Just like the previous three payloads, this payload was also able to open PowerShell and did not come further. | 5/209
+    \item  \emph{Schedule Processes:} The first line of the script was executed before the disconnect was triggered, at which point no harm was done. | 39/209
 \end{itemize}
 
-In theory, this configuration (0.02 seconds averaged over 3 characters) should trigger a disconnect after the first 3 inputs; however, it takes until character 47 of the ''a`` spam payload to react, putting it at a 0.018\% execution rate. The reason for this is the latency of the defense script. Adjusting the configuration to average over 2 characters confirms this; the disconnect happens after 41 characters only 6 characters earlier. It is marginally faster because it can react one keystroke sooner, however the latency is so big that the effect of the adjustment is only small.
+Human input registered pretty fast; often interarrvial times were much faster than 0.02, more like 0.008 / 0.007 -> make max allowed speed 0.009
 
-Delays in the payload unexpectedly improved the performance of the rate limiter; after the first keystrokes to open a menu or application, the pauses made sure that the program had time to react. Opening PowerShell as administrator starts with an input of 3 characters within 116 milliseconds, which results in an average interarrival time of 38 milliseconds, a value far above the threshold of 20 miliseconds  so then how tf is this even possible???
-2 * 0.008 + 0.1
+to get something that allows reasonably fast tiping, you'd need a (0.008,4) config. But how good is that at detection?
 
-Since the average was over such a small number of characters, even opening the power user menu and selecting an option there (3 keys) already triggered the disconnect. Payloads that did not require administrator access, such as ``extract private key files'' made more progress, since they do not require navigating the confirmation pop up. However, this also relies on timing, with shorter delays, such as in ``Schedule Processes'' PowerShell could also be opened as administrator. 
+
+\begin{itemize}
+    \item  \emph{''a`` spam}: 70 ''a``s were written by the payload before it stopped. | 70/2670
+    \item  \emph{Register Email Forwarding:} The interruption happened after the Windows Search Menu was opened, without the payload being able to search for anything  |  1/70 
+    \item  \emph{Disable Windows Event Logging CLI:}  Execution stopped at the pop-up to confirm user privileges. | 3/94
+    \item  \emph{Disable Windows Event Logging UI:} The attack executed fully before the program attempted to disconnect it which failed, because the cable had already disconnected autonomously | 47/47
+    \item  \emph{Extract Hashes:}  The payload progressed until the second line of the payload, without being able to exfiltrate anything. | 25/728 
+    \item  \emph{Extract Private Key Files:}  | Although no input was made, the payload did manage to open PowerShell. 16/1024
+    \item  \emph{Steal Websession Cookies:} The attack was stopped right after opening PowerShell. | 16/1157
+    \item  \emph{Iteratively End Processes:} Again the cable was disconnected after opening PowerShell. | 16/386
+    \item  \emph{Schedule Processes:} The disconnect happened after the first line of the PowerShell script was executed, no harm was done at that point. | 39/209
+\end{itemize}
+
+
+
+
+
+
+In theory, this configuration (0.02 seconds averaged over 3 characters) should trigger a disconnect after the first 3 inputs; however, it takes until character 42 of the ''a`` spam payload to react, putting it at a 0.018\% execution rate. This is due to the defence script's latency of 39 keystrokes, which equals 2.91 seconds (39 * 69k/s = 2691 milliseconds).
+
+Delays in the payload unexpectedly improved the performance of the rate limiter; after the first keystrokes to open a menu or application, the pauses allowed the program to react. Opening PowerShell as administrator requires a delay of at least 100ms after the first two input keystrokes to open the power user menu. This makes the start of the payload fly under the radar of the rate limiter. Only when the input to the terminal starts are the keystrokes continuous enough to reach the limit. Interestingly, the latency is increased in the actual payloads; for example in ``Disable Windows Event Logging'' disregarding the first 5 keystrokes to get to the terminal and the first 2 keystrokes (which would skew the average over 3 keys), the latency amounts to 62 keystrokes, nearly a third more than the latency for the 'a' spam.
+
+The payloads that were stopped the fastest were those that featured many keystrokes in the beginning by opening applications with the Windows Run Menu. These inputs triggered the rate limit and the delays that were necessary to allow the programs to load afforded the defence script enough time to process the disconnect.  
+
+In conclusion, this configuration succeeds in detecting all the payloads, reacting faster with start-heavy payloads. Payloads with delays spacing out the input at the start have more success. They progress far into the payload even though the rate limit is triggered because of the delay of the defence script. This could be counteracted by adjusting the configuration to average over 2 characters as shown in Listing \ref{lst:start_script_ita_0.02,2}   
+
+\begin{lstlisting}[caption={start Defense Script with ITA (0.02,2)},label={lst:start_script_ita_0.02,2}, captionpos=b]
+ py .\omg_detection.py "USBDeview file path" -de --i "(0.02,3)
+\end{lstlisting}
+
+Another drawback for the (0.02,3) configuration is that it is easily triggered by human keyboard input. 
+
+cable
+0.01596653461456299
+
+
+human
+0.012127518653869629
+
+
+fuck, the human input is faster than the cable ??? what is this stuff
+
+
+
 
 
 \subsubsection{Time Window Analysis}
