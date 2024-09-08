@@ -60,6 +60,7 @@ In general, it holds, as always, that the best choice is the fastest and most re
 
 Acquiring admin rights is mainly an issue when trying to execute admin-level commands in PowerShell. For these operations, PowerShell should be run as an administrator. \\
 The most straightforward approach for this is to use the power user menu and select Terminal (Admin) with the 'a' shortcut. If the current user is the administrator, a simple dialogue window will pop up to ask if the application should be allowed to make changes to the device. 'Yes' can be selected and PowerShell will open and run with administrator access. If the current user is not the administrator, the prompt will ask for the admin password. \\
+If the admin password is not known and the logged-on user does not have admin privileges, executing a payload that requires those privileges becomes impossible. 
 \begin{lstlisting}[caption={Open terminal with admin rights via the Power User Menu}, captionpos=b]
 GUI x
 DELAY 100
