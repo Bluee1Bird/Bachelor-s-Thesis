@@ -5,7 +5,7 @@ This chapter covers the evaluation of the developed payloads and defence mechani
 
 \section{Payloads}
 
-It is difficult to find an objective, quantitative measure of the effectiveness of a payload. It is influenced by too many outside factors and the specific context it is deployed in. However, it is possible to qualitatively evaluate whether or not it can reach its own specific goal, discounting any factors of the bigger picture of the attack, such as whether the information was useful or the success of planting the hardware. This section will discuss whether the payloads introduced in chapter \ref{Methodology} achieve their declared goal. Within this aspect, there can be a distinction between reliability and speed. Both of these factors are heavily influenced by the circumstances surrounding the attacked host. Speed specifically may have to be adjusted to the computational power of the target and reliability depends heavily on how well this speed is chosen. Too little wait jeopardizes the entire attack, and long delays may produce overhead. However, the more time overhead the more reliable the payload in different situations, since it will work on more and older computers. Reliability can also be impacted by the other processes running on the computer, such as Bad USB-specific defences, antivirus software, Updates etc. . To be able to make some claims as to the flexibility (and thereby reliability) of these attacks, this evaluation will be carried out on multiple devices, specifically including computers in which the payloads have never been executed before. The following computers were used;
+It is difficult to find an objective, quantitative measure of the effectiveness of a payload. It is influenced by too many outside factors and the specific context it is deployed in. However, it is possible to qualitatively evaluate whether or not it can reach its own specific goal, discounting any factors of the bigger picture of the attack, such as whether the information was useful or the success of planting the hardware. This section will discuss whether the payloads introduced in chapter \ref{Methodology} achieve their declared goal. Within this aspect, there can be a distinction between reliability and speed. Both of these factors are heavily influenced by the circumstances surrounding the attacked host. Speed specifically may have to be adjusted to the computational power of the target and reliability depends heavily on how well this speed is chosen. Too little wait jeopardizes the entire attack, and long delays may produce overhead. However, the more time overhead the more reliable the payload in different situations, since it will work on more and older computers. Reliability can also be impacted by the other processes running on the computer, such as Bad USB-specific defences, antivirus software, Updates etc.. To be able to make some claims as to the flexibility (and thereby reliability) of these attacks, this evaluation will be carried out on multiple devices, specifically including computers in which the payloads have never been executed before. The following computers were used;
 
 \begin{itemize}
     \item Microsoft Surface Laptop 4, Processor: 11th Gen Intel(R) Core(TM) i7-1185G7 @3.00GHz, 16.0 GB installed RAM running Windows 11 Home version 23H2 (Used for payload development), on administrator account
@@ -56,9 +56,9 @@ Conclusively it can be said that this payload works very well when applying the 
 
 
 
-\subsubsection{Extract SSH hashes}
+\subsubsection{Extract SAM hashes}
 
-GOAL:\\ Extract SSH hashes from default storage on a device and send them to a command and control (C\&C) server.
+GOAL:\\ Extract SAM hashes from default storage on a device and send them to a command and control (C\&C) server.
 PREREQUISITES: Windows 11 and a running C\&C server, in this case, Dropbox. Administrator rights are required
 
 Since this script is working with default Windows settings, there are not a lot of challenges to be expected. On the MSI laptop, it worked flawlessly after some adjustments on the delays for opening the terminal. Since administrator access is not given on the custom gaming computer, the payload had to be adjusted to include the administrator password. With this adjustment, it was able to run successfully. The best results were again on the Windows Surface Laptop, where it executed flawlessly. 
@@ -238,10 +238,10 @@ In the following, the performance of this configuration against the developed pa
     \item  \emph{Schedule Processes:} The disconnect happened after the first line of the PowerShell script was executed, no harm was done at that point. | 39/209
 \end{itemize}
 
-In theory, this configuration (0.008 seconds averaged over 4 characters) should trigger a disconnect after the first 4 inputs; however, it takes until character 70 of the spam payload to disconnect. This is due to the defence script's latency of 66 keystrokes. Since the input speed is so high, even very small delays between the triggering input have a big effect.
+In theory, this configuration (0.008 seconds averaged over 4 characters) should trigger a disconnect after the first 4 inputs; however, it takes until character 70 of the spam payload to disconnect. This is due to the defence script's latency. Since the input speed is so high, even a very small delay between the triggering keystrokes and the actual disconnect has a big effect.
 
 
-Delays in the payload unexpectedly improved the performance of the rate limiter; after the first keystrokes to open a menu or application, the pauses allowed the program to react. Opening PowerShell as administrator requires a delay of at least 100ms after the first two input keystrokes to open the power user menu, increasing the average interarrival time significantly. This makes the start of the payload fly under the radar of the rate limiter. Only when the input to the terminal starts are the keystrokes continuous enough to reach the limit. This allows the payload to operate stealthily up to its PowerShell input. Additionally, it has a window of opportunity because the disconnect does not occur immediately after the first 4 continuous keystrokes, allowing it to use the delay to execute fully. This is what happened for ``Disable Windows Event Logging CLI''. It opened the PowerShell window without being detected and had enough time afterwards to execute the two lines of bash script that it needed to reach its goal. It was therefore able to run fully without being interrupted. When the defence script attempted to disconnect it, it had already deregistered itself. 
+Delays in the payload unexpectedly improved the performance of the rate limiter; after the first keystrokes to open a menu or application, the pauses allowed the program to react. Opening PowerShell as administrator requires a delay of at least 100ms after the first two input keystrokes to open the power user menu, increasing the average interarrival time significantly. This makes the start of the payload fly under the radar of the rate limiter. Only upon the start of the terminal input are the keystrokes continuous enough to reach the limit. This allows the payload to operate stealthily up to its PowerShell input. Additionally, it has a window of opportunity because the disconnect does not occur immediately after the first 4 continuous keystrokes, allowing it to use the delay to execute fully. This is what happened for ``Disable Windows Event Logging CLI''. It opened the PowerShell window without being detected and had enough time afterwards to execute the two lines of bash script that it needed to reach its goal. It was therefore able to run fully without being interrupted. When the defence script attempted to disconnect it, it had already deregistered itself. 
 
 Payloads with many initial keystrokes were stopped the most quickly. They triggered the rate limiter by opening applications with the Windows Run Menu. Unlike opening applications with the Power User Menu, this approach requires the application's names to be typed out such that they trigger the rate limiter. The subsequent delays in the payload to allow the programs to start also afforded the defence script the time it needed to disconnect the devices.  
 
@@ -337,7 +337,7 @@ This configuration does also not trigger from human inputs of around 80 wpm. How
 
 
 A quick test of a (0.1,12) configuration shows that it too, will not recognize payloads reliably, it is therefore time to change the strategy.
-Since the delay of the script seems to hinder it in recognizing keystrokes, adding that delay to the time window might soothe the problem. Listing \ref{lst:start_script_twa_0.125,3} shows the configuration for detecting 6 keystrokes within a time windows of 72 milliseconds seconds plus 0.1 milliseconds of puffer to account for the script delay. 
+Since the delay of the script seems to hinder it in recognizing keystrokes, adding that delay to the time window might soothe the problem. Listing \ref{lst:start_script_twa_0.125,3} shows the configuration for detecting 6 keystrokes within a time window of 72 milliseconds seconds plus 0.1 milliseconds of puffer to account for the script delay. 
 
 \begin{lstlisting}[caption={start defence Script with TWA (0.125,3)},label={lst:start_script_twa_0.125,3}, captionpos=b]
  py .\omg_detection.py "USBDeview file path" -de --i "(0.125,3)"
@@ -366,7 +366,7 @@ but was stopped before navigating further. | 16/47
     \item  \emph{Schedule Processes:}  Progress was made until the second line of the PowerShell script where it was interrupted. | 54/209
 \end{itemize}
 
-These numbers are similar to the results from ITA, stopping start-heavy payloads the quickest, right after a long input and a delay to open PowerShell or Services.msc. Payloads that used the Power User Menu progressed further upto one or two lines of their PowerShell scripts. \\
+These numbers are similar to the results from ITA, stopping start-heavy payloads the quickest, right after a long input and a delay to open PowerShell or Services.msc. Payloads that used the Power User Menu progressed further up to one or two lines of their PowerShell scripts. \\
 This configuration achieved a true positives rate of 100\% with zero false negatives at input speeds of 80wpm of normal input. Considering the 25 k/s of maximum human input speed, a human would not be able to trigger this rate limit, since it takes 120 milliseconds at 25 k/s to type 3 keys. However, same as with ITA the limit can be exceeded by pressing multiple character and or number keys at a time. \\
 The question arises whether results can still be improved upon; would a threshold of 2 characters within the time window interrupt payloads even quicker? Using the same ratio, this results in a configuration such as shown in Listing \ref{lst:start_script_twa_0.05,2}. 
 
@@ -374,8 +374,6 @@ The question arises whether results can still be improved upon; would a threshol
 \begin{lstlisting}[caption={start defence Script with TWA (0.05,2)},label={lst:start_script_twa_0.05,2}, captionpos=b]
  py .\omg_detection.py "USBDeview file path" -de --i "(0.05,2)"
 \end{lstlisting}
-
-not triggered by spamming (multiple keys at once) ??? Unless it is in fast succession that is wild
 
 \begin{itemize}
     \item  \emph{spam}:  | 70/2670
@@ -436,6 +434,4 @@ Schedule Processes & 3/209 & 39/209  & 39/209 & 54/209 & 3/209 \\
 The fastest results are reached with enumeration analysis, followed by TWA(0.05,2) and a very close call between TWA(0.075,3) and ITA(0.008,3). For every defence option, a 100\% detection rate could be achieved, mostly while preventing the payload from executing and causing harm. The only instance in which a payload was able to reach (part of) its goal was ``Disable Windows Event Logging'' with ITA. Since EPA is triggered first before any keystrokes are injected, it can react fastest, while TWA(0.05,2) has the advantage over the other configurations in that it only has to wait for two keystrokes instead of three. \\
 While these results are promising, it has to be kept in mind that the rate-limiting options are dependent on a specific type of input. Payloads that space said input in the right way, can circumvent the detection. The O.MG cable, for example, has a configuration option ``DEFAULT\_CHAR\_DELAY'' that can be set to add a delay after every string character. This way, the rate limiters can be tricked; more spaced input decreases the input speed and therein tricks the rate limiter into a false negative. [TODO: add a demonstration]. \\
 In situations like these, ETA is essential; it cannot be tricked. The bm attributes of an O.MG cable cannot be set by a user themselves, not even if they write their own firmware, as confirmed by developers of Mischief Gadgets. It is not guaranteed, however, that this enumeration pattern is present in every BadUSB or will always exist on O.MG devices. A combination of different approaches is therefore recommended to ensure as many attacks as possible are detected and prevented from causing harm. 
-
-
 

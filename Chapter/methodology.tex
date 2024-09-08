@@ -22,7 +22,7 @@ The thesis will not examine all 14 categories and instead highlight the most rel
 \subsubsection{Reconnaissance}
 
 Reconnaissance involves actively or passively gathering information. The gathered information can be used to inform the preparations
-of a bigger attack or to further additional reconnaissance efforts. This category includes scanning network traffic and gathering host information such as name, Internet Protocol (IP) address, operating system,
+for a bigger attack or to further additional reconnaissance efforts. This category includes scanning network traffic and gathering host information such as name, Internet Protocol (IP) address, operating system,
 hardware information, credentials, email, or information about a network. Phishing also belongs into this category, as does the purchase of information about the system from legal or illegal data brokers or gathering publicly available information, for example from the Internet \cite{MITREATTCK}.
 
 This is a field in which keyboard injection can cause considerable damage. There exist many exfiltration scripts, that download sensitive files, exfiltrate passwords, gather network and device information, or social engineer the user to enter sensitive data on malicious sites.
@@ -58,7 +58,7 @@ Running malicious code is at the core of Keyboard Injection attacks. It is their
 
 \subsubsection{Persistence} \label{persistence}
 
-Persistence stresses the longevity and robustness of an attack over time. To this end, accounts and access rights can be manipulated, SSH keys stolen or modified, new devices registered for two-factor authentication, system processes created or modified  (i.e. modifying PowerShell profile scripts), and much more. This can be achieved by using external remote services, or manipulating pre-OS boot mechanisms \cite{MITREATTCK}. \\
+Persistence stresses the longevity and robustness of an attack over time. To this end, accounts and access rights can be manipulated, SAM keys stolen or modified, new devices registered for two-factor authentication, system processes created or modified  (i.e. modifying PowerShell profile scripts), and much more. This can be achieved by using external remote services, or manipulating pre-OS boot mechanisms \cite{MITREATTCK}. \\
 An example of this kind of technique is the remote access that can be gained by scripts like \verb|revshell_macOS| \cite{OmgpayloadsPayloadsLibrary}
 or remote control access establishment as demonstrated by \cite{bojovicRisingThreatHardware2019}. \\
 This category also includes attack scheduling, which can easily be achieved by DuckyScript, using the `DELAY` command, the remote trigger, or the Geofencing feature \cite{hak5MGCable}.
@@ -94,9 +94,9 @@ computer without leaving traces of an attack, thereby framing the computer's use
 \subsection{Conclusions drawn from existing Payloads}
 
 From the examples above it is apparent, that a wide variety of attacks and techniques are available with DuckyScript and a malicious USB device. Many sections of the ATT\&CK model play a role and are part of various scripts for the O.MG cable that already exist. The most prevalent ATT\&CK categories from the available code base are focused on the collection and exfiltration of data and the infiltration of systems and networks. The ``impact'' category is scarcely covered by existing payloads, suggesting significant room for development in this area.
-Differences in coverage might be explained through the nature of the attack type; for some attacks, it is simply not effective to use keyboard injection. Take for example 'Supply Chain Compromise' (ID T1195) \cite{SupplyChainCompromise} which describes supply chain attacks for which products are manipulated before their usage. Although it would theoretically be possible to manipulate, for example, firmware of a computer chip, there may be much more effective vectors than a keyboard injection attack; it simply requires too much very detailed intelligence. Attacks for which the O.MG cable is more useful, like simple attacks utilizing PowerShell commands, or pranks like playing a video, sounds, or changing background pictures are more common. 
-Another aspect to consider is that this repository is not designed to comply with the Mitre ATT\&CK framework and has only 36 contributors. Open-source programmers may create payloads for topics that interest them or align with their expertise. Their goal is not to cover as many attacks as possible. One last consideration concerning the payloads in the repository is content moderation. It is possible that some payloads are not tolerated on the repository. However, this theory is unlikely since the entire premise of Hak5 is to make the dangers and attacks of the black hat world as widely known as possible to be able to defend against them.\\  
-In line with this sentiment, this thesis will develop novel payloads in the following chapters. Splitting the enormous spectrum of all possible cyber attacks into only 14 categories means that each of those categories still covers a large section of attack types, each of which in turn can have a multitude of aspects and implementations. For this reason, the payloads developed in this thesis cannot be exclusively attributed to 'Impact' or other underrepresented categories. Instead, they represent a collection of novel payloads associated with subtechniques from various categories. Each payload is inspired by a specific subtechnique and has not yet been included in the O.MG Payloads GitHub repository. These are realistic attacks where HID injection is possible, representing only a small selection of potential payloads still 'missing' from the repository.
+Differences in coverage might be explained through the nature of the attack type; for some attacks, it is simply not effective to use keyboard injection. Take for example ``Supply Chain Compromise'' (ID T1195) \cite{SupplyChainCompromise} which describes supply chain attacks for which products are manipulated before their usage. Although it would theoretically be possible to manipulate, for example, firmware of a computer chip, there may be much more effective vectors than a keyboard injection attack; it simply requires too much very detailed intelligence. Attacks for which the O.MG cable is more useful, like simple attacks utilizing PowerShell commands, or pranks like playing a video, sounds, or changing background pictures are more common. 
+Another aspect to consider is that this repository is not designed to comply with the MITRE ATT\&CK framework and has only 36 contributors. Open-source programmers may create payloads for topics that interest them or align with their expertise. Their goal is not to cover as many attacks as possible. One last consideration concerning the payloads in the repository is content moderation. It is possible that some payloads are not tolerated on the repository. However, this theory is unlikely since the entire premise of Hak5 is to make the dangers and attacks of the black hat world as widely known as possible to be able to defend against them.\\  
+In line with this sentiment, this thesis will develop novel payloads in the following chapters. Splitting the enormous spectrum of all possible cyber attacks into only 14 categories means that each of those categories still covers a large section of attack types, each of which in turn can have a multitude of aspects and implementations. For this reason, the payloads developed in this thesis cannot be exclusively attributed to ``Impact`'' or other underrepresented categories. Instead, they represent a collection of novel payloads associated with subtechniques from various categories. Each payload is inspired by a specific subtechnique and has not yet been included in the O.MG Payloads GitHub repository. These are realistic attacks where HID injection is possible, representing only a small selection of potential payloads still 'missing' from the repository.
 
 \newpage
 \section{Payload Architecture}
@@ -125,10 +125,11 @@ Naturally, these steps influence each other or may overlap. Figure \ref{Flow Dia
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{visuals/attack_dev.png}
+    \includegraphics[width=1.1\linewidth]{visuals/Attack Development(1).png}
     \caption{Development process for a payload}
     \label{Flow Diagram Development process payload}
 \end{figure}
+
 
 
 \subsection{Command Line vs User Interface}
@@ -139,7 +140,7 @@ Payloads follow a combination of two main strategies;
     \item Command Line Interface (CLI) based
 \end{itemize}
 
-UI-based payloads follow the line of action a typical UI-focused user would take. For example, for sending an email, such a user might search for the email application icon on their desktop, click on it, then click on 'new Mail', fill out all the fields of the email form, and finally click on send. A payload that mimics this behaviour, would navigate in the same way, using the keyboard instead of the mouse. For instance, if the Outlook icon was the fourth icon on the taskbar, it could be selected with the Windows key + 3. The 'new Mail' button would be reached with 16 tabs or by using  Ctrl + N. All navigation can be done in this manner and therefore programmed as a O.MG script. \\
+UI-based payloads follow the line of action a typical UI-focused user would take. For example, for sending an email, such a user might search for the email application icon on their desktop, click on it, then click on 'new Mail', fill out all the fields of the email form, and finally click on send. A payload that mimics this behaviour, would navigate in the same way, using the keyboard instead of the mouse. For instance, if the Outlook icon was the fourth icon on the taskbar, it could be selected with the Windows key + 3. The 'new Mail' button would be reached with 16 tabs or by using  Ctrl + N. All navigation can be done in this manner and therefore programmed as an O.MG script. \\
 Possible issues with this approach are obvious; How can you determine the location of Outlook on the taskbar? What if the computer is not connected to the Internet and instead of opening Outlook an error message pops up? What if the computer is very slow and  Ctrl + N is sent before the application has fully loaded?  Some of these issues can be accounted for, Outlook for instance can also be opened by searching for it in the start menu, however, determining whether the application has loaded is impossible with the O.MG cable. The risk can be mitigated by implementing long delays between commands. Unfortunately, this creates time overhead which can be a big drawback in time-sensitive situations. \\
 
 A command-line-based approach eliminates such problems. It allows for a cleaner and more concise execution of an attack. It simplifies many actions and is often more direct and therefore faster. Take the mail example again. PowerShell has a cmdlet that allows you to send emails directly. This cuts down nearly all navigation and the risks and time overhead that come with it. \\
@@ -152,7 +153,7 @@ This section provides an overview of the methodology for the newly developed pay
 \begin{enumerate}
     \item Register Email Forwarding (Collection)
     \item Disable Windows Event Logging (Defence Evasion)
-    \item Extract SSH Hashes (Defence Evasion)
+    \item Extract SAM Hashes (Defence Evasion)
     \item Extract Private Key Files (Defence Evasion)
     \item Steal Web Session Cookies (Defence Evasion)
     \item Iteratively End Processes (Impact)
@@ -182,9 +183,9 @@ Some actions on a system might raise errors, warnings or other types of events i
 There are multiple ways to disable Windows event logging, in the implementation chapter, a UI option and a CLI option will be presented. 
 
 
-\subsubsection{Extract SSH hashes}
+\subsubsection{Extract SAM hashes}
 
-The Security Account Registry (SAM) on Windows stores passwords as hashes. These hashes can be exfiltrated and used to spoof the victim. This is used as a technique in the ATT\&CK lateral movement and Defence Evasion techniques \cite{UseAlternateAuthentication}. \\
+The Security Account Registry (SAM) on Windows stores user accounts and security descriptors \cite{archiveddocsSecurityAccountManager2009}, including, for example, passwords as hashes. These hashes can be exfiltrated and used to spoof the victim in a Pass the Hash attack. Passwords are often stored as hashes instead of cleartext, however, just like cleartext passwords, these hashes can be stolen and used to impersonate the user. This approach can also be used in the context of single sign-on systems to create new sign-on tickets using the stolen hash. This is used as a technique in the ATT\&CK lateral movement and Defence Evasion categories \cite{UseAlternateAuthentication}. \\
 Access to these files is restricted to admin privileges on Windows, therefore this payload requires administrator privileges.
 
 \subsubsection{Extract Private Key Files}
@@ -200,12 +201,12 @@ Such an attack first has to determine which browser should be targeted. For this
 
 \subsubsection{Iteratively End Processes} \label{Iteratively End Processes}
 
-One underexplored area of the Mitre ATT\&CK framework is the category 'Persistence'. This payload aims to achieve persistence by iteratively ending running processes. From all the running processes, the payload should stop those defined on a whitelist.
+One underexplored area of the MITRE ATT\&CK framework is the category 'Persistence'. This payload aims to achieve persistence by iteratively ending running processes. From all the running processes, the payload should stop those defined on a whitelist.
 
 
 \subsubsection{Schedule Processes}
 
-One under-explored area of the Mitre ATT\&CK framework is persistence. This payload aims to achieve persistence by registering processes that will run iteratively depending on a customizable trigger. These processes can be anything from reconnaissance scripts to other persistence payloads. This payload could for example be combined with the end-processes.payload \ref{Iteratively End Processes} to create a payload that schedules the iterative termination of processes based on a predefined trigger.
+This payload aims to achieve persistence by registering processes that will run iteratively depending on a customizable trigger. These processes can be anything from reconnaissance scripts to other persistence payloads. This payload could for example be combined with the end processes payload in Section \ref{Iteratively End Processes} to create a payload that schedules the iterative termination of processes based on a predefined trigger.
 
 
 
@@ -215,7 +216,7 @@ One under-explored area of the Mitre ATT\&CK framework is persistence. This payl
 
 To be able to defend against the existing and especially new threats introduced in this paper, this section will give an overview of the architecture for the announced defence script.
 
-It has to be kept in mind, that most approaches are heuristics. Theoretically, it is always possible to circumvent them if enough resources are available. The only way to completely get rid of USB threats is to not use USB. In a closed system, all USB ports could be permanently blocked and the use of outside technology forbidden. As is so often the case in cyber-security spaces, this is a question of usability vs security. Restricting access and thereby usage of USB devices necessarily also diminishes or extinguishes the additional value they might bring. The framework in this paper consists of components that try to minimize the impact of usability. The framework should be a support and not an additional vice on the users to ensure that it is not circumvented because it is too tedious to work with.  
+It has to be kept in mind, that most approaches are heuristics. Theoretically, it is always possible to circumvent them if enough resources are available. The only way to completely get rid of USB threats is to not use USB. In a closed system, all USB ports could be permanently blocked and the use of outside technology forbidden. As is often the case in cybersecurity, this is a matter of balancing usability and security. Restricting access and thereby usage of USB devices necessarily also diminishes or extinguishes the additional value they might bring. The framework in this paper consists of components that try to minimize the impact of usability. The framework should be a support and not an additional vice on the users to ensure that it is not circumvented because it is too tedious to work with.  
 
 In order to be able to defend the payloads that were just introduced, the next section will outline a defence methodology.
 This defence has two pillars:
@@ -340,7 +341,7 @@ INTERFACE DESCRIPTOR (0.0): class HID
     iInterface: 0
 \end{lstlisting}
 
-It specifically describes the device as a Human Interface Device (HID) and the interface protocol as 'Keyboard' with the corresponding hexadecimal HID code for a keyboard; '0x01'.
+It specifically describes the device as a Human Interface Device (HID) and the interface protocol as ``Keyboard'' with the corresponding hexadecimal HID code for a keyboard; ``0x01''.
 
 Device Descriptor and interface packets describe the function of a USB device and identify it as a keyboard to the host. In order to spoof a keyboard, an O.MG cable would have to do the same. So what do these packets look like for an O.MG cable?
 First off, it is important to note that the cable is not enumerated as a keyboard immediately after being plugged in. When first inserted into a host, no communication happens, since it is acting as a simple cable which does not require communication with the host. However, every time a payload is executed, the cable enumerates as a keyboard.
@@ -406,7 +407,7 @@ Just like the REMOTE WAKEUP property, the amount of power a non-self-powered dev
 
 \subsubsection{Register as multiple devices}
 
-All the devices register as multiple HID devices corresponding to their device functions as explained in Chapter \ref{Background}. The Sharkoon and Glorious keyboards first register as a keyboard, then as a mouse. The Ducky registers as keyboard first and as multiple different 'HID Report's later. The O.MG cable is the only one that registers as a mouse first and as a keyboard second. This can be seen in packet 18 for all the devices; figure \ref{fig:packet18Glorious} shows an example of the Glorious Keyboard specifying the enumeration as keyboard and mouse. 
+All the devices register as multiple HID devices corresponding to their device functions as explained in Chapter \ref{Background}. The Sharkoon and Glorious keyboards first register as a keyboard, then as a mouse. The Ducky registers as keyboard first and as multiple different ``HID Report''s later. The O.MG cable is the only one that registers as a mouse first and as a keyboard second. This can be seen in packet 18 for all the devices; figure \ref{fig:packet18Glorious} shows an example of the Glorious Keyboard specifying the enumeration as keyboard and mouse. 
 
 \begin{figure}[H]
     \centering
@@ -455,20 +456,20 @@ A second use of monitoring USB traffic is rate limiting. In addition to the qual
 Keystrokes this fast are suspicious and indicate non-human input. A rate limiter should monitor all keyboard input and their speed. Once inputs surpass a threshold, the user should be alarmed and the device disconnected to stop the attack. \\
 The challenge in the design of such a rate limiter is the threshold. What should the threshold effectively be? A measurement like this requires a time window in which it is measured. The greater the amount of available data, which implies a longer measurement window, the more accurate the conclusion. However, this means more time for executing an attack; if the cable can input 120 keystrokes per second and a rate limiter has a window of one second, all payloads under 120 keystrokes are theoretically able to circumvent the defence mechanism. In practice, these payloads would also need to introduce delays, pushing their total execution time beyond one second.
 Such delays would, however, also enable payloads longer than 120 keystrokes. To illustrate, pressing Windows Key + R opens the Run window, followed by a brief pause to allow the host to respond, before entering 'PowerShell' and pressing Enter. Assuming that the input + wait time would take one second, that is an input speed of 12 keys/sec half the speed of attainable human input. Simply delaying a payload after every 10 keystrokes circumvents a rate limiter that checks one-second intervals.\\
-Another possible approach is measuring the input time between individual keystrokes, which might become a problem for key combinations, gaming and spamming keys manually. 25 keystrokes per second comes out to a limit of 2.4 milliseconds interarrival time between keys for human input. All interarrival times below this threshold ought to be considered machine-generated. Similarly to the time window approach, this value could also be calculated as an average over a number of keystrokes. To circumvent it, many small delays are necessary between the individual keystrokes.\\
+Another possible approach is measuring the input time between individual keystrokes, which might become a problem for key combinations, gaming and spamming keys manually. 25 keystrokes per second comes out to a limit of 40 milliseconds interarrival time between keys for human input. All interarrival times below this threshold ought to be considered machine-generated. Similarly to the time window approach, this value could also be calculated as an average over a number of keystrokes. To circumvent it, many small delays are necessary between the individual keystrokes.\\
 Either method can be circumvented with delays, however, they can still be useful for catching less intricate attacks that are unprepared against rate limiting.
 Chapter \ref{Implementation} will explain how both approaches can be realized and their results will be discussed in chapter \ref{Evaluation}.
 
 
 To measure these speeds, the defence framework has to store the times at which HID input packets arrive for a specific keyboard. These packets have to be mapped to their sources, to ensure that the program knows which USB device it has to disconnect to stop the attack. This means this type of monitoring must be linked to packet analysis to avoid false triggers from mouse or Bluetooth traffic.
 
-Figure \ref{fig:defense_flowchart} visualizes the defense process as a flow chart, starting with the enumeration pattern detection and moving on to the two different rate limiter modes. 
+Figure \ref{fig:defence_flowchart} visualizes the defence process as a flow chart, starting with the enumeration pattern detection and moving on to the two different rate limiter modes. 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{visuals/defense_flowchart.png}
-    \caption{Flowchart describing the Defense Architecture}
-    \label{fig:defense_flowchart}
+    \includegraphics[width=0.75\linewidth]{visuals/defence_flowchart.png}
+    \caption{Flowchart describing the Defence Architecture}
+    \label{fig:defence_flowchart}
 \end{figure}
 
 

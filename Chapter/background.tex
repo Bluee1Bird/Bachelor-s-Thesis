@@ -65,7 +65,13 @@ It may be observed by some that the initialization process described in Section 
 The risks posed by this activity are exacerbated by the fact that USB devices are not perceived as a threat by a vast majority of people. Many would pick up, plug in, and even interact with USB sticks they find lying around on the ground. A study \cite{tischerUsersReallyPlug2016} conducted in 2016 found that USB sticks are a very effective attack vector. They explored whether USB sticks dropped on a university campus would be picked up and plugged in. They found that users opened one or more files on 45\% of the flash drives and that 98\% of the drives were removed from the drop location by the time the experiment had ended. Based on this, the authors estimate that between 45\% and 98\% of drives were eventually plugged in. Through a survey placed on the drives, it was concluded that the participants acted mostly out of altruistic motives although the authors speculate that many may have acted out of curiosity. The social engineering attack vector was concluded to be an ``expeditious" with a median time of connection of only 6.9 hours. \\
 USB ports are ubiquitous in all kinds of environments. USB has developed into the standard for convenient power and data transfer, not only in private but also in public.  Many people do not think twice when connecting their laptop to an external display in a library, using public charging ports, or accepting a charging cable from a friend. Still, none of those interactions are protected, and every use of the USB protocol poses a risk that most are not aware of.
 
-TODO: insert picture of USB in use in public
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{visuals/USB_treadmill.jpeg}
+    \caption{USB is everywhere; inconspicuous USB port on a treadmill in a public gym.}
+    \label{fig:USB_treadmill}
+    \cite{}
+\end{figure}
 
 A myriad of different attacks are possible through such an unsecured attack vector. This paragraph describes a few of them. \\
 Through USB, data can be silently downloaded without the user's permission or knowledge from computers \cite{clarkHardwareTrojanHorse2009} as well as phones \cite{SharpIdeasDownloads2006}. USB drives could be developed to be able to do data manipulation, and with the increased popularity of U3, attackers could hack U3 images and replace them for their own malicious purposes to take advantage of auto-run. 
@@ -76,7 +82,7 @@ What such HID attacks could look like will be discussed and exemplified in this 
 
 \subsection{Bad Hardware}
 
-None of the attacks and only part of the defenses that are discussed in this thesis would be possible without specialized hardware. This section will therefore give a brief introduction to the different microcontrollers and computers that will be mentioned in the following chapters.\\
+None of the attacks and only part of the defences that are discussed in this thesis would be possible without specialized hardware. This section will therefore give a brief introduction to the different microcontrollers and computers that will be mentioned in the following chapters.\\
 In general, any USB device that has been modified to execute some malicious action will be referred to as BadUSB, a term coined by a BlackHat presentation by Karsten Nohl, Sascha Krissler, and Jakob Lell \cite{Srlabsbadusbblackhatv1Pdf2014}. 
 
 
@@ -131,10 +137,20 @@ This section will give an overview of the O.MG cable, and the scripting language
 
 As described shortly in sections \ref{Hak5Hardware} and \ref{HistoryOfAttacks} the O.MG cable is a BadUSB cable invented by MG \cite{MGCable2019a}, produced by Mischief Gadgets \cite{hak5MischiefGadgets} and sold in cooperation with Hak5 on their website \cite{hak5MischiefGadgets}. \\
 The cable does not have any physical markers; neither its USB ends, the cable, nor the weight gives any indication that it has so many more capabilities than normal USB cables. For the most part, it is a usual USB cable; the passive (passthrough) end does not have any special abilities, and if it is not configured to execute a boot script, the cable can be used like any other to charge an transfer data. Its malicious, active end is marked by a USB trident. This symbol is often found on USB cables to indicate their compatibility with the USB standard. The active end transmits the payloads from the device to the USB host. It is available in USB-A, USB-C, and lightning. 
-To set up an O.MG cable, the first step is to flash it. This must be done before initial use or after a self-destruct sequence has been triggered. Flashing the cable requires an O.MG Programmer \cite{hak5MGCable}. The active end of the O.MG cable is plugged into the programmer, which itself is connected to a computer by a regular USB data cable. Flashing can either be done with the official open source firmware \cite{DuckyScriptSyntaxGuide} via the setup website (https://o.mg.lol/setup/OMGCable/) or with custom firmware. After flashing the device is ready to be used. \\  
-Once the active end receives power from a USB host, it establishes a short-range wireless network with the default SSID "O.MG" and password "12345678," both of which are configurable. The WebUI can be acessed through that network, on ``http://192.168.4.1.''. \\
-The WebUI offers a variety of features.
-[TODO; add screenshot of the webUI]
+To set up an O.MG cable, the first step is to flash it. This must be done before initial use or after a self-destruct sequence has been triggered. Flashing the cable requires an O.MG Programmer \cite{hak5MGCable}. The active end of the O.MG cable is plugged into the programmer, which itself is connected to a computer by a regular USB data cable. Flashing can either be done with the official open-source firmware \cite{DuckyScriptSyntaxGuide} via the setup website (https://o.mg.lol/setup/OMGCable/) or with custom firmware. After flashing the device is ready to be used. \\  
+Once the active end receives power from a USB host, it establishes a short-range wireless network with the default SSID "O.MG" and password "12345678," both of which are configurable. The WebUI can be accessed through that network, on ``http://192.168.4.1.''. \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{visuals/O.MG_webUI.png}
+    \caption{Web UI of the O.MG cable in Microsoft Edge.}
+    \label{fig:O.MG_webUI}
+    \cite{}
+\end{figure}
+
+
+
+As seen in Figure \ref{fig:O.MG_webUI} the WebUI offers a variety of features.
 
 \begin{enumerate}
     \item Payloads
@@ -172,12 +188,12 @@ Cleanup is an important part of an attack or penetration test. This cable suppor
 
 \subsubsection{Keylogger}
 
-When an O.MG cable connects a physical keyboard with a detachable cable to a host, it can log the keystrokes from the keyboard and display them in real-time in the WebUI. In order for this to work, the keyboard has to be Full Speed USB (12mbps) and not low (1.5mbps) or high speed (480mbps). 
+When an O.MG cable connects a physical keyboard with a detachable cable to a host, it can log the keystrokes from the keyboard and display them in real time in the WebUI. In order for this to work, the keyboard has to be Full Speed USB (12mbps) and not low (1.5mbps) or high speed (480mbps). 
 
 \subsubsection{Keymap Viewer}
 
-Since the O.MG cable imitates keyboard presses, it is dependent on the keyboard settings of the attacked host. Input in a US keyboard will not produce the same signal to the computer as a DE\_CH keyboard even though the same key is pressed. For this reason, the language of a payload has to be set, which is explained in more detail in section (TODO!!). If the keyboard setting of the target is not known beforehand, obtaining this information in the reconnaissance phase is crucial. \\
-For this reason, the Keymap Viewer exists. Using keylogging the keyboard layout of a connected host can be determined. (TODO; try this out!!)
+Since the O.MG cable imitates keyboard presses, it is dependent on the keyboard settings of the attacked host. Input in a US keyboard will not produce the same signal to the computer as a DE\_CH keyboard even though the same key is pressed. For this reason, the language of a payload has to be set, which is explained in more detail in Section \ref{ducky\_lang}. \\
+For this reason, the Keymap Viewer exists. Using keylogging the keyboard layout of a connected host can be determined. 
 
 \subsubsection{Partition Editor}
 
@@ -193,9 +209,28 @@ This feature is still in progress, but Its aim is to enable more stealthy data e
 
 \subsection{Ducky Script} \label{DuckyScript}
 
-DuckyScript was invented by Darren Kitchen, the founder of Hak5. It evolved from a macro scripting language that could handle keyboard injections and delays in its first iteration to a structured and feature-rich programming language supporting injection attack-specific commands (jitter, side-channel exfiltration) as well as control flow instructions, repetitions, and functions in version 3.0. \cite{the book} [TODO cite the book!!] \\
-Some specific Hak5 gear like the BashBunny or LANTurtle uses an interpreted version of DuckyScript 1.0 that incorporates the BASH shell scripting language \cite{Hak5Usbrubberduckypayloads2024}. The DuckyScript version licensed for the O.MG cable is based on DuckyScript 1.0 and additionally includes some device-specific commands for the specific functionalities of the O.MG cable. The available DuckyScript 1.0 commands are limited to REM (marks a comment), DELAY (pauses the payload), STRING (injects keystrokes), and some buttons like ENTER, GUI, F11, PAGEUP, TAB; ESCAPE, etc. \\
-A basic implementation of a Hello, World! is shown in Listing \ref{lst:hello_world_duckyscript}.
+DuckyScript was invented by Darren Kitchen, the founder of Hak5. It evolved from a macro scripting language that could handle keyboard injections and delays in its first iteration to a structured and feature-rich programming language supporting injection attack-specific commands (jitter, side-channel exfiltration) as well as control flow instructions, repetitions, and functions in version 3.0 \cite{kitchenUSBRUBBERDUCKY2022}. \\
+Some specific Hak5 gear like the BashBunny or LANTurtle uses an interpreted version of DuckyScript 1.0 that incorporates the BASH shell scripting language \cite{Hak5Usbrubberduckypayloads2024}. The DuckyScript version licensed for the O.MG cable is based on DuckyScript 1.0 and additionally includes some device-specific commands for the specific functionalities of the O.MG cable. The available commands include the usual keyboard keys like ENTER, GUI (Windows key), F11, PAGEUP, TAB; ESCAPE, etc. Some of the other supported commands are\cite{DuckyScriptSyntaxGuide}:
+\begin{itemize}
+    \item DUCKY\_LANG: set the input language of the keyboard.
+    \item DELAY: Pause for a specified amount of time (in milliseconds)
+    \item DEFINE. Define a variable
+    \item STRING: Followed by a string that is sent as input to the host, STRINGLN follows that input with ``ENTER''.
+    \item MOUSE: controls the mouse movement.
+    \item USB ON/OFF: Enumerate or disconnect as USB device.
+    \item JIGGLER: turn mouse jiggle on or off.
+    \item REBOOT: reboot the O.MG
+    \item DEFAULT\_DELAY: Puts a default delay before every command. Also available as DEFAULT\_CHAR\_DELAY to put delays in front of every STRING character.  
+    \item REPEAT: Repeats the preceding value a number of times.
+    \item VID/PID: sets the VID / PID.
+    \item MAN / PRO / SER: set iManufacturer / iProdcut / iSerial
+    \item KEYLOGGER ON / OFF: turns keylogger on or off.
+    \item NOKEY: will send a null value.  
+\end{itemize}
+
+Some more options, such as SELF\_DESTRUCT were introduced in Section \ref{theOMGCable}
+
+What a basic implementation of a Hello, World! could look like is shown in Listing \ref{lst:hello_world_duckyscript}.
 
 \begin{lstlisting}[caption={Hello, World! in DuckyScript 1.0}, label={lst:hello_world_duckyscript}, captionpos=b]
 REM Title: Hello, World!
@@ -217,4 +252,4 @@ STRING Hello, World!
 
 This chapter introduced the USB standard and protocol and the vulnerabilities that come with it. It features a short history of USB and a physical and technical explanation of USB. It showed how the lack of USB authentication can be leveraged by malicious actors to target users, stealthily and efficiently. To this end, it listed a variety of different possible USB attacks and introduced the keyboard injection attack.
 Lastly, a basic overview of the hardware in this thesis was given and the O.MG cable, as well as its scripting language, DuckyScript was introduced. 
-Building on this background knowledge, the next chapters of this thesis elaborate on the history of HID injection attacks and eventually novel payloads and defense mechanisms. 
+Building on this background knowledge, the next chapters of this thesis elaborate on the history of HID injection attacks and eventually novel payloads and defence mechanisms. 
