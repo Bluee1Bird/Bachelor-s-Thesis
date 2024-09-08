@@ -244,11 +244,11 @@ Nevertheless, the (0.008,4) configuration is not triggered by normal human input
 In the following, the performance of this configuration against the developed payloads is described quantitatively and qualitatively.
 
 \begin{itemize}
-    \item  \emph{''a`` spam}: 70 ''a``s were written by the payload before it stopped. | 70/2670
-    \item  \emph{Register Email Forwarding:} The interruption happened after the Windows Search Menu was opened, without the payload being able to search for anything  |  1/70 
-    \item  \emph{Disable Windows Event Logging CLI:}  Execution stopped at the pop-up to confirm user privileges. | 3/94
-    \item  \emph{Disable Windows Event Logging UI:} The attack executed fully before the program attempted to disconnect it which failed, because the cable had already disconnected autonomously | 47/47
-    \item  \emph{Extract Hashes:}  The payload progressed until the second line of the payload, without being able to exfiltrate anything. | 25/728 
+    \item  \emph{spam}: 70 keystrokes were written by the payload before it stopped. | 70/2670
+    \item  \emph{Register Email Forwarding:} The interruption happened after searching for Outlook(new) in the Windows Search Menu  | 14/70 
+    \item  \emph{Disable Windows Event Logging CLI:}  The attack executed fully before the program attempted to disconnect it which failed, because the cable had already disconnected autonomously | 95/95
+    \item  \emph{Disable Windows Event Logging UI:} The script succeeded in opening Servies.msc but was stopped before navigating further. | 16/47
+    \item  \emph{Extract Hashes:}  The payload progressed until the second line of the payload, without being able to exfiltrate anything. | 41/728 
     \item  \emph{Extract Private Key Files:}  | Although no input was made, the payload did manage to open PowerShell. 16/1024
     \item  \emph{Steal Websession Cookies:} The attack was stopped right after opening PowerShell. | 16/1157
     \item  \emph{Iteratively End Processes:} Again the cable was disconnected after opening PowerShell. | 16/386
@@ -278,31 +278,12 @@ This configuration is, however much less user friendly. Since it averages over t
 An average over three keys is much less susceptible to false positives and is not triggered by typing speeds around 80 to 90 wpm. It is therefore much more user friendly. The following experiments evaluated whether it was faster at interrupting the payloads. 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 \begin{itemize}
-    \item  \emph{''a`` spam}: 70 ''a``s were written by the payload before it stopped. | 70/2670
-    \item  \emph{Register Email Forwarding:} The interruption happened after the Windows Search Menu was opened, without the payload being able to search for anything  |  1/70 
-    \item  \emph{Disable Windows Event Logging CLI:}  Execution stopped at the pop-up to confirm user privileges. | 3/94
-    \item  \emph{Disable Windows Event Logging UI:} The attack executed fully before the program attempted to disconnect it which failed, because the cable had already disconnected autonomously | 47/47
-    \item  \emph{Extract Hashes:}  The payload progressed until the second line of the payload, without being able to exfiltrate anything. | 25/728 
+    \item  \emph{spam}: 80 keystrokes were written by the payload before it stopped. | 80/2670
+    \item  \emph{Register Email Forwarding:} The interruption happened after searching for Outlook(new) in the Windows Search Menu  | 14/70 
+    \item  \emph{Disable Windows Event Logging CLI:}  Execution stopped after the first line of the PowerShell script. | 41/95
+    \item  \emph{Disable Windows Event Logging UI:} The script succeeded in opening Servies.msc but was stopped before navigating further. | 16/47
+    \item  \emph{Extract Hashes:}  The payload progressed until the second line of the payload, without being able to exfiltrate anything. | 38/728 
     \item  \emph{Extract Private Key Files:}  | Although no input was made, the payload did manage to open PowerShell. 16/1024
     \item  \emph{Steal Websession Cookies:} The attack was stopped right after opening PowerShell. | 16/1157
     \item  \emph{Iteratively End Processes:} Again the cable was disconnected after opening PowerShell. | 16/386
