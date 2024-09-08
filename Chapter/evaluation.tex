@@ -120,36 +120,64 @@ Execution on the Surface Laptop went without issues as well. A challenge for the
 \section{Defence Evaluation} \label{defence evaluation}
 
 
-This section will evaluate the performance of the defence script. To illustrate the progress a payload makes before it is interrupted, this thesis proposes a new metric. It measures the success of the payload in executed keystrokes divided by the total keystrokes in the payload. Executed keystrokes include commands such as \verb|ENTER| or \verb|LEFTARROW|and commands such as \verb|GUI R| are counted as two keystrokes. Variable length inputs, such as the email address to forward to in ''Register Email Forwarding`` are not considered in the total keystrokes of a payload. The benefit of this metric is that it represents how close the payload got to executing completely, thereby achieving the attacker's goal. Its biggest disadvantage is that it does not reflect the actual success of the payload, since it does not take into account whether the input happened at the correct place and time. For example, a payload could execute 100\% of its keystrokes, but if there was an error along the way the payload likely still failed. This is why the metric is complemented by a qualitative description of the result to describe the end state of the payload. In the case of 100\% execution with an error along the way, it would state that the PowerShell script experienced an error and did not execute successfully. 
+This section will evaluate the performance of the defence script. To illustrate the progress a payload makes before it is interrupted, this thesis proposes a new metric. It measures the success of the payload in executed keystrokes divided by the total keystrokes in the payload. Executed keystrokes include commands such as \verb|ENTER| or \verb|LEFTARROW|and commands such as \verb|GUI R| are counted as two keystrokes. Variable length inputs, such as the email address to forward to in ''Register Email Forwarding`` are not considered in the total keystrokes of a payload. The benefit of this metric is that it represents how close the payload got to executing completely and achieving the attacker's goal. Its biggest disadvantage is that it does not reflect the actual success of the payload, since it does not take into account whether the input happened at the correct place and time. For example, a payload could execute 100\% of its keystrokes, but if there was an error along the way the payload likely still failed. This is why the metric is complemented by a qualitative description of the result to describe the end state of the payload. In the case of 100\% execution with an error along the way, it would state that the PowerShell script experienced an error and did not execute successfully. 
 
- A spam payload is introduced to get a baseline for the performance of the executions without any delays or unknown factors. It's a simple script that does nothing besides set the keyboard language and input a large number of ''a``s. Listing \ref{lst:a_spam} shows an excerpt of this script. 
+A spam payload is introduced to get a baseline for the performance of the executions without any delays or unknown factors. It's a simple script that does nothing besides set the keyboard language and input a sequence of ``qwertz'' until it reaches 2’400 characters.  large number of ''a``s. Listing \ref{lst:spam_payload} shows an excerpt of this script. 
 
 
-\begin{lstlisting}[caption={Excerpt: write 2670 'a's without delays},label=lst:a_spam, captionpos=b]
+\begin{lstlisting}[caption={Excerpt: write a string of length 2'400 without delays},label=lst:spam_payload, captionpos=b]
 DUCKY_LANG DE_CH
-STRING aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+STRING qwertzqwertzqwertzqwertzqwer
 \end{lstlisting}
 
 The execution of this script against all the following versions of the defence script provides a comparative value for the other payloads.
+As a baseline, the speed of input for O.MG cables is determined. Theoretically, the O.MG cables are advertised to have input speeds of 120 keys/sec for the basic version and 890 keys/sec for elite. This evaluation will focus on 120 k/s to cover all versions of the O.MG cable. Considering this speed and the length of the payload, it should take 2'400 / 60 = 20 seconds to fully execute the script. To test this, the payload is executed and it's frames examined. The epoch time stamp of the first HID packet subtracted from the timestamp of the last HID packet equals the elapsed time. These timestamps are displayed in Wireshark and can therefore easily be accessed. Testing results in execution times between 19.45 and 20.5 seconds, which is exactly the expected range. \\
+Typing time can be categorized into two components: the interval between keystrokes and the duration each key is pressed. In terms of USB packets this means a packet with HID data is first sent to the host to indicate a key press. After the duration of the key press, a second packet with HID data set to zeros is sent to indicate the key release. Holding a keypress delays this release package, signalling to the host to interpret the signal as autorepeat. This release frame can also be replaced by another key press package, to communicate to the host that a different key is pressed now. Understanding this mechanism is vital for comprehending the the total number of keypresses a host registers when using the O.MG keyboard. A normal human user always has a delay between releasing a key and pressing another. The computer chip inside the cable does not have that constraint, it can simply send a new keypress signal to indicate a new keypress. This means that for O.MG input, the string 'aaa' is actually 6 packets long, while 'abc' has a length of 4. 
 
-The two components of the defence script are evaluated separately: first, this chapter looks at the enumeration pattern detection, and then it deals with the two options for the rate limiter.
+a b c [release] = 4
+a [release] a [release] a [release] = 6
+
+Therefore it is important to use a spam payload that does not consist solely of one character, it would increase the number of packets send to the host in a way that is not representative of a usual payload.
+
+In the following subsections the two components of the defence script are evaluated separately: first, the enumeration pattern detection, and then the two options for the rate limiter.
+
+
+
+\iffalse
+The aforementioned interarrival time for a O.MG cable is nearly none, while it is significant for human input. 
+
+this makes me think i might have to rewrite the defense script again. What i am looking at now is not actually interarrival time but the time from keypress to keypress. right? i mean it's still weird that the calculations don't work, because press duration is approximately 0.008 for both but humans have an interarrival time and the o.mg cable literally doesn't but this also explains why spamming your keyboard will always trigger a rate limiter like this; there are no interarrival times if your keystrokes are happening basically at the same time. 
+i am ignoring release packets rn with the ita, so how could i fix that?
+There are no release packets for o.mg input, not unless it's the same character twice after another. so i don't have any data to compare the human ita to. 
+So i still have to use the press to press time, it doesn't matter. but i cant call it itnerarrival time now can i? or i have to find another name for what i just called interarrival time. 
+
+
+
+The duration of each keypress can be determined using the timestamps from the input frames; subtracting the timestamp of the initial press signal from the release frame timestamp provides the press duration. This data yields a key press duration time of 7.9 to 8.1 milliseconds.
+Considering the 20 seconds it took to input 2400 keystrokes and the 8 milliseconds of key press duration, the average interarrival time can be calculated. It's 20 seconds minus 2'400 * 0.008 which comes out to and incredibly small number that can't be it because it isn't since there are no release signals for omg input it's just a continuous stream of keystrokes wtffffff  
+
+
+Taking the 43 seconds the O.MG cable took to input 2670 keystrokes and subtracting the press time for each of these keys: 43 - (0.008*2670) results in a total interarrival time of 21.64 seconds. Considering that over 2670 keystrokes there are 2669 interarrival slots, an interarrival time of 21.64/2669 = 0.0081 seconds, or 8.1 milliseconds for O.MG input can be derived. These calculations serve as the basis for establishing reasonable inputs for the rate limiter options in the following subsections.  
+
+\fi
+
 
 
 \subsection{Enumeration Pattern Detection}
 
-This subsection will describe a series of experiments to evaluate the speed of the enumeration pattern analysis (EPA). For these experiments, every payload is run against the defence script with the rate limiter disabled, as shown in Listing \ref{lst:start_script_dr}.
+This subsection will describe a series of experiments to evaluate the enumeration pattern analysis (EPA). For these experiments, every payload is ran against the defence script with the rate limiter disabled, as shown in Listing \ref{lst:start_script_dr}, leaving only the enumeration analysis to detect O.MG devices.
 
 \begin{lstlisting}[caption={start Defense Script with Rate Limiter disabled},label={lst:start_script_dr}, captionpos=b]
  py .\omg_detection.py "USBDeview file path" -dr
 \end{lstlisting}
 
-This defence is not expected to have any differences in performance between the payloads; it acts solely on the information from the cable itself, and what happens after the enumeration is not of any concern. \\
+Since this detection mechanism is based on a feature of the O.MG cable itself as opposed to any of the characteristics of a payload, it is expected to not have any differences in performance between the payloads. \\
 The following list explains the qualitative and quantitative progress every payload made.
 
 \begin{itemize}
-    \item  \emph{''a`` spam}: 243 ''a``s were written by the payload before it stopped. | 243/2670
+    \item  \emph{spam}: 42 characters were written by the payload before it stopped. | 42/2400
     \item  \emph{Register Email Forwarding:} The interruption happened after the Windows Search Menu was opened, without the payload being able to search for anything  |  1/70 
-    \item  \emph{Disable Windows Event Logging CLI:}  Execution stopped at the pop-up to confirm user privileges. | 3/88
+    \item  \emph{Disable Windows Event Logging CLI:}  Execution stopped at the pop-up to confirm user privileges. | 3/95
     \item  \emph{Disable Windows Event Logging UI:} The attack reached the Windows run window without typing anything in | 2/47
     \item  \emph{Extract Hashes:}  The payload progressed until the pop-up window confirming user privileges. | 3/728 
     \item  \emph{Extract Private Key Files:}  | Although no input was made, the payload did manage to open PowerShell. 164/1024
@@ -164,13 +192,13 @@ The following list explains the qualitative and quantitative progress every payl
 \hline
 Name & EPA  \\
 \hline
-''a`` spam & 243/2670 \\
+''a`` spam & 42/2400 \\
 \hline
-Register Email Forwarding & 14/70 \\
+Register Email Forwarding & 1/70  \\
 \hline
-Disable Windows Event Logging CLI & 3/94 \\
+Disable Windows Event Logging CLI &  3/95 \\
 \hline
-Disable Windows Event Logging UI & 4/47 \\
+Disable Windows Event Logging UI & 2/47 \\
 \hline
 Extract Hashes & 3/728  \\
 \hline
@@ -187,47 +215,86 @@ Schedule Processes & 3/209 \\
 \label{table:EPA_results}
 \end{table}
 
-Every execution was interrupted successfully before it could make any impact, often before any of its intentions were clear. The effect of delays becomes obvious when comparing scripts that require admin rights with those that don't. That first group had many delays at the start of the script when opening menus and waiting for pop-ups. This gives the script a lot of time to react and disconnect the cable, hence the very low execution rates. The other group, on the other hand, uses the widows run menu to open PowerShell or Windows Services which is more input-heavy compared to the navigation of the first group. Start-heavy payloads are therefore able to input more keystrokes before the disconnect. In either case, the defence is a success, it detects the attack in 100\% of cases before anything can be executed. \\
-However, still, the execution rates are not zero and are proof of the latency of the defence script. The result of the spam payload shows, that it is possible to enter 23 consecutive keystrokes into a target machine before this defence would step in. Fortunately for possible victims, this is only a theoretical scenario; every payload in practice would have to waste time with delays and could not get near the 23 keystrokes, as visible in the results chart of Listing \ref{table:EPA_results}\
+Every execution was interrupted successfully before it could make any impact, often even before any of its intentions were clear. The effect of delays becomes obvious when comparing scripts that require admin rights with those that don't. That first group had many delays at the start of the script when opening menus and waiting for pop-ups. This gives the script a lot of time to react and disconnect the cable, hence the very low execution rates. The other group, on the other hand, uses the widows run menu to open PowerShell or Windows Services which is more input-heavy compared to the navigation of the first group. Start-heavy payloads are therefore able to input more keystrokes before the disconnect. In either case, the defence is a success, it detects the attack in 100\% of cases before anything can be executed. \\
+However, still, the execution rates are not zero and are proof of the latency of the defence script. As is further evident by the result of the spam payload, which was able to input 42 keystrokes before it was interrupted.  Fortunately such a script that spams input is not realistic as an attack scenario; in practice every payload would have to waste time with delays, specifically somewhere at the start. 
 
 
 \subsection{Rate Limiter}
 
 This section will determine which values for the time window and interarrival time analysis respectively are best suited in defense against the newly formulated attacks.\\
-As a baseline, the speed of input for O.MG cables is determined. Theoretically, the O.MG cables are advertised to have input speeds of 120 keys/sec for the basic version and 890 keys/sec for elite. The O.MG cable used for development in this thesis is an elite cable. The ''a``spam payload introduced in the introduction to Section \ref{defence evaluation} is used to test this. It consists of 2670 ''a``s that should be printed out without any delays into a notepad. Since the elite cable should be able to input 890 keystrokes per second the complete execution is expected to take 3 seconds. The elapsed time is measured using the Epoch Arrival time of the first UBR\_INTERRUPT frame carrying the correct HID data as captured by Wireshark and the last. \\
-Running the payload three times results in a consistent measured execution time of 43.0 seconds. This is equivalent to 69.0 keystrokes/second, 12.9 times slower than expected. it is therefore much closer to what has been established as humanly possible in section \ref{Methodology} at 25 keystrokes/second. TODO; find out why \\
-Typing time can be categorized into two components: the interval between keystrokes and the duration each key is pressed. The duration of each keypress can be determined using the timestamps from the input frames; subtracting the timestamp of the initial press signal from the release frame timestamp provides the press duration. This data yields a key press duration time of 7.9 to 8.1 milliseconds. Taking the 43 seconds the O.MG cable took to input 2670 keystrokes and subtracting the press time for each of these keys: 43 - (0.008*2670) results in a total interarrival time of 21.64 seconds. Considering that over 2670 keystrokes there are 2669 interarrival slots, an interarrival time of 21.64/2669 = 0.0081 seconds, or 8.1 milliseconds for O.MG input can be derived. These calculations serve as the basis for establishing reasonable inputs for the rate limiter options in the following subsections.  
 
-
-MSI: 22.247s for qwerty script
 
 \subsubsection{Interarrival Time Analysis}
 
 
-Interarrival Time Analysis (ITA) was implemented by \cite{neunerUSBlockBlockingUSBBased2018} who described a detection mechanism for what they call Rapid Keypress event sequence (RES). A RES would be detected every time a sequence \emph{s} of consecutive keypresses arrives with an interarrival time less than a defined threshold \emph{t} between each of them. They concluded that \emph{t} should be at 0.02 s with an \emph{s} of 3 to allow some averaging while ruling out false negatives for short attacks. To come to their conclusion, the paper assumes a minimum interarrival time for organically generated keypresses of 80ms, based on a study from 1985 \cite{umphressIdentityVerificationKeyboard1985}. It has to be kept in mind that this value might be outdated.
+This subsection discusses the interarrival time analysis, which tries to detect non human input by its speed. Here, interarrival time is defined as the time between two key press signals. The time between key release and key press signal, which is often referred to in papers that analyze typing patterns, such as \cite{neunerUSBlockBlockingUSBBased2018}, is not applicable in this situation because of the way the O.MG cable generates it's input. As discussed in the introduction to this chapter, Section \ref{defence evaluation}, the O.MG cable does not send key release signals when inputting a string, instead it simply sends the new keypress signal. Therefore this analysis cannot deal with durations between key release and new keypresses, they don't exist on many O.MG input sequences. Instead, this analysis focuses on the time between key press signals. \\
+As established previously, the currently fastest human typing is at around 25 k/s, which comes out to approximately 40 milliseconds of interarrival time. The O.MG cable, at 120 k/s has a theoretical interarrival time of 8.3 milliseconds. 
 
-To test these assumptions the script can be run with the command shown in Listing \ref{lst:start_script_ita_0.02,3}
+To test these assumptions the script can be run with the command shown in Listing \ref{lst:start_script_ita_0.008,4}
 
 
-\begin{lstlisting}[caption={start Defense Script with ITA (0.02,3)},label={lst:start_script_ita_0.02,3}, captionpos=b]
- py .\omg_detection.py "USBDeview file path" -de --i "(0.02,3)"
+\begin{lstlisting}[caption={start Defense Script with ITA (0.02,3)},label={lst:start_script_ita_0.008,4}, captionpos=b]
+ py .\omg_detection.py "USBDeview file path" -de --i "(0.008,4)"
 \end{lstlisting}
 
+The difficulty in finding a good configuration for the rate limiter lies therein, that an attack should always be registered as fast as possible (100\% true positives with 0\% false negatives) while keeping the alarms for human input as small as possible (0\% false positives).
+This is a tradeoff, false positives will always be possible, because the input speeds of a O.MG cable can easily be simulated by spamming a keyboard. As soon as multiple keys are pressed at the same time, the interarrival time between them is zero, triggering the rate limiter. This does not affect keys that are designed to compound, such as shift, control or alt, but pressing multiple character or number keys simultaneously will have that effect. This type of input is usually uncommon in real life, but can very easily happen by accident. \\
+Nevertheless, the (0.008,4) configuration is not triggered by normal human input. It does not trigger for normal input speeds up to 90 wpm, and this subsection was written without any false positives. 
+
+In the following, the performance of this configuration against the developed payloads is described quantitatively and qualitatively.
+
 \begin{itemize}
-    \item  \emph{''a`` spam}: 160 ''a``s were written by the payload before it stopped. | 160/2670
-    \item  \emph{Register Email Forwarding:} The payload was interrupted after searching for Outlook(new) in the Windows Search Menu without opening it.  | 14/70 
-    \item  \emph{Disable Windows Event Logging CLI:} Execution stopped after executing the first line of the powershell script which already disabeld eventlogging, at this point a large part of the damage is already done. | 44/94
-    \item  \emph{Disable Windows Event Logging UI:} It reached the Windows Services settings, where it would navigate to disable the event logging. However, execution stopped before any navigation could take place.  | 14/47
-    \item  \emph{Extract Hashes:} Opened PowerShell in administrator mode and executed one and a half lines of the script, at which point no damage is done yet. |36/728 
-    \item  \emph{Extract Private Key Files:} The disconnect happened right after PowerShell was opened. | 16/1024
-    \item  \emph{Steal Websession Cookies:} Identically to the private key file extraction, this payload ran until the PowerShell Window opened. | 16/1157
-    \item  \emph{Iteratively End Processes:} This payload also reached PowerShell without being able to input anything. | 16/386
-    \item  \emph{Schedule Processes:} The first line of the script was executed before the disconnect was triggered, at which point no harm was done. | 39/209
+    \item  \emph{''a`` spam}: 70 ''a``s were written by the payload before it stopped. | 70/2670
+    \item  \emph{Register Email Forwarding:} The interruption happened after the Windows Search Menu was opened, without the payload being able to search for anything  |  1/70 
+    \item  \emph{Disable Windows Event Logging CLI:}  Execution stopped at the pop-up to confirm user privileges. | 3/94
+    \item  \emph{Disable Windows Event Logging UI:} The attack executed fully before the program attempted to disconnect it which failed, because the cable had already disconnected autonomously | 47/47
+    \item  \emph{Extract Hashes:}  The payload progressed until the second line of the payload, without being able to exfiltrate anything. | 25/728 
+    \item  \emph{Extract Private Key Files:}  | Although no input was made, the payload did manage to open PowerShell. 16/1024
+    \item  \emph{Steal Websession Cookies:} The attack was stopped right after opening PowerShell. | 16/1157
+    \item  \emph{Iteratively End Processes:} Again the cable was disconnected after opening PowerShell. | 16/386
+    \item  \emph{Schedule Processes:} The disconnect happened after the first line of the PowerShell script was executed, no harm was done at that point. | 39/209
 \end{itemize}
 
-Human input registered pretty fast; often interarrvial times were much faster than 0.02, more like 0.008 / 0.007 -> make max allowed speed 0.009
+In theory, this configuration (0.008 seconds averaged over 4 characters) should trigger a disconnect after the first 4 inputs; however, it takes until character 70 of the spam payload to disconnect. This is due to the defence script's latency of 66 keystrokes. Since the input speed is so high, even very small delays between the triggering input have a big effect.
 
-to get something that allows reasonably fast tiping, you'd need a (0.008,4) config. But how good is that at detection?
+
+Delays in the payload unexpectedly improved the performance of the rate limiter; after the first keystrokes to open a menu or application, the pauses allowed the program to react. Opening PowerShell as administrator requires a delay of at least 100ms after the first two input keystrokes to open the power user menu, increasing the average interarrival time significantly. This makes the start of the payload fly under the radar of the rate limiter. Only when the input to the terminal starts are the keystrokes continuous enough to reach the limit. This allows the payload to operate stealthily up to its PowerShell input.Additionally, it has a window of opportunity because the disconnect does not occur immediately after the first 4 continuous keystrokes, allowing it to use the delay to execute fully. This is what happened for ``Disable Windows Event Logging CLI''. It opened the PowerShell window without being detected and had enough time afterwards to execute the two lines of bash script that it needs to reach its goal. It was therefore able to run fully without being interrupted. When the defense script attempted to disconnect it, it had already deregistered itself. 
+
+Payloads with many initial keystrokes were stopped the most quickly. They triggered the rate limiter by opening applications with the Windows Run Menu. Unlike opening applications with the Power User Menu, this approach requires the application's names to be typed out such that they trigger the rate limiter. The subsequent delays in the payload to allow the programs to start also afforded the defense script the time it needed to disconnect the devices.  
+
+In conclusion, this configuration succeeds in detecting all the payloads, reacting faster with start-heavy payloads. Payloads with delays spacing out the input at the start have more success, even going as far as executing fully before being forcefully disconnected. An attempt to counteract this is shown in Listing  \ref{lst:start_script_ita_0.008,2}   
+
+\begin{lstlisting}[caption={start Defense Script with ITA (0.02,2)},label={lst:start_script_ita_0.008,2}, captionpos=b]
+ py .\omg_detection.py "USBDeview file path" -de --i "(0.008,2)
+\end{lstlisting}
+
+This payload is expected to recognize inputs faster, minimizing the delay, since it can react two keystrokes earlier than the previous configuration. 
+
+This configuration is, however much less user friendly. Since it averages over two keystrokes only, one particularly fast sequence of keystrokes can trigger the rate limiter, making it very prone to false positives. Even typing moderately fast at approximately 50 wpm triggers the rate limiter. Unlike the previous configuration, this does not allow comfortable typing speeds. Such a defense would be completely infeasible in practice, impractical defense systems are not supported by users, which is vital for their success. An average over three keystrokes might therefore be more useful and minimize false positives while also keeping the delay minimal. This configuration is shown in Listing  \ref{lst:start_script_ita_0.008,3}   
+\begin{lstlisting}[caption={start Defense Script with ITA (0.02,2)},label={lst:start_script_ita_0.008,3}, captionpos=b]
+ py .\omg_detection.py "USBDeview file path" -de --i "(0.008,3)
+\end{lstlisting}
+
+An average over three keys is much less susceptible to false positives and is not triggered by typing speeds around 80 to 90 wpm. It is therefore much more user friendly. The following experiments evaluated whether it was faster at interrupting the payloads. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 \begin{itemize}
@@ -247,29 +314,16 @@ to get something that allows reasonably fast tiping, you'd need a (0.008,4) conf
 
 
 
-In theory, this configuration (0.02 seconds averaged over 3 characters) should trigger a disconnect after the first 3 inputs; however, it takes until character 42 of the ''a`` spam payload to react, putting it at a 0.018\% execution rate. This is due to the defence script's latency of 39 keystrokes, which equals 2.91 seconds (39 * 69k/s = 2691 milliseconds).
-
-Delays in the payload unexpectedly improved the performance of the rate limiter; after the first keystrokes to open a menu or application, the pauses allowed the program to react. Opening PowerShell as administrator requires a delay of at least 100ms after the first two input keystrokes to open the power user menu. This makes the start of the payload fly under the radar of the rate limiter. Only when the input to the terminal starts are the keystrokes continuous enough to reach the limit. Interestingly, the latency is increased in the actual payloads; for example in ``Disable Windows Event Logging'' disregarding the first 5 keystrokes to get to the terminal and the first 2 keystrokes (which would skew the average over 3 keys), the latency amounts to 62 keystrokes, nearly a third more than the latency for the 'a' spam.
-
-The payloads that were stopped the fastest were those that featured many keystrokes in the beginning by opening applications with the Windows Run Menu. These inputs triggered the rate limit and the delays that were necessary to allow the programs to load afforded the defence script enough time to process the disconnect.  
-
-In conclusion, this configuration succeeds in detecting all the payloads, reacting faster with start-heavy payloads. Payloads with delays spacing out the input at the start have more success. They progress far into the payload even though the rate limit is triggered because of the delay of the defence script. This could be counteracted by adjusting the configuration to average over 2 characters as shown in Listing \ref{lst:start_script_ita_0.02,2}   
-
-\begin{lstlisting}[caption={start Defense Script with ITA (0.02,2)},label={lst:start_script_ita_0.02,2}, captionpos=b]
- py .\omg_detection.py "USBDeview file path" -de --i "(0.02,3)
-\end{lstlisting}
-
-Another drawback for the (0.02,3) configuration is that it is easily triggered by human keyboard input. 
-
-cable
-0.01596653461456299
 
 
-human
-0.012127518653869629
 
 
-fuck, the human input is faster than the cable ??? what is this stuff
+
+
+
+
+
+
 
 
 
