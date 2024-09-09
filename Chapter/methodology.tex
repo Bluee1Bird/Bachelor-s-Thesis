@@ -77,7 +77,7 @@ Examples are \verb|SudoSnatch| \cite{OmgpayloadsPayloadsLibrary}, \verb|Everythi
 \subsubsection{Collection}
 After a target has been infiltrated, the data collection process can start. It consists of techniques like Man-in-the-Middle (MITM), compressing data, browser session hijacking, audio and or image capture, clipboard data exfiltration, email collection, keylogging, etc. \cite{MITREATTCK}. \\
 Keylogging specifically is one of the features of the O.MG cable, as discussed previously, and further extended by \verb|Persistent_Keylogger-Telegram_Based|
-\cite{OmgpayloadsPayloadsLibrary}. Image capturing is demonstrated by \verb|Screen-Shock| \cite{OmgpayloadsPayloadsLibrary}, and the theft of photos by \verb|/ExfiltratePhotosThroughShell| \cite{OmgpayloadsPayloadsLibrary}.
+\cite{OmgpayloadsPayloadsLibrary}. Image capturing is demonstrated by \verb|Screen-Shock| \cite{OmgpayloadsPayloadsLibrary}, and the theft of photos by \\  \verb|ExfiltratePhotosThroughShell| \cite{OmgpayloadsPayloadsLibrary}.
 
 
 \subsubsection{Exfiltration}
@@ -109,7 +109,7 @@ This section will give an overview of the methodologies of the developed payload
 
 When preparing for an HID injection attack, a malicious actor has to pay attention to the following 5 points:
 
-\begin{enumerate}[noitemsep]
+\begin{enumerate}
     \item Target
     \item Circumstance
     \item Required Hardware
@@ -467,13 +467,13 @@ Figure \ref{fig:defence_flowchart} visualizes the defence process as a flow char
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{visuals/defence_flowchart.png}
+    \includegraphics[width=1\linewidth]{visuals/defense_flowchart.png}
     \caption{Flowchart describing the Defence Architecture}
     \label{fig:defence_flowchart}
 \end{figure}
 
 
-\section{Conclusion}
+\section{Conclusion Methodology and Architecture}
 
 This chapter introduced the underlying architecture and methodology for both the attack side through the newly developed payloads as well as the defence by introducing the developed defence system and its components. 
 It started by introducing the MITRE ATT\&CK framework and some of its 14 categories. Then, it mapped the payloads from the official open-source O.MG payloads repository on GitHub onto those categories to find out which techniques were already present and available and which ones were underrepresented or missing completely. After that, it introduced the architecture of a few payloads that would fill some of those gaps using techniques that had not yet been featured in the source code. \\

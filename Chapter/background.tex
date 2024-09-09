@@ -51,7 +51,7 @@ To be able to communicate with any USB device, a connection must to be establish
     \begin{itemize}
         \item First the host will request the descriptor length and the descriptor from the device with the Get\_Device\_Descriptor command.
         \item The advice is reset again and given a unique local address by the host called via the Set\_Address command. 
-        \item Lastly, the device is prompted to send its configuration by the Get\_Configuration\_Descriptor. The configuration includes a hierarchy of interface, endpoint, and class-specific descriptors.  
+        \item Lastly, the device is prompted to send its configuration by the \\ Get\_Configuration\_Descriptor. The configuration includes a hierarchy of interface, endpoint, and class-specific descriptors.  
     \end{itemize}
     \item \emph{Loading Drivers}: Now that all the information has been exchanged the host can start using it to load the device-specific drivers that will allow control over the device. The corresponding driver is found through the USB class, the vendor ID (VID), and the product ID (PID). Most standard drivers are included in the operating system (OS) of the host. If they aren't the user has to download them manually. This concludes the enumeration process; the device is now ready for use.
 \end{enumerate}
@@ -123,8 +123,8 @@ These qualities combined with its size, make it a popular microcontroller for ho
     \cite{hak5MGCable}
 \end{figure}
 
-Hak5 is a company founded in 2005 by a group who have made it their mission to 'advance the InfoSec industry' \cite{hak5}. They have an award-winning podcast, a big YouTube channel, and a lot of penetration-testing gear. They aim to inform people of the security risks that come with tech to ultimately make the world a safer place. \\
-In 2019, the O.MG cable was made available at Hak5 \cite{MGCable2019a} marking the beginning of a collaboration between the creator of the O.MG cable and founder of Mischief Gadgets, MG \cite{MGCable2019a} and the Hak5 team. They have since released many variations of the O.MG cable, including a plug, an adapter, an 'unblocker', and a cable detector \cite{hak5MischiefGadgets}. The device that will be featured in this thesis is the O.MG cable. It is plug-and-play and can therefore be used to conduct injection attacks, without having to do any hardware building yourself \cite{hak5MGCable}. 
+Hak5 is a company founded in 2005 by a group who have made it their mission to ``advance the InfoSec industry'' \cite{hak5}. They have an award-winning podcast, a big YouTube channel, and a lot of penetration-testing gear. They aim to inform people of the security risks that come with tech to ultimately make the world a safer place. \\
+In 2019, the O.MG cable was made available at Hak5 \cite{MGCable2019a} marking the beginning of a collaboration between the creator of the O.MG cable and founder of Mischief Gadgets, MG \cite{MGCable2019a} and the Hak5 team. They have since released many variations of the O.MG cable, including a plug, an adapter, an ``unblocker'', and a cable detector \cite{hak5MischiefGadgets}. The device that will be featured in this thesis is the O.MG cable. It is plug-and-play and can therefore be used to conduct injection attacks, without having to do any hardware building yourself \cite{hak5MGCable}. 
 
 
 
@@ -138,7 +138,7 @@ This section will give an overview of the O.MG cable, and the scripting language
 As described shortly in sections \ref{Hak5Hardware} and \ref{HistoryOfAttacks} the O.MG cable is a BadUSB cable invented by MG \cite{MGCable2019a}, produced by Mischief Gadgets \cite{hak5MischiefGadgets} and sold in cooperation with Hak5 on their website \cite{hak5MischiefGadgets}. \\
 The cable does not have any physical markers; neither its USB ends, the cable, nor the weight gives any indication that it has so many more capabilities than normal USB cables. For the most part, it is a usual USB cable; the passive (passthrough) end does not have any special abilities, and if it is not configured to execute a boot script, the cable can be used like any other to charge an transfer data. Its malicious, active end is marked by a USB trident. This symbol is often found on USB cables to indicate their compatibility with the USB standard. The active end transmits the payloads from the device to the USB host. It is available in USB-A, USB-C, and lightning. 
 To set up an O.MG cable, the first step is to flash it. This must be done before initial use or after a self-destruct sequence has been triggered. Flashing the cable requires an O.MG Programmer \cite{hak5MGCable}. The active end of the O.MG cable is plugged into the programmer, which itself is connected to a computer by a regular USB data cable. Flashing can either be done with the official open-source firmware \cite{DuckyScriptSyntaxGuide} via the setup website (https://o.mg.lol/setup/OMGCable/) or with custom firmware. After flashing the device is ready to be used. \\  
-Once the active end receives power from a USB host, it establishes a short-range wireless network with the default SSID "O.MG" and password "12345678," both of which are configurable. The WebUI can be accessed through that network, on ``http://192.168.4.1.''. \\
+Once the active end receives power from a USB host, it establishes a short-range wireless network with the default SSID ``O.MG" and password ``12345678" both of which are configurable. The WebUI can be accessed through that network, on ``http://192.168.4.1.''. \\
 
 \begin{figure}[H]
     \centering
@@ -174,7 +174,7 @@ Payloads can be written directly in the WebUI, where they can be stored in slots
 
 \subsubsection{Geofencing}
 
-Geofencing can be accomplished by a simple conditional statement. It allows triggering or blocking actions depending on the presence or absence of a wifi network with a specific SSID. This is accomplished by a condition that is evaluated every time the O.MG device powers up. Alternatively, the cable can wait until an SSID or BSSID is present with the 'WAIT\_FOR\_PRESENT' keyword.
+Geofencing can be accomplished by a simple conditional statement. It allows triggering or blocking actions depending on the presence or absence of a wifi network with a specific SSID. This is accomplished by a condition that is evaluated every time the O.MG device powers up. Alternatively, the cable can wait until an SSID or BSSID is present with the ``WAIT\_FOR\_PRESENT'' keyword.
 It can be configured to either wait for a specific amount of time or run forever. Conversely, this feature can also be used to wait until it is out of reach of a network.
 
 \subsubsection{Self-Destruct}
@@ -248,7 +248,7 @@ STRING Hello, World!
 
 
 
-\section{Chapter Conclusion}
+\section{Conclusion Background}
 
 This chapter introduced the USB standard and protocol and the vulnerabilities that come with it. It features a short history of USB and a physical and technical explanation of USB. It showed how the lack of USB authentication can be leveraged by malicious actors to target users, stealthily and efficiently. To this end, it listed a variety of different possible USB attacks and introduced the keyboard injection attack.
 Lastly, a basic overview of the hardware in this thesis was given and the O.MG cable, as well as its scripting language, DuckyScript was introduced. 
