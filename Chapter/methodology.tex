@@ -157,7 +157,7 @@ This section provides an overview of the methodology for the newly developed pay
     \item Extract Private Key Files (Defence Evasion)
     \item Steal Web Session Cookies (Defence Evasion)
     \item Iteratively End Processes (Impact)
-    \item Schedule Processes (Persistence)
+    \item Schedule Job (Persistence)
 \end{enumerate}
 
 
@@ -204,7 +204,7 @@ Such an attack first has to determine which browser should be targeted. For this
 One underexplored area of the MITRE ATT\&CK framework is the category 'Persistence'. This payload aims to achieve persistence by iteratively ending running processes. From all the running processes, the payload should stop those defined on a whitelist.
 
 
-\subsubsection{Schedule Processes}
+\subsubsection{Schedule Job}
 
 This payload aims to achieve persistence by registering processes that will run iteratively depending on a customizable trigger. These processes can be anything from reconnaissance scripts to other persistence payloads. This payload could for example be combined with the end processes payload in Section \ref{Iteratively End Processes} to create a payload that schedules the iterative termination of processes based on a predefined trigger.
 

@@ -22,7 +22,7 @@ This section will give a short overview over those use cases and how they can be
 
 \subsubsection{DUCKY\_LANG} \label{ducky\_lang}
 
-It is crucial that the layout set in the payload (default US) is the same as the layout language of the victim host. What happens if it isn't can easily be illustrated by switching the input language of one's own computer using Windows Key + Spacebar. The host interprets the input it receives as though it were typed on a keyboard of that input language layout. This means pressing the same key on a keyboard before and after switching the host's input language will not result in the same interpretation. Typing a ``\$'' on an ISO-CH layout keyboard will be interpreted as a ``#'' by a host set to ISO-DE input. A payload written on an ISO-CH keyboard injecting a ``\$''  will write the wrong character to an ISO-DE host - unless the keyboard language is set as \verb|DUCKY_LANG DE|. 
+It is crucial that the layout set in the payload (default US) is the same as the layout language of the victim host. What happens if it isn't can easily be illustrated by switching the input language of one's own computer using Windows Key + Spacebar. The host interprets the input it receives as though it were typed on a keyboard of that input language layout. This means pressing the same key on a keyboard before and after switching the host's input language will not result in the same interpretation. Typing a ``\$'' on an ISO-CH layout keyboard will be interpreted as a ``\#'' by a host set to ISO-DE input. A payload written on an ISO-CH keyboard injecting a ``\$''  will write the wrong character to an ISO-DE host - unless the keyboard language is set as \verb|DUCKY_LANG DE|. 
 For this reason, having the right input language set in the payload is vital to its success. If the input language is unknown, the O.MG's keymapper feature can be used to identify it.
 
 
@@ -317,9 +317,9 @@ The program features a while loop, which will keep it running continuously. It a
 
 
 
-\subsubsection{Schedule Processes}
+\subsubsection{Schedule Job}
 
-Windows Processes can be scheduled via PowerShell with admin privileges. As soon as that is achieved, a job trigger can be chosen. There is a wide variety to choose from, such as time intervals in seconds, minutes, days, even weeks, random delays, repetition for a set duration, or events such as logon or start-up \cite{sdwheelerNewJobTriggerPSScheduledJobPowerShell}.
+Windows Jobs can be scheduled via PowerShell with admin privileges. As soon as that is achieved, a job trigger can be chosen. There is a wide variety to choose from, such as time intervals in seconds, minutes, days, even weeks, random delays, repetition for a set duration, or events such as logon or start-up \cite{sdwheelerNewJobTriggerPSScheduledJobPowerShell}.
 For this demonstration, logon is used. \\
 Similarly, some job options can also be configured, they can be things like \\ '-ContinueIfGoingOnBattery', -HideInTaskScheduler, -IdleTimeout (how long is the computer idle before the job starts), -RequireNetwork, and many more \cite{sdwheelerSetScheduledJobOptionPSScheduledJobPowerShell}. \\
 After these settings have been defined, the job itself is registered and the PowerShell window can be closed. \\

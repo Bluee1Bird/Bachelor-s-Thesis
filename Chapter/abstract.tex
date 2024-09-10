@@ -3,15 +3,46 @@
 \addcontentsline{toc}{chapter}{Kurzfassung}
 \selectlanguage{german}
 
-abstract deutsch
+Das USB Protokoll implementiert keine authentifizierungs Massnahmen für USB peripher Geräte. Das ermöglicht die Imitation von Eingabegeräten (Human Interface Devices) genauer eraubt es jeglichen USB Geräten vorzugeben ein solcher Eingabegerät zu sein und dem Computer befehle zu erteilen. Solche Attacken warden HID-imitations Angriffe genannt und haben das Potential grossen Schaden auf angegfiffenen Systemen aunzurichten. Sogenannte BadUSB haben alle Möglichkeiten für Eingaben an den Copmuter, die auch ein Mensch mit physischem Zugriff hätte mit dem Vorteil von übermenschlichen Geschwindikeiten, möglich gemacht durch die eingebauten Mikrocontroller. Ihr grösster Nachteil, jedoch, sind die fehlenden Rückmeldungen um einschätzen zu können, ob die abgegebenen Befehle erfolgreich waren.
+Diese Arbeit erkundigt die Geschichte solcher Angriffe sowie die Evolution der Massnahmen gegen sie. Zudem setzt sie einen Schwerpunkt auf ein solches BadUSB, das O.MG Kabel. Sie analysiert die bestehenden Angriffskripts verfügbar im offiziellen O.MG GitHub Datenbank und gleicht sie ab mit den Methoden gelistet im MITRRE ATT\&CK Framework. Zu einigen unter oder nicht representierten Methoden warden anschliessend Sieben neue Angriffe beschrieben und entwickelt. Zusätzlich beschreibt sie den Aufbau und die Implementation eines verteidigungsprogrammes, dass einen neuartigen Ansatz zur Erkennung von O.MG Geräten aufgrund von ihrer USB Registrierungmuster beinhaltet. Weiter besteht es aus einem Ratenbegrenzer zwei Modi; einer Analyse der Zeitabstände zwischen Tastendrücken und einer Analyse der Anzahl Tastendrücke in einer gesetzten Zeitspanne. Sobal verdächtige Aktivität bemerkt wird, trennt das Programm die Verbindung. 
+Diese Implementationen werden anschliessend evaluiert. Dafür warden die Angriffsskripts auf drei verschiedenen Geräten ausgeführt und aufgrund ihres Erfolges beurteilt. Sie wurden ebenfalls gegen das Verteidigungsprogramm getestet,um herauszuffinden, wie schnell dieses sie unterbrechen würde. 
+Es wurde festgestellt, dass einige Skripts flexibler und weniger anfällig für unvorhergesehene Hindernisse sind und daher weniger Anpassungen brauchen. Zudem wrude herausgefunden, dass die Regierstrierungsmusteranalyse so wie der ratenbegrenzer zuverlässig Angriffe erkennen und abbrichen. 
+Die effizienteste Konfiguration für die Analyse der Zeitabstände was ein Schnitt von 8 Millisekunden über drei Tastendrücke, während es für die Zeitfensteranalyse zwei Tastdendrücke in einer Zeitspanne von 75 Millisekunden war.
 
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
 \selectlanguage{english}
 
+The USB protocol does not implement authentication measures for USB peripheral de-
+vices. This leaves room for Human Interface Device Spoofing, more specifically for USB
+devices that pretend to be HID and inject commands to a host. Those attacks are called
+HID spoofing attacks and have the potential to wreak havoc on target computer. Such a
+BadUSB has all the capabilities of a human with physical access to the device’s HID, but
+with the added advantage of superhuman input speeds provided by its microcontrollers.
+However, its main limitation is the lack of feedback mechanisms to assess the outcomes
+of its actions. 
 
-abstract english
+This thesis explores the history of such attacks as well as the history of
+countermeasures against them. Additionally, it puts a focus on one commercially avail-
+able BadUSB, the O.MG cable.
+ It analyses existing attack payloads on the official O.MG
+GitHub repository, comparing them to the MITRE ATT&CK framework and supplement-
+ing them with seven new ones. Furthermore, the architecture and implementation of a
+defense script is described. It features a novel defense approach by detecting O.MG device
+through their special enumeration patterns and a rate limiter with two modes; Interarrival
+Time Analysis, which detects suspicious input speeds by the delay between keypresses,
+and Time Window Analysis, which identifies them when the number of keystrokes sur-
+passes a certain threshold within a given time frame. The script disconnects the input
+device as soon as any suspicious behavior is detected through the previously described
+methods.
 
-
+These implementations are then evaluated. The payloads are tested on three different de-
+vices while the three part detection script is evaluated by how quickly it can detect these
+novel payloads. It was  found that some payloads are more flexible than others and some of
+their features make them more or less prone to fail due to unexpected circumstances and therefore require fewer adjustments to work. Fur-
+thermore, it was found that the Enumeration Pattern Analysis works reliably and quickly
+as do the Rate Limiter modes. The most effective configurations for Interarrival Time
+Analysis is found to be 8 milliseconds averaged over 3 recorded keystrokes while it is two
+keystrokes in a window of 75 milliseconds for Time Window Analysis.
 

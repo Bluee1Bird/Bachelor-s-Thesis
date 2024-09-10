@@ -2,4 +2,36 @@
 
 \chapter{Installation Guidelines}
 
+The code developed in the course of this thesis is available at: https://github.com/Bluee1Bird/BA-code .
+The repository is split into two folders, one for attack and one for defense.
+
+    
+\section{Set up Attack}  
+
+\begin{enumerate}
+    \item Set up the cable by following the manufacturer's instructions-
+    \item Download the Payloads from the GitHub Repository https://github.com/Bluee1Bird/BA-code 
+    \item Start up the Web UI, paste the desired payload and run. 
+\end{enumerate}
+
+
+
+\section{Set Up Defense}
+
+The detection script relies on tshark, USBPcap and USBDeview to work. It uses tshark extended with USBPcap to capture all USB traffic and USBDeview to disconnect suspicious devices. Tshark is the command line tool from Wireshark, it is recommended to not use it on it's own when not familiar with Wireshark.
+
+\begin{enumerate}
+    \item Install Python 3.9: https://www.python.org/downloads/
+    \item Install Tshark together with Wireshark: https://www.wireshark.org/download.html
+    \item Check the Wireshark installation with tshark --version, if it is not recognized, you might have to add it to the PATH.
+    \item Remember to click the option to install Pcap when prompted by the Wizard. After this installation, your computer will have to reboot.
+    \item Download USBDeview: https://www.nirsoft.net/utils/usb\_devices\_view.html (Download link at 4/5 of the page) and unzip it.
+    \item Remember where you stored it so you can pass the path to the installation to the program later.
+    \item Download the script from the GitHub and run it. The -h flag can give indications for how to use it.
+\end{enumerate}
+    
+
+
+
+
 \chapter{Contents of the CD}
