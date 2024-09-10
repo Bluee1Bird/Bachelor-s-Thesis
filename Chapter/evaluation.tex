@@ -130,7 +130,7 @@ In conclusion it can be said that the payloads did not perform perfectly; They f
 
 This section will evaluate the performance of the defence script. To illustrate the progress a payload makes before it is interrupted, this thesis proposes a new metric. It measures the success of the payload in executed keystrokes divided by the total keystrokes in the payload. Executed keystrokes include commands such as \verb|ENTER| or \verb|LEFTARROW| and commands such as \verb|GUI R| are counted as two keystrokes. Variable length inputs, such as the email address to forward to in ``Register Email Forwarding'' are not considered in the total keystrokes of a payload. The benefit of this metric is that it represents how close the payload got to executing completely and achieving the attacker's goal. Its biggest disadvantage is that it does not reflect the actual success of the payload, since it does not take into account whether the input happened at the correct place and time. For example, a payload could execute 100\% of its keystrokes, but if there was an error along the way the payload likely still failed. This is why the metric is complemented by a qualitative description of the result to describe the end state of the payload. In the case of 100\% execution with an error along the way, it would state that the PowerShell script experienced an error and did not execute successfully. 
 
-A spam payload is introduced to get a baseline for the performance of the executions without any delays or unknown factors. It's a simple script that does nothing besides set the keyboard language and input a sequence of ``qwertz'' until it reaches 2’400 characters. Listing \ref{lst:spam_payload} shows an excerpt of this script. 
+A spam payload is introduced to get a baseline for the performance of the executions without any delays or unknown factors. It's a simple script that does nothing besides set the keyboard language and input a sequence of ``qwertz'' until it reaches 2400 characters. Listing \ref{lst:spam_payload} shows an excerpt of this script. 
 
 
 \begin{lstlisting}[caption={Excerpt: write a string of length 2'400 without delays},label=lst:spam_payload, captionpos=b]
@@ -161,7 +161,7 @@ In the following subsections, the two components of the defence script are evalu
 
 This subsection will describe a series of experiments to evaluate the enumeration pattern analysis (EPA). For these experiments, every payload is ran against the defence script with the rate limiter disabled, as shown in Listing \ref{lst:start_script_dr}, leaving only the enumeration analysis to detect O.MG devices.
 
-\begin{lstlisting}[caption={start defence Script with Rate Limiter disabled},label={lst:start_script_dr}, captionpos=b]
+\begin{lstlisting}[caption={Start defence Script with Rate Limiter disabled},label={lst:start_script_dr}, captionpos=b]
  py .\omg_detection.py "USBDeview file path" -dr
 \end{lstlisting}
 
